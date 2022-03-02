@@ -31,6 +31,6 @@
 <style>
 
 table {
-    background:red;
+    opacity: 100%; /*placeholder so css file is generated */
 }
 </style>
