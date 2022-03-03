@@ -5,7 +5,7 @@
 
     // TODO join and normalise (must end in "/" else could load gigabytes and
     // crash tab)
-    $: fullPath = base + path;
+    $: fullPath = normalise_path(path);
 
     async function load_path() {
         let req = fetch(fullPath, {
@@ -22,6 +22,23 @@
             return response.json();
         });
     }
+
+    function normalise_path(path: string) {
+        // return a path joined to the base, normalised, with a training slash
+        // TODO implement properly
+        return base + "/" + path;
+    }
+
+    function human_size(bytes: number) {
+        // TODO implement
+        return bytes;
+    }
+
+    function human_relative_time(dateString: string) {
+        // TODO implement
+        return dateString;
+    }
+
 </script>
 
 <input type="text" bind:value={path} />
@@ -47,13 +64,13 @@
           <tr>
             <td>{item.name}</td>
             <td>-</td>
-            <td>{item.mtime}</td>
+            <td>{human_relative_time(item.mtime}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
             <td>{item.name}</td>
-            <td>{item.size}</td>
-            <td>{item.mtime}</td>
+            <td>{human_size(item.size)}</td>
+            <td>{human_relative_time(item.mtime}</td>
           </tr>
         {/if}
     {/each}
