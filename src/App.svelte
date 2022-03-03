@@ -1,14 +1,18 @@
 <script lang="ts">
+    import { tick } from 'svelte';
     export let base: string;
     let path: string = "";
     let fullPath: string = "";
+    let req: Promise<Listing> | undefined;
 
     // TODO join and normalise (must end in "/" else could load gigabytes and
     // crash tab)
+    fullPath = normalise_path("");
     $: fullPath = normalise_path(path);
 
+
     async function load_path() {
-        let req = fetch(fullPath, {
+        req = fetch(fullPath, {
             headers: {
                 'Accept': 'application/json',
             },
@@ -22,6 +26,7 @@
             return response.json();
         });
     }
+
 
     function normalise_path(path: string) {
         // return a path joined to the base, normalised, with a training slash
@@ -39,12 +44,14 @@
         return dateString;
     }
 
+    load_path();
 </script>
 
-<input type="text" bind:value={path} />
-
-<input type="button" value="Go" />
-<input type="button" value="Up" />
+<form on:submit|preventDefault={load_path}>
+    <input type="text" bind:value={path} />
+    <input type="submit" value="Go" />
+    <input type="button" value="Up" />
+</form>
 
 {#await req}
 <div class="nis">Loading...</div>
@@ -64,13 +71,13 @@
           <tr>
             <td>{item.name}</td>
             <td>-</td>
-            <td>{human_relative_time(item.mtime}</td>
+            <td>{human_relative_time(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
             <td>{item.name}</td>
             <td>{human_size(item.size)}</td>
-            <td>{human_relative_time(item.mtime}</td>
+            <td>{human_relative_time(item.mtime)}</td>
           </tr>
         {/if}
     {/each}
