@@ -1,5 +1,7 @@
 <script lang="ts">
+    // TODO up button
     // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
+    // TODO clickable path to jump to parents
     import { hash } from './stores';
     export let base: string;
     let req: Promise<Listing> | undefined;
@@ -83,8 +85,7 @@
 {/await}
 
 <style>
-    div.astralbrowser-nis {
-        font-size:14px;
-        opacity:50%;
+    table {
+        opacity:100%; /* placeholder so CSS file is created */
     }
 </style>
