@@ -47,12 +47,10 @@
 </script>
 
 
+<h2>{join_path("/", $hash, "/")}</h2>
 {#await req}
 <div class="nis">Loading...</div>
 {:then listing}
-
-<h2>{join_path("/", $hash, "/")}</h2>
-
 <table>
     <thead>
       <tr>
