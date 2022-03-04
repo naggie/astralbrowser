@@ -2,6 +2,7 @@
     // TODO up button
     // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
     // TODO clickable path to jump to parents
+    // TODO scroll up every nav
     import { hash } from './stores';
     export let base: string;
     let req: Promise<Listing> | undefined;
