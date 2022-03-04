@@ -1,4 +1,5 @@
 <script lang="ts">
+    // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
     import { tick } from 'svelte';
     export let base: string;
     let path: string = "/";
@@ -41,6 +42,12 @@
         return dateString;
     }
 
+    // get an absolute (relative to base) from a name considering the current path
+    function get_joined_path(name: string) :string {
+        // TODO implement cleanly
+        return path + "/" + name;
+    }
+
     load_path();
 </script>
 
@@ -54,7 +61,7 @@
 <div class="nis">Loading...</div>
 {:then listing}
 
-<table>
+<table class="wide">
     <thead>
       <tr>
         <th>Name</th>
@@ -66,13 +73,13 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td on:click={() => {path = path + item.name + "/"; load_path()}}>{item.name}</td>
+            <td class="astralbrowser-file-name" on:click={() => {path = get_joined_path(item.name); load_path()}}>{item.name}/</td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td>{item.name}</td>
+            <td class="astralbrowser-file-name"><a href={get_joined_path(item.name)} download>{item.name}</a></td>
             <td>{human_size(item.size)}</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
@@ -86,7 +93,7 @@
 {/await}
 
 <style>
-table {
-    opacity: 100%; /*placeholder so css file is generated */
+table td.astralbrowser-file-name {
+    cursor: pointer;
 }
 </style>
