@@ -49,7 +49,7 @@
 
 <h2>{join_path("/", $hash, "/")}</h2>
 {#await req}
-<div class="astralbrowser-nis">Loading...</div>
+<div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
 <table>
     <thead>
