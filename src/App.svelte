@@ -6,12 +6,17 @@
     let req: Promise<Listing> | undefined;
 
     async function load_path() {
-        let fullPath: string = normalise_path(path);
-        req = fetch(fullPath, {
-            headers: {
-                'Accept': 'application/json',
-            },
-        })
+        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
+        path = join_path(path, '/');
+
+        req = fetch(
+            join_path(base, path),
+            {
+                headers: {
+                    'Accept': 'application/json',
+                },
+            }
+        )
         .then(response => {
             if (response.status == 404) {
                 throw new Error("Directory does not exist");
@@ -20,16 +25,6 @@
             }
             return response.json();
         });
-    }
-
-
-    function normalise_path(path: string): string {
-        // TODO join and normalise (must end in "/" else could load gigabytes
-        // and crash tab) return a path joined to the base, normalised, with a
-        // training slash
-        // TODO implement properly
-        // TODO relative mode if no / ?
-        return base + path;
     }
 
     function human_size(bytes: number): string {
@@ -43,9 +38,9 @@
     }
 
     // get an absolute (relative to base) from a name considering the current path
-    function get_joined_path(name: string) :string {
-        // TODO implement cleanly
-        return path + "/" + name;
+    function join_path(...fragments: string) :string {
+        // TODO normalise no double dot -- single slashes and resolve relative to /
+        return fragments.join('/').replace(/\/+/, '/');
     }
 
     load_path();
@@ -73,13 +68,13 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td class="astralbrowser-file-name" on:click={() => {path = get_joined_path(item.name); load_path()}}>{item.name}/</td>
+            <td class="astralbrowser-file-name" on:click={() => {path = join_path(path, item.name); load_path()}}>{item.name}/</td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td class="astralbrowser-file-name"><a href={get_joined_path(item.name)} download>{item.name}</a></td>
+            <td class="astralbrowser-file-name"><a href={join_path(base, path, item.name)} download>{item.name}</a></td>
             <td>{human_size(item.size)}</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
