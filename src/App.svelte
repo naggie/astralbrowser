@@ -1,11 +1,11 @@
 <script lang="ts">
     // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
-    import { tick } from 'svelte';
+    import { hash } from './stores';
     export let base: string;
-    let path: string = "/";
     let req: Promise<Listing> | undefined;
 
-    async function load_path() {
+
+    async function load_path(path: string) {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = join_path(path, '/');
 
@@ -40,17 +40,13 @@
     // get an absolute (relative to base) from a name considering the current path
     function join_path(...fragments: string) :string {
         // TODO normalise no double dot -- single slashes and resolve relative to /
-        return fragments.join('/').replace(/\/+/, '/');
+        return fragments.join('/').replace(/\/+/g, '/');
     }
 
-    load_path();
+    $: load_path($hash);
+    $: console.log($hash);
 </script>
 
-<form on:submit|preventDefault={load_path}>
-    <input type="text" bind:value={path} />
-    <input type="submit" value="Go" />
-    <input type="button" value="Up" />
-</form>
 
 {#await req}
 <div class="nis">Loading...</div>
@@ -68,13 +64,13 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td class="astralbrowser-file-name" on:click={() => {path = join_path(path, item.name); load_path()}}>{item.name}/</td>
+            <td><a href={'#' + join_path($hash, item.name)}>{item.name}</a></td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td class="astralbrowser-file-name"><a href={join_path(base, path, item.name)} download>{item.name}</a></td>
+            <td><a href={join_path(base, $hash, item.name)} download>{item.name}</a></td>
             <td>{human_size(item.size)}</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
@@ -88,7 +84,7 @@
 {/await}
 
 <style>
-table td.astralbrowser-file-name {
-    cursor: pointer;
+table td {
+    opacity:100%; /* placeholder so css is created */
 }
 </style>

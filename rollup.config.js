@@ -41,7 +41,7 @@ export default [
         },
         plugins: [
             svelte({
-                preprocess: sveltePreprocess({ sourceMap: !production }),
+                preprocess: sveltePreprocess({sourceMap: true}), //!production }),
                 compilerOptions: {
                     // enable run-time checks when not in production
                     dev: true, //!production
@@ -76,7 +76,7 @@ export default [
 
             // If we're building for production (npm run build
             // instead of npm run dev), minify
-            production && terser()
+            //production && terser()
         ],
         watch: {
             clearScreen: false
@@ -103,9 +103,9 @@ export default [
             }),
             commonjs(),
             typescript({
-                sourceMap: false,
+                sourceMap: true,
             }),
-            terser(),
+            //terser(),
         ],
     },
 ];
