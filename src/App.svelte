@@ -65,7 +65,7 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-<td><a href={'#' + join_path("/", $hash, item.name, "/")}>{item.name}</a></td>
+            <td><a href={'#' + join_path("/", $hash, item.name, "/")}>{join_path(item.name, "/"}}</a></td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
