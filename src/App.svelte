@@ -53,7 +53,7 @@
 
 <h2>{join_path("/", $hash, "/")}</h2>
 
-<table class="wide">
+<table>
     <thead>
       <tr>
         <th>Name</th>
