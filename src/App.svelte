@@ -44,13 +44,14 @@
     }
 
     $: load_path($hash);
-    $: console.log($hash);
 </script>
 
 
 {#await req}
 <div class="nis">Loading...</div>
 {:then listing}
+
+<h2>{join_path("/", $hash, "/")}</h2>
 
 <table class="wide">
     <thead>
@@ -64,7 +65,7 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td><a href={'#' + join_path($hash, item.name)}>{item.name}</a></td>
+<td><a href={'#' + join_path("/", $hash, item.name, "/")}>{item.name}</a></td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
