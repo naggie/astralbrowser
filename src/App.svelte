@@ -1,17 +1,11 @@
 <script lang="ts">
     import { tick } from 'svelte';
     export let base: string;
-    let path: string = "";
-    let fullPath: string = "";
+    let path: string = "/";
     let req: Promise<Listing> | undefined;
 
-    // TODO join and normalise (must end in "/" else could load gigabytes and
-    // crash tab)
-    fullPath = normalise_path("");
-    $: fullPath = normalise_path(path);
-
-
     async function load_path() {
+        let fullPath: string = normalise_path(path);
         req = fetch(fullPath, {
             headers: {
                 'Accept': 'application/json',
@@ -28,18 +22,21 @@
     }
 
 
-    function normalise_path(path: string) {
-        // return a path joined to the base, normalised, with a training slash
+    function normalise_path(path: string): string {
+        // TODO join and normalise (must end in "/" else could load gigabytes
+        // and crash tab) return a path joined to the base, normalised, with a
+        // training slash
         // TODO implement properly
-        return base + "/" + path;
+        // TODO relative mode if no / ?
+        return base + path;
     }
 
-    function human_size(bytes: number) {
+    function human_size(bytes: number): string {
         // TODO implement
         return bytes;
     }
 
-    function human_relative_time(dateString: string) {
+    function human_relative_time(dateString: string): string{
         // TODO implement
         return dateString;
     }
@@ -69,7 +66,7 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td>{item.name}</td>
+            <td on:click={() => {path = path + item.name + "/"; load_path()}}>{item.name}</td>
             <td>-</td>
             <td>{human_relative_time(item.mtime)}</td>
           </tr>
