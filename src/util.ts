@@ -28,7 +28,7 @@ export function humanRelativeTime(dateString: string): string{
 }
 
 // get an absolute (relative to base) from a name considering the current path
-export function joinPath(...fragments: string) :string {
+export function joinPath(...fragments: string[]) :string {
     // TODO normalise no double dot -- single slashes and resolve relative to /
     return fragments.join('/').replace(/\/+/g, '/');
 }
