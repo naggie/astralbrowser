@@ -4,16 +4,17 @@
     // TODO clickable path to jump to parents
     // TODO scroll up every nav
     import { hash } from './stores';
+    import { humanFileSize, humanRelativeTime, joinPath } from './util';
     export let base: string;
     let req: Promise<Listing> | undefined;
 
 
     async function load_path(path: string) {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-        path = join_path(path, '/');
+        path = joinPath(path, '/');
 
         req = fetch(
-            join_path(base, path),
+            joinPath(base, path),
             {
                 headers: {
                     'Accept': 'application/json',
@@ -29,28 +30,11 @@
             return response.json();
         });
     }
-
-    function human_size(bytes: number): string {
-        // TODO implement
-        return bytes;
-    }
-
-    function human_relative_time(dateString: string): string{
-        // TODO implement
-        return dateString;
-    }
-
-    // get an absolute (relative to base) from a name considering the current path
-    function join_path(...fragments: string) :string {
-        // TODO normalise no double dot -- single slashes and resolve relative to /
-        return fragments.join('/').replace(/\/+/g, '/');
-    }
-
     $: load_path($hash);
 </script>
 
 
-<h2>{join_path("/", $hash, "/")}</h2>
+<h2>{joinPath("/", $hash, "/")}</h2>
 {#await req}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
@@ -66,15 +50,15 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td><a href={'#' + join_path("/", $hash, item.name, "/")}>{join_path(item.name, "/")}</a></td>
+            <td><a href={'#' + joinPath("/", $hash, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
             <td>-</td>
-            <td>{human_relative_time(item.mtime)}</td>
+            <td>{humanRelativeTime(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td><a href={join_path(base, $hash, item.name)} download>{item.name}</a></td>
-            <td>{human_size(item.size)}</td>
-            <td>{human_relative_time(item.mtime)}</td>
+            <td><a href={joinPath(base, $hash, item.name)} download>{item.name}</a></td>
+            <td>{humanFileSize(item.size)}</td>
+            <td>{humanRelativeTime(item.mtime)}</td>
           </tr>
         {/if}
     {/each}
