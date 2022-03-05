@@ -33,3 +33,11 @@ export function joinPath(...fragments: string[]) :string {
     return fragments.join('/').replace(/\/+/g, '/');
 }
 
+export function parentDir(path: string) : string {
+    // Normalise path first
+    path = joinPath(path);
+    // remove "" either end with filter boolean
+    const fragments: string[] = path.split("/").filter(Boolean);
+    fragments.pop();
+    return joinPath("/", ...fragments, "/");
+}
