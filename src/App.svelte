@@ -1,17 +1,13 @@
 <script lang="ts">
-    // TODO up button
-    // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
-    // TODO clickable path to jump to parents
+    // TODO clickable path fragments to jump to parents
     import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
     export let base: string;
+    export let path: string = "/";
     let req: Promise<Listing> | undefined;
 
 
     async function load_path(path: string) {
-        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-        path = joinPath(path, '/');
-
         // can get annoying if we don't do this
         window.scroll(0,0);
 
@@ -32,11 +28,14 @@
             return response.json();
         });
     }
-    $: load_path($hash);
+
+    // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
+    $: path = joinPath('/', $hash, '/');
+    $: load_path(path);
 </script>
 
 
-<h2>{joinPath("/", $hash, "/")}</h2>
+<h2>{path}</h2>
 {#await req}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
@@ -49,9 +48,9 @@
       </tr>
     </thead>
     <tbody>
-    {#if joinPath("/", $hash, "/") != "/"}
+    {#if path != "/"}
       <tr>
-        <td><a href={'#' + parentDir($hash)}>../</a></td>
+        <td><a href={'#' + parentDir(path)}>../</a></td>
         <td>-</td>
         <td>-</td>
       </tr>
@@ -59,13 +58,13 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td><a href={'#' + joinPath("/", $hash, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
+            <td><a href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
             <td>-</td>
             <td>{humanRelativeTime(item.mtime)}</td>
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td><a href={joinPath(base, $hash, item.name)} download>{item.name}</a></td>
+            <td><a href={joinPath(base, path, item.name)} download>{item.name}</a></td>
             <td>{humanFileSize(item.size)}</td>
             <td>{humanRelativeTime(item.mtime)}</td>
           </tr>
