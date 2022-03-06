@@ -3,7 +3,7 @@
     // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
     // TODO clickable path to jump to parents
     import { hash } from './stores';
-    import { humanFileSize, humanRelativeTime, joinPath } from './util';
+    import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
     export let base: string;
     let req: Promise<Listing> | undefined;
 
@@ -49,6 +49,13 @@
       </tr>
     </thead>
     <tbody>
+    {#if joinPath("/", $hash, "/") != "/"}
+      <tr>
+        <td><a href={'#' + parentDir($hash)}>../</a></td>
+        <td>-</td>
+        <td>-</td>
+      </tr>
+    {/if}
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
