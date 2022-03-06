@@ -1,4 +1,3 @@
-// TODO revert to original and make dev/prod work as expected
 import svelte from 'rollup-plugin-svelte';
 import commonjs from '@rollup/plugin-commonjs';
 import resolve from '@rollup/plugin-node-resolve';
@@ -42,10 +41,10 @@ export default [
         },
         plugins: [
             svelte({
-                preprocess: sveltePreprocess({sourceMap: true}), //!production }),
+                preprocess: sveltePreprocess({ sourceMap: !production }),
                 compilerOptions: {
                     // enable run-time checks when not in production
-                    dev: true, //!production
+                    dev: !production
                 }
             }),
             // we'll extract any component CSS out into
@@ -77,7 +76,7 @@ export default [
 
             // If we're building for production (npm run build
             // instead of npm run dev), minify
-            //production && terser()
+            production && terser()
         ],
         watch: {
             clearScreen: false
@@ -104,9 +103,9 @@ export default [
             }),
             commonjs(),
             typescript({
-                sourceMap: true,
+                sourceMap: false,
             }),
-            //terser(),
+            terser(),
         ],
     },
 ];
