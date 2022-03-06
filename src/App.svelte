@@ -1,15 +1,20 @@
 <script lang="ts">
     // TODO clickable path fragments to jump to parents
+    import { tick } from 'svelte';
     import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
     export let base: string;
     export let path: string = "/";
-    let req: Promise<Listing> | undefined;
+    // show for / only
+    export let readme: HTMLElement;
 
+    let req: Promise<Listing> | undefined;
 
     async function load_path(path: string) {
         // can get annoying if we don't do this
         window.scroll(0,0);
+
+        if (path != "/") readme.style.display = "none";
 
         req = fetch(
             joinPath(base, path),
@@ -23,8 +28,12 @@
             if (response.status == 404) {
                 throw new Error("Directory does not exist");
             } else if (response.status != 200) {
-                throw new Error("Error loading procedure information");
+                throw new Error("Error loading directory");
             }
+
+            // show readme if appropriate (after load so it does not jump)
+            if (path == "/") readme.style.display = "block";
+
             return response.json();
         });
     }
