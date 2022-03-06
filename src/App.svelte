@@ -2,7 +2,6 @@
     // TODO up button
     // TODO use hashref to allow bac/forward/boookmarking/URL sharing etc
     // TODO clickable path to jump to parents
-    // TODO scroll up every nav
     import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath } from './util';
     export let base: string;
@@ -12,6 +11,9 @@
     async function load_path(path: string) {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath(path, '/');
+
+        // can get annoying if we don't do this
+        window.scroll(0,0);
 
         req = fetch(
             joinPath(base, path),
