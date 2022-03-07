@@ -43,8 +43,10 @@
     $: load_path(path);
 </script>
 
+<form on:submit|preventDefault={(e) => window.location.hash = e.target.elements["location"].value}>
+    <input type="text" value={path} name="location">
+</form>
 
-<h2>{path}</h2>
 {#await req}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
@@ -89,5 +91,11 @@
 <style>
     table {
         opacity:100%; /* placeholder so CSS file is created */
+    }
+
+    form input[type="text"] {
+        width:100%;
+        font-size:16px;
+        padding:10px;
     }
 </style>
