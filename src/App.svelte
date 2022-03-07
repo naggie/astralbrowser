@@ -44,7 +44,7 @@
 </script>
 
 <form on:submit|preventDefault={(e) => window.location.hash = e.target.elements["location"].value}>
-    <input type="text" value={path} name="location">
+    <input type="text" value={path} name="location" spellcheck="false">
 </form>
 
 {#await req}
