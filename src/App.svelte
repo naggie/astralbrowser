@@ -1,5 +1,4 @@
 <script lang="ts">
-    // TODO clickable path fragments to jump to parents
     import { tick } from 'svelte';
     import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
