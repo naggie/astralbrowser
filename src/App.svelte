@@ -7,6 +7,7 @@
     export let readme: HTMLElement;
 
     let path: string = "/";
+    let search: string = "";
 
     let req: Promise<Listing> | undefined;
 
@@ -49,6 +50,7 @@
 
 <form on:submit|preventDefault={handleSubmit}>
     <input type="text" value={path} name="path" spellcheck="false">
+    <input type="text" value={search} name="search" placeholder="Search" spellcheck="false">
 </form>
 
 {#await req}
@@ -97,7 +99,15 @@
         opacity:100%; /* placeholder so CSS file is created */
     }
 
-    form input[type="text"] {
-        width:100%;
+    form {
+        display:flex;
+    }
+
+    form input[name="path"] {
+        width:70%;
+    }
+
+    form input[name="search"] {
+        width:30%;
     }
 </style>
