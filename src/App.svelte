@@ -39,7 +39,7 @@
         });
     }
 
-    async function load_search(query: string) {
+    function load_search(query: string) {
         console.log(query);
     }
 
@@ -51,19 +51,16 @@
         window.location.hash = '?' + e.target.elements["search"].value;
     }
 
-    $: {
-        if ($hash.startsWith("?")) {
-            search = $hash.slice(1);
-            load_search(search);
-            path = "";
-        } else {
-            // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-            path = joinPath('/', $hash, '/');
-            load_path(path);
-            search = "";
-        }
+    $: if ($hash.startsWith("?")) {
+        search = $hash.slice(1);
+        load_search(search);
+        path = "";
+    } else {
+        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
+        path = joinPath('/', $hash, '/');
+        load_path(path);
+        search = "";
     }
-
 </script>
 
 <div id="astralbrowser-toolbar">
