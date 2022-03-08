@@ -38,13 +38,17 @@
         });
     }
 
+    function handleSubmit(e: Event) {
+        window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
+    }
+
     // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
     $: path = joinPath('/', $hash, '/');
     $: load_path(path);
 </script>
 
-<form on:submit|preventDefault={(e) => window.location.hash = joinPath("/", e.target.elements["location"].value, "/")}>
-    <input type="text" value={path} name="location" spellcheck="false">
+<form on:submit|preventDefault={handleSubmit}>
+    <input type="text" value={path} name="path" spellcheck="false">
 </form>
 
 {#await req}
