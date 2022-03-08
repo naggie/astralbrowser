@@ -43,7 +43,7 @@
     $: load_path(path);
 </script>
 
-<form on:submit|preventDefault={(e) => window.location.hash = e.target.elements["location"].value}>
+<form on:submit|preventDefault={(e) => window.location.hash = joinPath("/", e.target.elements["location"].value, "/")}>
     <input type="text" value={path} name="location" spellcheck="false">
 </form>
 
