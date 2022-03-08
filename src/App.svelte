@@ -7,7 +7,7 @@
     export let readme: HTMLElement;
 
     let path: string = "/";
-    let searchInput: string = "";
+    let search: string = "";
 
     let req: Promise<Listing> | undefined;
 
@@ -39,7 +39,7 @@
         });
     }
 
-    async function search(query: string) {
+    async function load_search(query: string) {
         console.log(query);
     }
 
@@ -47,27 +47,35 @@
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
 
-    $: if (searchInput) window.location.hash = "?" + searchInput;
+    function handleSearchSubmit(e: Event) {
+        window.location.hash = '?' + e.target.elements["search"].value;
+    }
 
     $: {
         if ($hash.startsWith("?")) {
-            search($hash.slice(1));
+            search = $hash.slice(1);
+            load_search(search);
             path = "";
         } else {
             // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
             path = joinPath('/', $hash, '/');
             load_path(path);
-            searchInput = "";
+            search = "";
         }
     }
 
 </script>
 
-<form on:submit|preventDefault={handlePathSubmit}>
-    <input type="text" value={path} name="path" spellcheck="false" on:change={() => searchInput = "/"}>
-    <input type="text" bind:value={searchInput} name="search" placeholder="Search" spellcheck="false">
-    <input type="submit" hidden />
-</form>
+<div id="astralbrowser-toolbar">
+    <form id="astralbrowser-toolbar-path" on:submit|preventDefault={handlePathSubmit}>
+        <input type="text" value={path} name="path" spellcheck="false">
+        <input type="submit" hidden />
+    </form>
+    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
+        <input type="text" value={search} name="search" placeholder="Search" spellcheck="false">
+        <input type="submit" hidden />
+    </form>
+</div>
 
 {#await req}
 <div class="accesswait"><div class="progress-line"></div></div>
@@ -111,19 +119,19 @@
 {/await}
 
 <style>
-    table {
-        opacity:100%; /* placeholder so CSS file is created */
-    }
-
-    form {
+    #astralbrowser-toolbar {
         display:flex;
     }
 
-    form input[name="path"] {
+    #astralbrowser-toolbar input {
+        width:100%;
+    }
+
+    #astralbrowser-toolbar-path {
         width:70%;
     }
 
-    form input[name="search"] {
+    #astralbrowser-toolbar-search {
         width:30%;
     }
 </style>
