@@ -7,7 +7,7 @@
     export let readme: HTMLElement;
 
     let path: string = "/";
-    let search: string = "";
+    let searchInput: string = "";
 
     let req: Promise<Listing> | undefined;
 
@@ -39,18 +39,34 @@
         });
     }
 
-    function handleSubmit(e: Event) {
+    async function search(query: string) {
+        console.log(query);
+    }
+
+    function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
 
-    // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-    $: path = joinPath('/', $hash, '/');
-    $: load_path(path);
+    $: if (searchInput) window.location.hash = "?" + searchInput;
+
+    $: {
+        if ($hash.startsWith("?")) {
+            search($hash.slice(1));
+            path = "";
+        } else {
+            // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
+            path = joinPath('/', $hash, '/');
+            load_path(path);
+            searchInput = "";
+        }
+    }
+
 </script>
 
-<form on:submit|preventDefault={handleSubmit}>
-    <input type="text" value={path} name="path" spellcheck="false">
-    <input type="text" value={search} name="search" placeholder="Search" spellcheck="false">
+<form on:submit|preventDefault={handlePathSubmit}>
+    <input type="text" value={path} name="path" spellcheck="false" on:change={() => searchInput = "/"}>
+    <input type="text" bind:value={searchInput} name="search" placeholder="Search" spellcheck="false">
+    <input type="submit" hidden />
 </form>
 
 {#await req}
