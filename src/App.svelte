@@ -3,9 +3,10 @@
     import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
     export let base: string;
-    export let path: string = "/";
     // show for / only
     export let readme: HTMLElement;
+
+    let path: string = "/";
 
     let req: Promise<Listing> | undefined;
 
