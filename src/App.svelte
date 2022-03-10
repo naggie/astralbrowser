@@ -44,7 +44,7 @@
 {#if path}
 <LsDir base={base} path={path} />
 {:else if search}
-Search query: {search}
+Search is not yet implemented.
 {:else}
 Nothing to do.
 {/if}
