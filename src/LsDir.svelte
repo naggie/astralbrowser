@@ -1,15 +1,15 @@
 <script lang="ts">
-    import { hash } from './stores';
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
     export let base: string;
 
     export let path: string = "/";
 
-    let req: Promise<Listing> | undefined;
+    // Unresolved promise until first request
+    let req: Promise<Listing> = new Promise(() => {});
 
     async function load_path(path: string) {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-        path = joinPath('/', $hash, '/');
+        path = joinPath('/', path, '/');
 
         // can get annoying if we don't do this
         window.scroll(0,0);
