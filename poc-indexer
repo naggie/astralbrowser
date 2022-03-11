@@ -2,6 +2,8 @@
 set -e
 
 BASE=/mnt/nfs
+INDEX=${BASE}/.index
 
 cd $BASE
-find . -type f > ${BASE}/.index
+find . -type f -not -path '*/.*' > ${INDEX}
+chown www-data:www-data ${INDEX}
