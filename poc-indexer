@@ -1,0 +1,7 @@
+#!/usr/bin/env bash
+set -e
+
+BASE=/mnt/nfs
+
+cd $BASE
+find . -type f > ${BASE}/.index
