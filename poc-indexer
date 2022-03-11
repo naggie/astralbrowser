@@ -3,7 +3,11 @@ set -e
 
 BASE=/mnt/nfs
 INDEX=${BASE}/.index
+INDEXTMP=${BASE}/.index.tmp
+
+# NOTE when serving with nginx, ensure the location has gzip enabled
 
 cd $BASE
-find . -type f -not -path '*/.*' > ${INDEX}
+find . -type f -not -path '*/.*' > ${INDEXTMP}
+mv ${INDEXTMP} ${INDEXTMP}
 chown www-data:www-data ${INDEX}
