@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BASE=/mnt/nfs
+BASE=/mnt/user-shares
 INDEX=${BASE}/.index
 INDEXTMP=${BASE}/.index.tmp
 

@@ -3,7 +3,7 @@ set -e
 
 # TODO run on boot (easier than maintaining fstab)
 
-NFS_MOUNTPOINT=/mnt/nfs
+NFS_MOUNTPOINT=/mnt/user-shares
 
 which mount.nfs || sudo apt install -y nfs-common
 sudo mkdir -p ${NFS_MOUNTPOINT}
