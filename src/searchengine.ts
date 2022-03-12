@@ -36,6 +36,7 @@ export default class SearchEngine {
 
             for (const line of lines) {
                 this.onNewLine(line);
+                console.log(line);
             }
 
             console.log(`Received ${receivedLength} of ${contentLength}`)

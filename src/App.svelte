@@ -1,6 +1,7 @@
 <script lang="ts">
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
+    import Search from './Search.svelte';
     import { joinPath } from './util';
     export let base: string;
     // show for / only
@@ -44,7 +45,8 @@
 {#if path}
 <LsDir base={base} path={path} />
 {:else if search}
-Search is not yet implemented.
+<!-- TODO remove hard code -->
+<Search indexUrl="/file-sharing/user-shares/mnt/.index" query={search} />
 {:else}
 Nothing to do.
 {/if}
