@@ -8,7 +8,7 @@ export default class SearchEngine {
     protected _onInvalidateResults: Function = () => {};
     protected _onSearchProgress: Function = () => {};
 
-    construtor(indexUrl: string) {
+    constructor(indexUrl: string) {
         // index file should be a line delimited list of files relative to base
         this.indexUrl = indexUrl;
     }
@@ -41,7 +41,7 @@ export default class SearchEngine {
 
             for (const line of lines) {
                 this.onNewLine(line);
-                console.log(line);
+                //////console.log(line);
             }
 
             console.log(`Received ${receivedLength} of ${contentLength}`)
