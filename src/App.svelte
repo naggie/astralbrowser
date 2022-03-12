@@ -1,4 +1,6 @@
 <script lang="ts">
+    // TODO mount search on interest (focus etc) to start building index
+    // TODO maybe instant search
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
     import Search from './Search.svelte';

@@ -1,5 +1,8 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
 // TODO handle fetch errors
+// TODO limit results to 100 by default (constructor)
+// // TODO ensure gzip
+// // TODO report number of files searched in UI
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string = "";
@@ -42,7 +45,6 @@ export default class SearchEngine {
 
             for (const line of lines) {
                 this.onNewLine(line);
-                //////console.log(line);
             }
 
             console.log(`Received ${receivedLength} of ${contentLength}`)
