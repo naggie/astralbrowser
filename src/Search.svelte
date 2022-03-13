@@ -7,13 +7,14 @@
     let results: string[] = [];
 
     const search = new SearchEngine(indexUrl);
+    search.begin();
 
     $: search.newSearch(query);
 
     search.onResult(result => results = [...results, result]);
     search.onInvalidateResults(() => results = []);
 </script>
-SEARCH IS HERE
+
 {#each results as result}
 <p>{result}</p>
 {/each}

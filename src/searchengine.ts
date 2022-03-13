@@ -1,15 +1,20 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
 export default class SearchEngine {
     // a list of files, built and searched concurrently
+    indexUrl: string = "";
     index: string[] = [];
-    query: string;
+    query: string = "";
     protected _onResult: Function = () => {};
     protected _onInvalidateResults: Function = () => {};
     protected _onSearchProgress: Function = () => {};
 
-    async construtor(indexUrl: string) {
+    construtor(indexUrl: string) {
         // index file should be a line delimited list of files relative to base
-        const response = await fetch(indexUrl);
+        this.indexUrl = indexUrl;
+    }
+
+    async begin() {
+        const response = await fetch(this.indexUrl);
         const reader = response.body.getReader();
         const contentLength: number = +response.headers.get('Content-Length');
         let receivedLength: number = 0;
