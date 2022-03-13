@@ -1,14 +1,15 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
-
-class SearchEngine {
+export default class SearchEngine {
     // a list of files, built and searched concurrently
-    const index: string[] = [];
-    protected let _onResult: Function = () => {};
-    protected let _onInvalidateResults: Function = () => {};
+    index: string[] = [];
+    query: string;
+    protected _onResult: Function = () => {};
+    protected _onInvalidateResults: Function = () => {};
+    protected _onSearchProgress: Function = () => {};
 
-    construtor(indexUrl: string) {
+    async construtor(indexUrl: string) {
         // index file should be a line delimited list of files relative to base
-        let response = await fetch(indexUrl);
+        const response = await fetch(indexUrl);
         const reader = response.body.getReader();
         const contentLength: number = +response.headers.get('Content-Length');
         let receivedLength: number = 0;
@@ -18,19 +19,20 @@ class SearchEngine {
         let fragment: string = "";
 
         while(true) {
-            const {done: boolean, value: Uint8} = await reader.read();
+            const chunk = await reader.read();
 
-            if (done) {
+            if (chunk.done) {
                 break;
             }
 
-            receivedLength += value.length;
+            receivedLength += chunk.value.length;
 
-            const text = new TextDecoder("utf-8").decode(value);
+            const text = new TextDecoder("utf-8").decode(chunk.value);
             const lines = text.split(/\r?\n/);
 
+            // attach last fragment and get next
             lines[0] = fragment + lines[0];
-            fragment = array.pop();
+            fragment = lines.pop();
 
             for (const line of lines) {
                 this.onNewLine(line);
@@ -42,18 +44,15 @@ class SearchEngine {
 
     newSearch(query: string) {
         this._onInvalidateResults();
+        this.query = query;
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
-        for (const line of index) {
-            if (matchesQuery(line, query)) {
+        for (const line of this.index) {
+            if (matchesQuery(line, this.query)) {
                 this._onResult(line);
             }
         }
-    }
-
-    onInvalidateResults(fn: Function) {
-        this._onInvalidateResults = fn;
     }
 
     // called whenever a single match is found. Use to build an array of
@@ -63,18 +62,26 @@ class SearchEngine {
         this._onResult = fn;
     }
 
+    onInvalidateResults(fn: Function) {
+        this._onInvalidateResults = fn;
+    }
+
+    onSearchProgress(fn: Function) {
+        this._onSearchProgress = fn;
+    }
+
     protected onNewLine(line: string) {
         // add to index
-        index.push(line);
+        this.index.push(line);
 
         // emit new results that current search is unaware of
-        if (matchesQuery(line, query)) {
+        if (matchesQuery(line, this.query)) {
             this._onResult(line);
         }
     }
 }
 
-function matchesQuery(text: string, query: string): bool {
+function matchesQuery(text: string, query: string): boolean {
     // TODO more advanced matching -- split by whitespace and match
     // sequentially. Also, outside of this, match highest directory and ignore
     // resulting dupes
