@@ -9,5 +9,5 @@ INDEXTMP=${BASE}/.index.tmp
 
 cd $BASE
 find . -type f -not -path '*/.*' > ${INDEXTMP}
-mv ${INDEXTMP} ${INDEXTMP}
+mv ${INDEXTMP} ${INDEX}
 chown www-data:www-data ${INDEX}

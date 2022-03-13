@@ -1,4 +1,5 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
+// TODO handle fetch errors
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string = "";
