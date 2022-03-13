@@ -19,6 +19,13 @@ export default class SearchEngine {
 
     async begin() {
         const response = await fetch(this.indexUrl);
+
+        if (response.status == 404) {
+            throw new Error("Search index does not exist");
+        } else if (response.status != 200) {
+            throw new Error("Error loading search index");
+        }
+
         const reader = response.body.getReader();
         const contentLength: number = +response.headers.get('Content-Length');
         let receivedLength: number = 0;
