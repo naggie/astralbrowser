@@ -1,6 +1,7 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
 // TODO handle fetch errors
 // TODO limit results to 100 by default (constructor)
+// // TODO yild during search to prevent blocking too long?
 // // TODO ensure gzip
 // // TODO report number of files searched in UI
 export default class SearchEngine {
