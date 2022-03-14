@@ -4,7 +4,9 @@
 // // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // // TODO ensure gzip
 // // TODO report number of files searched in UI
-// TODO maybe report match count (so ui can show)
+// TODO maybe report match count (so ui can show there are more)
+// TODO maybe eventemitter, or simplify by removing indirection for hooks
+// TODO emit search progress (0-100 in 0.1 steps)
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
@@ -61,8 +63,6 @@ export default class SearchEngine {
             for (const line of lines) {
                 this.onNewLine(line);
             }
-
-            console.log(`Received ${receivedLength} of ${contentLength}`)
         }
     }
 
