@@ -1,5 +1,5 @@
 // TODO handle fetch errors
-TODO  use web workers. don't forget myWorker.terminate(); on unmount
+// TODO  use web workers. don't forget myWorker.terminate(); on unmount
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // TODO ensure gzip
 // TODO report number of files searched in UI
