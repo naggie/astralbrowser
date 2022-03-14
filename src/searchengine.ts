@@ -161,11 +161,12 @@ function matchesQuery(path: string, query: string): boolean {
 // directories too. Requires de-duping of results)
 function highestMatch(path: string, query: string) {
     const parts = path.split(/\/+/);
+    const levels = parts.length;  // has to be const as .lenth changes
     const isDir = path.endsWith("/");
 
     let highestPath = path;
 
-    for (let i = 0; i < parts.length; i++) {
+    for (let i = 0; i < levels; i++) {
         // construct, ensure directories are not seen as files
         const currentPath = i == 0  && isDir? joinPath(...parts) : joinPath(...parts, '/');
 
@@ -179,4 +180,4 @@ function highestMatch(path: string, query: string) {
 
     return highestPath;
 }
-//console.log(highestMatch('/foo/bar/baz/quux', 'quu'))
+//console.log(highestMatch('./frillip/yes/PROWinx64/PRO1000/Winx64/NDIS63/e1k63x64.cat', 'frillip'))
