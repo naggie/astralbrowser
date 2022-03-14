@@ -4,7 +4,6 @@
 // TODO ensure gzip
 // TODO report number of files searched in UI
 // TODO emit search progress (0-100 in 0.1 steps)
-// TODO process paths to start with / (no ./) ?? or list without that? Or joinpathh could remove elements == .
 // TODO display results count only when search has finished
 import { joinPath } from './util';
 
@@ -58,7 +57,9 @@ export default class SearchEngine {
             paths[0] = fragment + paths[0];
             fragment = paths.pop();
 
-            for (const path of paths) {
+            for (let path of paths) {
+                // normalise path so it's relative to / (and no ./)
+                path = joinPath("/", path);
                 this.onNewPath(path);
             }
         }
