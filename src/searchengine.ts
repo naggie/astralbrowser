@@ -1,14 +1,11 @@
-// TODO match on directories, high as possible, ignore dupes, via results filter?
 // TODO handle fetch errors
-// TODO  use web workers. don't forget myWorker.terminate(); on unmount
-// // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
-// // TODO ensure gzip
-// // TODO report number of files searched in UI
-// TODO maybe report match count (so ui can show there are more)
-// TODO maybe eventemitter, or simplify by removing indirection for hooks
+TODO  use web workers. don't forget myWorker.terminate(); on unmount
+// TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
+// TODO ensure gzip
+// TODO report number of files searched in UI
 // TODO emit search progress (0-100 in 0.1 steps)
-// TODO process paths to start with / (no ./)
-// TODO file/direcory detection in highestMatch -- if dirs were in index it would break
+// TODO process paths to start with / (no ./) ?? or list without that? Or joinpathh could remove elements == .
+// TODO display results count only when search has finished
 import { joinPath } from './util';
 
 export default class SearchEngine {
@@ -168,7 +165,7 @@ function highestMatch(path: string, query: string) {
 
     for (let i = 0; i < levels; i++) {
         // construct, ensure directories are not seen as files
-        const currentPath = i == 0  && isDir? joinPath(...parts) : joinPath(...parts, '/');
+        const currentPath = (i == 0  && !isDir) ? joinPath(...parts) : joinPath(...parts, '/');
 
         if (!matchesQuery(currentPath, query)) {
             break;
