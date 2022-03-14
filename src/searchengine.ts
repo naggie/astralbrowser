@@ -1,7 +1,8 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
 // TODO handle fetch errors
 // TODO limit results to 100 by default (constructor)
-// // TODO yild during search to prevent blocking too long?
+// TODO  use web workers. don't forget myWorker.terminate(); on unmount
+// // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // // TODO ensure gzip
 // // TODO report number of files searched in UI
 export default class SearchEngine {
