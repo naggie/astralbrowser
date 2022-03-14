@@ -38,7 +38,7 @@
     </tbody>
 </table>
 
-{#if results == 1}
+{#if results.length == 1}
     1 result
 {:else if results.length < resultLimit}
     {results.length} results
