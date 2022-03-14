@@ -4,10 +4,11 @@
     export let base: string = "";
     export let indexUrl: string;
     export let query: string = "";
+    const resultLimit = 100;
 
     let results: string[] = [];
 
-    const search = new SearchEngine(indexUrl);
+    const search = new SearchEngine(indexUrl, resultLimit);
     search.begin();
 
     search.onResult = result => results = [...results, result];
@@ -39,8 +40,10 @@
 
 <p>
 {#if results == 1}
-    1 result.
+    1 result
+{:else if results.length < resultLimit}
+    {results.length} results
 {:else}
-    {results.length} results.
+    {results.length}+ results
 {/if}
 </p>
