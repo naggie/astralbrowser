@@ -75,7 +75,7 @@ export default class SearchEngine {
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            if (this.results.length > this.resultLimit) {
+            if (this.results.length >= this.resultLimit) {
                 return;
             }
 
@@ -120,7 +120,7 @@ export default class SearchEngine {
         // add to index
         this.index.push(path);
 
-        if (this.results.length > this.resultLimit) {
+        if (this.results.length >= this.resultLimit) {
             return;
         }
 
