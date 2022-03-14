@@ -161,12 +161,13 @@ function matchesQuery(path: string, query: string): boolean {
 // directories too. Requires de-duping of results)
 function highestMatch(path: string, query: string) {
     const parts = path.split(/\/+/);
+    const isDir = path.endsWith("/");
 
     let highestPath = path;
 
     for (let i = 0; i < parts.length; i++) {
         // construct, ensure directories are not seen as files
-        const currentPath = i == 0 ? joinPath(...parts) : joinPath(...parts, '/');
+        const currentPath = i == 0  && isDir? joinPath(...parts) : joinPath(...parts, '/');
 
         if (!matchesQuery(currentPath, query)) {
             break;
