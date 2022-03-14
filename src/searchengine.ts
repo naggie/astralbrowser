@@ -7,16 +7,17 @@
 // TODO maybe report match count (so ui can show there are more)
 // TODO maybe eventemitter, or simplify by removing indirection for hooks
 // TODO emit search progress (0-100 in 0.1 steps)
+// TODO process paths to start with / (no ./)
+// TODO file/direcory detection in highestMatch -- if dirs were in index it would break
+import { joinPath } from './util';
+
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
     index: string[];
     query: string;
     resultLimit: number;
-    results: []string;
-    protected _onResult: Function = () => {};
-    protected _onInvalidateResults: Function = () => {};
-    protected _onSearchProgress: Function = () => {};
+    results: string[];
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to base
@@ -67,7 +68,7 @@ export default class SearchEngine {
     }
 
     newSearch(query: string) {
-        this._onInvalidateResults();
+        this.onInvalidateResults();
         this.results = [];
         this.query = query;
 
@@ -79,25 +80,40 @@ export default class SearchEngine {
             }
 
             if (matchesQuery(path, this.query)) {
-                this._onResult(path);
-                this.results.push(path);
+                this.processResult(path);
             }
         }
     }
 
+    // to override!
     // called whenever a single match is found. Use to build an array of
     // matches that should be emptied when the invalidate results callback is
     // fired. Invalidation happens when a new search is carried out.
-    onResult(fn: Function) {
-        this._onResult = fn;
+    onResult(result: string) {
+        throw new Error("onResult needs to be overridden");
     }
 
-    onInvalidateResults(fn: Function) {
-        this._onInvalidateResults = fn;
+    onInvalidateResults() {
     }
 
-    onSearchProgress(fn: Function) {
-        this._onSearchProgress = fn;
+    // query is specified in case SearchEngine is running behind (so UI can
+    // show a non-deterministic progress bar until the current search is
+    // displayed)
+    onSearchProgress(percent: number, query: string) {
+    }
+
+    protected processResult(path: string) {
+        // this is a match but maybe not the highest match (if directory can be matched)
+        // if it is a directory, there are likely to be many results that
+        // resolve to the same highest path. Only emit result if unique.
+        const highestPath = highestMatch(path, this.query);
+
+        if (this.results.includes(highestPath)) {
+            return;
+        }
+
+        this.onResult(highestPath);
+        this.results.push(highestPath);
     }
 
     protected onNewPath(path: string) {
@@ -110,8 +126,7 @@ export default class SearchEngine {
 
         // emit new results that current search is unaware of
         if (matchesQuery(path, this.query)) {
-            this._onResult(path);
-            this.results.push(path);
+            this.processResult(path);
         }
     }
 }
@@ -141,3 +156,26 @@ function matchesQuery(path: string, query: string): boolean {
 
     return true;
 }
+
+// returns the highest path that still matches the query (so results can show
+// directories too. Requires de-duping of results)
+function highestMatch(path: string, query: string) {
+    const parts = path.split(/\/+/);
+
+    let highestPath = path;
+
+    for (let i = 0; i < parts.length; i++) {
+        // construct, ensure directories are not seen as files
+        const currentPath = i == 0 ? joinPath(...parts) : joinPath(...parts, '/');
+
+        if (!matchesQuery(currentPath, query)) {
+            break;
+        }
+
+        highestPath = currentPath;
+        parts.pop();
+    }
+
+    return highestPath;
+}
+//console.log(highestMatch('/foo/bar/baz/quux', 'quu'))
