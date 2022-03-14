@@ -1,22 +1,28 @@
 // TODO match on directories, high as possible, ignore dupes, via results filter?
 // TODO handle fetch errors
-// TODO limit results to 100 by default (constructor)
 // TODO  use web workers. don't forget myWorker.terminate(); on unmount
 // // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // // TODO ensure gzip
 // // TODO report number of files searched in UI
+// TODO maybe report match count (so ui can show)
 export default class SearchEngine {
     // a list of files, built and searched concurrently
-    indexUrl: string = "";
-    index: string[] = [];
-    query: string = "";
+    indexUrl: string ;
+    index: string[];
+    query: string;
+    resultLimit: number;
+    resultCount: number;
     protected _onResult: Function = () => {};
     protected _onInvalidateResults: Function = () => {};
     protected _onSearchProgress: Function = () => {};
 
-    constructor(indexUrl: string) {
+    constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to base
         this.indexUrl = indexUrl;
+        this.index = [];
+        this.query = "";
+        this.resultLimit = resultLimit;
+        this.resultCount = 0;
     }
 
     async begin() {
@@ -62,13 +68,19 @@ export default class SearchEngine {
 
     newSearch(query: string) {
         this._onInvalidateResults();
+        this.resultCount = 0;
         this.query = query;
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const line of this.index) {
+            if (this.resultCount > this.resultLimit) {
+                return;
+            }
+
             if (matchesQuery(line, this.query)) {
                 this._onResult(line);
+                this.resultCount +=1;
             }
         }
     }
@@ -92,9 +104,14 @@ export default class SearchEngine {
         // add to index
         this.index.push(line);
 
+        if (this.resultCount > this.resultLimit) {
+            return;
+        }
+
         // emit new results that current search is unaware of
         if (matchesQuery(line, this.query)) {
             this._onResult(line);
+            this.resultCount +=1;
         }
     }
 }
