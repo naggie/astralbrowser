@@ -99,13 +99,28 @@ export default class SearchEngine {
     }
 }
 
+// look for sequential matches for tokens in search query
 function matchesQuery(text: string, query: string): boolean {
-    // TODO more advanced matching -- split by whitespace and match
-    // sequentially. Also, outside of this, match highest directory and ignore
-    // resulting dupes
     if (query == "") {
         return false;
     }
 
-    return text.toLowerCase().includes(query.toLowerCase());
+    const queryTokens = query.toLowerCase().split(/\W+/);
+
+    // remaining part of test to search, to allow sequential search
+    let fragment = text.toLowerCase();
+
+    for (const token of queryTokens) {
+        const pos = fragment.indexOf(token);
+
+        // no match
+        if (pos == -1) {
+            return false
+        }
+
+        // chop off up to match
+        fragment = fragment.slice(pos + token.length);
+    }
+
+    return true;
 }
