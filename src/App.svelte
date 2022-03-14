@@ -48,7 +48,7 @@
 <LsDir base={base} path={path} />
 {:else if search}
 <!-- TODO remove hard code -->
-<Search indexUrl="/file-sharing/mnt/user-shares/.index" query={search} />
+<Search base={base} indexUrl="/file-sharing/mnt/user-shares/.index" query={search} />
 {:else}
 Nothing to do.
 {/if}
