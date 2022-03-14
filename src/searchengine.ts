@@ -13,7 +13,7 @@ export default class SearchEngine {
     index: string[];
     query: string;
     resultLimit: number;
-    resultCount: number;
+    results: []string;
     protected _onResult: Function = () => {};
     protected _onInvalidateResults: Function = () => {};
     protected _onSearchProgress: Function = () => {};
@@ -24,7 +24,7 @@ export default class SearchEngine {
         this.index = [];
         this.query = "";
         this.resultLimit = resultLimit;
-        this.resultCount = 0;
+        this.results = [];
     }
 
     async begin() {
@@ -68,19 +68,19 @@ export default class SearchEngine {
 
     newSearch(query: string) {
         this._onInvalidateResults();
-        this.resultCount = 0;
+        this.results = [];
         this.query = query;
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const line of this.index) {
-            if (this.resultCount > this.resultLimit) {
+            if (this.results.length > this.resultLimit) {
                 return;
             }
 
             if (matchesQuery(line, this.query)) {
                 this._onResult(line);
-                this.resultCount +=1;
+                this.results.push(line);
             }
         }
     }
@@ -104,14 +104,14 @@ export default class SearchEngine {
         // add to index
         this.index.push(line);
 
-        if (this.resultCount > this.resultLimit) {
+        if (this.results.length > this.resultLimit) {
             return;
         }
 
         // emit new results that current search is unaware of
         if (matchesQuery(line, this.query)) {
             this._onResult(line);
-            this.resultCount +=1;
+            this.results.push(line);
         }
     }
 }
