@@ -53,15 +53,15 @@ export default class SearchEngine {
 
             receivedLength += chunk.value.length;
 
-            const text = new TextDecoder("utf-8").decode(chunk.value);
-            const lines = text.split(/\r?\n/);
+            const path = new TextDecoder("utf-8").decode(chunk.value);
+            const paths = path.split(/\r?\n/);
 
             // attach last fragment and get next
-            lines[0] = fragment + lines[0];
-            fragment = lines.pop();
+            paths[0] = fragment + paths[0];
+            fragment = paths.pop();
 
-            for (const line of lines) {
-                this.onNewLine(line);
+            for (const path of paths) {
+                this.onNewPath(path);
             }
         }
     }
@@ -73,14 +73,14 @@ export default class SearchEngine {
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
-        for (const line of this.index) {
+        for (const path of this.index) {
             if (this.results.length > this.resultLimit) {
                 return;
             }
 
-            if (matchesQuery(line, this.query)) {
-                this._onResult(line);
-                this.results.push(line);
+            if (matchesQuery(path, this.query)) {
+                this._onResult(path);
+                this.results.push(path);
             }
         }
     }
@@ -100,24 +100,24 @@ export default class SearchEngine {
         this._onSearchProgress = fn;
     }
 
-    protected onNewLine(line: string) {
+    protected onNewPath(path: string) {
         // add to index
-        this.index.push(line);
+        this.index.push(path);
 
         if (this.results.length > this.resultLimit) {
             return;
         }
 
         // emit new results that current search is unaware of
-        if (matchesQuery(line, this.query)) {
-            this._onResult(line);
-            this.results.push(line);
+        if (matchesQuery(path, this.query)) {
+            this._onResult(path);
+            this.results.push(path);
         }
     }
 }
 
 // look for sequential matches for tokens in search query
-function matchesQuery(text: string, query: string): boolean {
+function matchesQuery(path: string, query: string): boolean {
     if (query == "") {
         return false;
     }
@@ -125,7 +125,7 @@ function matchesQuery(text: string, query: string): boolean {
     const queryTokens = query.toLowerCase().split(/\W+/);
 
     // remaining part of test to search, to allow sequential search
-    let fragment = text.toLowerCase();
+    let fragment = path.toLowerCase();
 
     for (const token of queryTokens) {
         const pos = fragment.indexOf(token);
