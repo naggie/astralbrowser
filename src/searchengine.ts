@@ -58,8 +58,8 @@ export default class SearchEngine {
             fragment = paths.pop();
 
             for (let path of paths) {
-                // normalise path so it's relative to / (and no ./)
-                path = joinPath("/", path);
+                // normalise path so no leading ./
+                path = joinPath(path);
                 this.onNewPath(path);
             }
         }
