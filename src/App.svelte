@@ -14,7 +14,6 @@
     let path: string = "/";
     let query: string = "";
 
-
     function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
@@ -23,9 +22,15 @@
         window.location.hash = '?' + e.target.elements["query"].value;
     }
 
+    // when search bar is focussed, index is built
+    const indexUrl = joinPath(mountPoint, '.index');
+    const searchEngine = new SearchEngine(indexUrl);
+
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
         path = "";
+        searchEngine.buildIndex();  // idempotent!
+        searchEngine.newSearch(query);
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
@@ -34,10 +39,6 @@
 
     // show readme if appropriate (after load so it does not jump)
     $: readme.style.display = path == '/' ? "block" : "none";
-
-    // when search bar is focussed, index is built
-    const indexUrl = joinPath(mountPoint, '.index');
-    const searchEngine = new SearchEngine(indexUrl);
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -54,7 +55,7 @@
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
 {:else if query}
-<Search searchEngine={searchEngine} mountPoint={mountPoint} query={query} />
+<Search searchEngine={searchEngine} mountPoint={mountPoint} />
 {:else}
 Nothing to do.
 {/if}

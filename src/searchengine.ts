@@ -18,6 +18,7 @@ export default class SearchEngine {
     results: string[];
     start: number;
     duration: number;
+    indexStarted: boolean;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to mountPoint
@@ -26,9 +27,16 @@ export default class SearchEngine {
         this.query = "";
         this.resultLimit = resultLimit;
         this.results = [];
+        this.indexStarted = false;
     }
 
     async buildIndex() {
+        if (this.indexStarted) {
+            return;
+        }
+
+        this.indexStarted = true;
+
         const response = await fetch(this.indexUrl);
 
         if (response.status == 404) {
