@@ -12,7 +12,7 @@
     export let readme: HTMLElement;
 
     let path: string = "/";
-    let search: string = "";
+    let query: string = "";
 
 
     function handlePathSubmit(e: Event) {
@@ -20,16 +20,16 @@
     }
 
     function handleSearchSubmit(e: Event) {
-        window.location.hash = '?' + e.target.elements["search"].value;
+        window.location.hash = '?' + e.target.elements["query"].value;
     }
 
     $: if ($hash.startsWith("?")) {
-        search = $hash.slice(1);
+        query = $hash.slice(1);
         path = "";
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
-        search = "";
+        query = "";
     }
 
     // show readme if appropriate (after load so it does not jump)
@@ -46,15 +46,15 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-<input type="text" value={search} name="search" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngine.buildIndex()}>
+<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngine.buildIndex()}>
         <input type="submit" hidden />
     </form>
 </div>
 
 {#if path}
-<LsDir mountPoint path />
-{:else if search}
-<Search searchEngine mountPoint />
+<LsDir mountPoint={mountPoint} path={path} />
+{:else if query}
+<Search searchEngine={searchEngine} mountPoint={mountPoint} query={query} />
 {:else}
 Nothing to do.
 {/if}
