@@ -2,19 +2,15 @@
     import SearchEngine from './searchengine';
     import { joinPath } from './util';
     export let base: string = "";
-    export let indexUrl: string;
     export let query: string = "";
-    const resultLimit = 100;
+    export let searchEngine: SearchEngine;
 
     let results: string[] = [];
 
-    const search = new SearchEngine(indexUrl, resultLimit);
-    search.begin();
+    searchEngine.onResult = result => results = [...results, result];
+    searchEngine.onInvalidateResults = () => results = [];
 
-    search.onResult = result => results = [...results, result];
-    search.onInvalidateResults = () => results = [];
-
-    $: search.newSearch(query);
+    $: searchEngine.newSearch(query);
 </script>
 
 <table>
@@ -37,11 +33,3 @@
     {/each}
     </tbody>
 </table>
-
-{#if results.length == 1}
-    1 result
-{:else if results.length < resultLimit}
-    {results.length} results
-{:else}
-    {results.length}+ results
-{/if}

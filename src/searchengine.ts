@@ -28,7 +28,7 @@ export default class SearchEngine {
         this.results = [];
     }
 
-    async begin() {
+    async buildIndex() {
         const response = await fetch(this.indexUrl);
 
         if (response.status == 404) {
