@@ -1,6 +1,6 @@
 <script lang="ts">
     import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
-    export let base: string;
+    export let mountPoint: string;
 
     export let path: string = "/";
 
@@ -14,7 +14,7 @@
         window.scroll(0,0);
 
         const response = await fetch(
-            joinPath(base, path),
+            joinPath(mountPoint, path),
             {
                 headers: {
                     'Accept': 'application/json',
@@ -61,7 +61,7 @@
           </tr>
         {:else if item.type == "file"}
           <tr>
-            <td><a href={joinPath(base, path, item.name)} download>{item.name}</a></td>
+            <td><a href={joinPath(mountPoint, path, item.name)} download>{item.name}</a></td>
             <td>{humanFileSize(item.size)}</td>
             <td>{humanRelativeTime(item.mtime)}</td>
           </tr>

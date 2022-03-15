@@ -1,7 +1,7 @@
 <script lang="ts">
     import SearchEngine from './searchengine';
     import { joinPath } from './util';
-    export let base: string = "";
+    export let mountPoint: string = "";
     export let query: string = "";
     export let searchEngine: SearchEngine;
 
@@ -27,7 +27,7 @@
           </tr>
         {:else}
           <tr>
-            <td><a href={joinPath(base, path)} download>{path}</a></td>
+            <td><a href={joinPath(mountPoint, path)} download>{path}</a></td>
           </tr>
         {/if}
     {/each}

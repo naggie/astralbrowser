@@ -20,7 +20,7 @@ export default class SearchEngine {
     duration: number;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
-        // index file should be a line delimited list of files relative to base
+        // index file should be a line delimited list of files relative to mountPoint
         this.indexUrl = indexUrl;
         this.index = [];
         this.query = "";
