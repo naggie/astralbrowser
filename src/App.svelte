@@ -44,8 +44,8 @@
         <input type="text" value={path} name="path" spellcheck="false">
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit} on:focus|once={searchEngine.buildIndex}>
-        <input type="text" value={search} name="search" placeholder="Search" spellcheck="false">
+    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
+<input type="text" value={search} name="search" placeholder="Search" spellcheck="false" on:focus|once={searchEngine.buildIndex}>
         <input type="submit" hidden />
     </form>
 </div>
@@ -53,7 +53,6 @@
 {#if path}
 <LsDir base={base} path={path} />
 {:else if search}
-<!-- TODO remove hard code -->
 <Search base={base} searchEngine />
 {:else}
 Nothing to do.
