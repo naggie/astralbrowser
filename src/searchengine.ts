@@ -15,8 +15,8 @@ export default class SearchEngine {
     query: string;
     resultLimit: number;
     results: string[];
-    startTimestamp: number;
-    searchDuration: number;
+    start: number;
+    duration: number;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to base
@@ -72,13 +72,13 @@ export default class SearchEngine {
         this.onInvalidateResults();
         this.results = [];
         this.query = query;
-        this.startTimestamp = getTimestamp();
+        this.start = getTimestamp();
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
             if (this.results.length >= this.resultLimit) {
-                this.searchDuration = parseInt(getTimestamp() - this.startTimestamp);
+                this.duration = parseInt(getTimestamp() - this.start);
                 return;
             }
 
@@ -110,7 +110,7 @@ export default class SearchEngine {
         this.index.push(path);
 
         if (this.results.length >= this.resultLimit) {
-            this.searchDuration = parseInt(getTimestamp() - this.startTimestamp);
+            this.duration = parseInt(getTimestamp() - this.start);
             return;
         }
 
