@@ -6,6 +6,7 @@
     import LsDir from './LsDir.svelte';
     import Search from './Search.svelte';
     import { joinPath } from './util';
+    // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
     // show for / only
     export let readme: HTMLElement;
@@ -13,7 +14,6 @@
     let path: string = "/";
     let search: string = "";
 
-    const indexUrl = joinPath(mountPoint, '.index');
 
     function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
@@ -36,6 +36,7 @@
     $: readme.style.display = path == '/' ? "block" : "none";
 
     // when search bar is focussed, index is built
+    const indexUrl = joinPath(mountPoint, '.index');
     const searchEngine = new SearchEngine(indexUrl);
 </script>
 
@@ -45,15 +46,15 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-<input type="text" value={search} name="search" placeholder="Search" spellcheck="false" on:focus|once={searchEngine.buildIndex}>
+<input type="text" value={search} name="search" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngine.buildIndex()}>
         <input type="submit" hidden />
     </form>
 </div>
 
 {#if path}
-<LsDir mountPoint={mountPoint} path={path} />
+<LsDir mountPoint path />
 {:else if search}
-<Search mountPoint={mountPoint} searchEngine />
+<Search searchEngine mountPoint />
 {:else}
 Nothing to do.
 {/if}
