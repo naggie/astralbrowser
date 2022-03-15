@@ -15,6 +15,8 @@ export default class SearchEngine {
     query: string;
     resultLimit: number;
     results: string[];
+    startTimestamp: number;
+    searchDuration: number;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to base
@@ -70,11 +72,13 @@ export default class SearchEngine {
         this.onInvalidateResults();
         this.results = [];
         this.query = query;
+        this.startTimestamp = getTimestamp();
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
             if (this.results.length >= this.resultLimit) {
+                this.searchDuration = getTimestamp() - this.startTimestamp;
                 return;
             }
 
@@ -101,6 +105,21 @@ export default class SearchEngine {
     onSearchProgress(percent: number, query: string) {
     }
 
+    protected onNewPath(path: string) {
+        // add to index
+        this.index.push(path);
+
+        if (this.results.length >= this.resultLimit) {
+            this.searchDuration = getTimestamp() - this.startTimestamp;
+            return;
+        }
+
+        // emit new results that current search is unaware of
+        if (matchesQuery(path, this.query)) {
+            this.processResult(path);
+        }
+    }
+
     protected processResult(path: string) {
         // this is a match but maybe not the highest match (if directory can be matched)
         // if it is a directory, there are likely to be many results that
@@ -115,19 +134,6 @@ export default class SearchEngine {
         this.results.push(highestPath);
     }
 
-    protected onNewPath(path: string) {
-        // add to index
-        this.index.push(path);
-
-        if (this.results.length >= this.resultLimit) {
-            return;
-        }
-
-        // emit new results that current search is unaware of
-        if (matchesQuery(path, this.query)) {
-            this.processResult(path);
-        }
-    }
 }
 
 // look for sequential matches for tokens in search query
@@ -180,3 +186,7 @@ function highestMatch(path: string, query: string) {
     return highestPath;
 }
 //console.log(highestMatch('./frillip/yes/PROWinx64/PRO1000/Winx64/NDIS63/e1k63x64.cat', 'frillip'))
+
+function getTimestamp() : number {
+    return (new Date()).getTime();
+}
