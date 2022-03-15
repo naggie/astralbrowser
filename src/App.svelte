@@ -6,14 +6,14 @@
     import LsDir from './LsDir.svelte';
     import Search from './Search.svelte';
     import { joinPath } from './util';
-    export let base: string;
+    export let mountPoint: string;
     // show for / only
     export let readme: HTMLElement;
 
     let path: string = "/";
     let search: string = "";
 
-    const indexUrl = joinPath(base, '.index');
+    const indexUrl = joinPath(mountPoint, '.index');
 
     function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
@@ -51,9 +51,9 @@
 </div>
 
 {#if path}
-<LsDir base={base} path={path} />
+<LsDir mountPoint={mountPoint} path={path} />
 {:else if search}
-<Search base={base} searchEngine />
+<Search mountPoint={mountPoint} searchEngine />
 {:else}
 Nothing to do.
 {/if}
