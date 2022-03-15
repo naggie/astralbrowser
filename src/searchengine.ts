@@ -5,6 +5,7 @@
 // TODO report number of files searched in UI
 // TODO emit search progress (0-100 in 0.1 steps)
 // TODO display results count only when search has finished
+// TODO time search and reflect in UI (searched 5002 items in 34ms. 100+ results)
 import { joinPath } from './util';
 
 export default class SearchEngine {
