@@ -2,6 +2,7 @@
     // TODO mount search on interest (focus etc) to start building index
     // TODO maybe instant search
     import { hash } from './stores';
+    import SearchEngine from './searchengine';
     import LsDir from './LsDir.svelte';
     import Search from './Search.svelte';
     import { joinPath } from './util';
@@ -11,6 +12,8 @@
 
     let path: string = "/";
     let search: string = "";
+
+    const indexUrl = joinPath(base, '.index');
 
     function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
@@ -31,6 +34,9 @@
 
     // show readme if appropriate (after load so it does not jump)
     $: readme.style.display = path == '/' ? "block" : "none";
+
+    // when search bar is focussed, index is built
+    const searchEngine = new SearchEngine(indexUrl);
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -38,7 +44,7 @@
         <input type="text" value={path} name="path" spellcheck="false">
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
+    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit} on:focus|once={searchEngine.buildIndex}>
         <input type="text" value={search} name="search" placeholder="Search" spellcheck="false">
         <input type="submit" hidden />
     </form>
@@ -48,7 +54,7 @@
 <LsDir base={base} path={path} />
 {:else if search}
 <!-- TODO remove hard code -->
-<Search base={base} indexUrl="/file-sharing/mnt/user-shares/.index" query={search} />
+<Search base={base} searchEngine />
 {:else}
 Nothing to do.
 {/if}
