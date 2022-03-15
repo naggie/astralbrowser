@@ -1,6 +1,7 @@
 <script lang="ts">
     // TODO mount search on interest (focus etc) to start building index
     // TODO maybe instant search
+    // TODO deal with race where callback is registered after commencing search (query in search as before)
     import { hash } from './stores';
     import SearchEngine from './searchengine';
     import LsDir from './LsDir.svelte';
@@ -30,7 +31,6 @@
         query = $hash.slice(1);
         path = "";
         searchEngine.buildIndex();  // idempotent!
-        searchEngine.newSearch(query);
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
@@ -55,7 +55,7 @@
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
 {:else if query}
-<Search searchEngine={searchEngine} mountPoint={mountPoint} />
+<Search searchEngine={searchEngine} mountPoint={mountPoint} query={query} />
 {:else}
 Nothing to do.
 {/if}

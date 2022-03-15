@@ -1,7 +1,7 @@
 /// <reference types="svelte" />
 export interface Directory {
-    name: string;
     type: "directory";
+    name: string;
     mtime: string;
 }
 
@@ -13,3 +13,12 @@ export interface File {
 }
 
 export type Listing = Array<File|Directory>;
+
+export interface ProgressReport {
+    searching: boolean;
+    numSearched: number;
+    numResults: number;
+    // approximated via bytes of full content length
+    percentSearched: number;
+    elapsedMs: number;
+}

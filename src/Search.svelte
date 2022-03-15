@@ -1,13 +1,20 @@
 <script lang="ts">
+    // can handle a million files whilst still being responsive!
     import SearchEngine from './searchengine';
     import { joinPath } from './util';
-    export let mountPoint: string = "";
     export let searchEngine: SearchEngine;
+    export let mountPoint: string = "";
+    export let query: string = "";
 
     let results: string[] = [];
 
     searchEngine.onResult = result => results = [...results, result];
     searchEngine.onInvalidateResults = () => results = [];
+
+    // it's important this is done after binding handlers so it has to be here
+    // instead of outside this component, as a race can occur if this component
+    // is not mounted yet; for instance on initial hash based search.
+    $: searchEngine.newSearch(query);
 </script>
 
 <table>
