@@ -78,7 +78,7 @@ export default class SearchEngine {
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
             if (this.results.length >= this.resultLimit) {
-                this.searchDuration = getTimestamp() - this.startTimestamp;
+                this.searchDuration = parseInt(getTimestamp() - this.startTimestamp);
                 return;
             }
 
@@ -110,7 +110,7 @@ export default class SearchEngine {
         this.index.push(path);
 
         if (this.results.length >= this.resultLimit) {
-            this.searchDuration = getTimestamp() - this.startTimestamp;
+            this.searchDuration = parseInt(getTimestamp() - this.startTimestamp);
             return;
         }
 
