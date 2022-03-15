@@ -2,15 +2,12 @@
     import SearchEngine from './searchengine';
     import { joinPath } from './util';
     export let mountPoint: string = "";
-    export let query: string = "";
     export let searchEngine: SearchEngine;
 
     let results: string[] = [];
 
     searchEngine.onResult = result => results = [...results, result];
     searchEngine.onInvalidateResults = () => results = [];
-
-    $: searchEngine.newSearch(query);
 </script>
 
 <table>
