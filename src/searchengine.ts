@@ -74,7 +74,10 @@ export default class SearchEngine {
             for (let path of paths) {
                 // normalise path so no leading ./
                 path = joinPath(path);
-                this.onNewPath(path);
+                // add to index
+                this.index.push(path);
+                // transform and emit as result if appropriate
+                this.progressPath(path);
             }
         }
     }
@@ -90,18 +93,7 @@ export default class SearchEngine {
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            // assume one byte per character (+ /n) for approximation
-            this.searchedBytes += path.length + 1;
-
-            this.maybeEmitReport();
-
-            if (this.results.length >= this.resultLimit) {
-                return;
-            }
-
-            if (matchesQuery(path, this.query)) {
-                this.processResult(path);
-            }
+            this.processPath(path);
         }
     }
 
@@ -122,10 +114,8 @@ export default class SearchEngine {
     // displayed)
     onProgressUpdate(report: ProgressReport) {}
 
-    protected onNewPath(path: string) {
-        // add to index
-        this.index.push(path);
-
+    // transform and emit as result if matches, is unique and less than 100 results
+    protected processPath(path: string) {
         // assume one byte per character (+ /n) for approximation
         this.searchedBytes += path.length + 1;
 
@@ -140,9 +130,7 @@ export default class SearchEngine {
         if (matchesQuery(path, this.query)) {
             this.processResult(path);
         }
-    }
 
-    protected processResult(path: string) {
         // this is a match but maybe not the highest match (if directory can be matched)
         // if it is a directory, there are likely to be many results that
         // resolve to the same highest path. Only emit result if unique.
