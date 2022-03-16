@@ -107,12 +107,16 @@ export default class SearchEngine {
 
     // called when the search query changes and the UI must remove all current
     // results
-    onInvalidateResults() {}
+    onInvalidateResults() {
+        throw new Error("onInvalidateResults needs to be overridden");
+    }
 
     // query is specified in case SearchEngine is running behind (so UI can
     // show a non-deterministic progress bar until the current search is
     // displayed)
-    onProgressUpdate(report: ProgressReport) {}
+    onProgressUpdate(report: ProgressReport) {
+        throw new Error("onProgressUpdate needs to be overridden");
+    }
 
     // transform and emit as result if matches, is unique and less than 100 results
     protected processPath(path: string) {
