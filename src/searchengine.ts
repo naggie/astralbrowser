@@ -86,7 +86,7 @@ export default class SearchEngine {
         this.onInvalidateResults();
         this.results = [];
         this.query = query;
-        this.start = getTimestamp();
+        this.start = performance.now();
         this.numSearched = 0;
         this.numResults = 0;
 
@@ -153,7 +153,7 @@ export default class SearchEngine {
             numResults: this.results.length,
             percentSearched: Math.round(100*this.searchedBytes/this.totalBytes),
             percentIndexDownloaded: Math.round(100*this.receivedBytes/this.totalBytes),
-            elapsedMs: getTimestamp() - this.start,
+            elapsedMs: performance.now() - this.start,
             query: this.query,
         }
 
@@ -213,7 +213,3 @@ function highestMatch(path: string, query: string) {
 }
 //console.log(highestMatch('./frillip/yes/PROWinx64/PRO1000/Winx64/NDIS63/e1k63x64.cat', 'frillip'))
 
-function getTimestamp() : number {
-    return (new Date()).getTime();
-}
-            //this.duration = Math.round(getTimestamp() - this.start);
