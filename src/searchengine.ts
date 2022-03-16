@@ -20,6 +20,7 @@ export default class SearchEngine {
     start: number;
     duration: number;
     indexStarted: boolean = false;
+    indexComplete: boolean = false;
     totalBytes: number = 0;
     receivedBytes: number = 0;
     searchedBytes: number = 0;
@@ -57,6 +58,8 @@ export default class SearchEngine {
         // next incoming
         let fragment: string = "";
 
+        this.maybeEmitReport(true);
+
         while(true) {
             const chunk = await reader.read();
 
@@ -81,7 +84,16 @@ export default class SearchEngine {
                 // transform and emit as result if appropriate
                 this.progressPath(path);
             }
+
+            this.maybeEmitReport();
         }
+        // this will only happen before a new search or after searching the
+        // index if a download was still in progress (as searching the index is
+        // blocking)
+        this.searching = false;
+        this.maybeEmitReport(true);
+
+        this.indexComplete = true;
     }
 
     newSearch(query: string) {
@@ -91,11 +103,20 @@ export default class SearchEngine {
         this.start = performance.now();
         this.numSearched = 0;
         this.numResults = 0;
+        this.searching = true;
+        this.maybeEmitReport(true);
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
             this.processPath(path);
+            this.maybeEmitReport();
+        }
+
+        if (this.indexComplete) {
+            // no more incoming paths to search as they arrive
+            this.searching = false;
+            this.maybeEmitReport(true);
         }
     }
 
@@ -150,10 +171,10 @@ export default class SearchEngine {
         this.results.push(highestPath);
     }
 
-    // emit a report, limited to around 100 per search
-    // TODO force report at start/end of search!
-    protected maybeEmitReport() {
-        if (performance.now() - this.lastReportTime < MIN_REPORT_INTERVAL) {
+    // emit a report, throttled. Note that setInterval cannot be used as
+    // searching the existing index is blocking
+    protected maybeEmitReport(force: boolean = false) {
+        if (!force && performance.now() - this.lastReportTime < MIN_REPORT_INTERVAL) {
             return;
         }
 
