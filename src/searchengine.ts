@@ -3,7 +3,7 @@
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // TODO ensure gzip
 // TODO report number of files searched in UI
-// TODO emit search progress (0-100 in 0.1 steps) (also delimit start/stop to disable form element)
+// TODO emit search progress (0-100 in 1% steps) (also delimit start/stop to disable form element)
 // TODO display results count only when search has finished
 // TODO time search and reflect in UI (searched 5002 items in 34ms. 100+ results)
 import { joinPath } from './util';
@@ -11,24 +11,28 @@ import { joinPath } from './util';
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
-    index: string[];
-    query: string;
+    index: string[] = [];
+    query: string = "";
     resultLimit: number;
-    results: string[];
+    results: string[] = [];
     start: number;
     duration: number;
-    indexStarted: boolean;
+    indexStarted: boolean = false;
+    totalBytes: number = 0;
+    receivedBytes: number = 0;
+    searchedBytes: number = 0;
+    lastReport: ProgressReport;
+    searching: boolean = false;
+    numSearched: number = 0;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to mountPoint
         this.indexUrl = indexUrl;
-        this.index = [];
-        this.query = "";
         this.resultLimit = resultLimit;
-        this.results = [];
-        this.indexStarted = false;
     }
 
+    // stream the index from the server, searching as it comes if there's a
+    // search on the go.
     async buildIndex() {
         if (this.indexStarted) {
             return;
@@ -45,8 +49,7 @@ export default class SearchEngine {
         }
 
         const reader = response.body.getReader();
-        const contentLength: number = +response.headers.get('Content-Length');
-        let receivedLength: number = 0;
+        this.totalBytes = +response.headers.get('Content-Length');
 
         // the last bit after the previous linebreak that may form part of the
         // next incoming
@@ -59,7 +62,7 @@ export default class SearchEngine {
                 break;
             }
 
-            receivedLength += chunk.value.length;
+            this.receivedBytes += chunk.value.length;
 
             const path = new TextDecoder("utf-8").decode(chunk.value);
             const paths = path.split(/\r?\n/);
@@ -81,10 +84,17 @@ export default class SearchEngine {
         this.results = [];
         this.query = query;
         this.start = getTimestamp();
+        this.numSearched = 0;
+        this.numResults = 0;
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
+            // assume one byte per character (+ /n) for approximation
+            this.searchedBytes += path.length + 1;
+
+            this.maybeEmitReport();
+
             if (this.results.length >= this.resultLimit) {
                 return;
             }
@@ -103,24 +113,30 @@ export default class SearchEngine {
         throw new Error("onResult needs to be overridden");
     }
 
-    onInvalidateResults() {
-    }
+    // called when the search query changes and the UI must remove all current
+    // results
+    onInvalidateResults() {}
 
     // query is specified in case SearchEngine is running behind (so UI can
     // show a non-deterministic progress bar until the current search is
     // displayed)
-    onSearchProgress(percent: number, query: string) {
-    }
+    onProgressUpdate(report: ProgressReport) {}
 
     protected onNewPath(path: string) {
         // add to index
         this.index.push(path);
+
+        // assume one byte per character (+ /n) for approximation
+        this.searchedBytes += path.length + 1;
+
+        this.maybeEmitReport();
 
         if (this.results.length >= this.resultLimit) {
             return;
         }
 
         // emit new results that current search is unaware of
+        // note an empty query does not match
         if (matchesQuery(path, this.query)) {
             this.processResult(path);
         }
@@ -140,6 +156,22 @@ export default class SearchEngine {
         this.results.push(highestPath);
     }
 
+    // emit a report, limited to around 100 per search
+    protected maybeEmitReport() {
+        // check for significant changes else skip
+        const report = {
+            searching: this.searching,
+            numSearched: this.numSearched,
+            numResults: this.results.length,
+            percentSearched: Math.round(100*this.searchedBytes/this.totalBytes),
+            percentIndexDownloaded: Math.round(100*this.receivedBytes/this.totalBytes),
+            elapsedMs: getTimestamp() - this.start,
+            query: this.query,
+        }
+
+        this.onProgressUpdate(report);
+        this.lastReport = report;
+    }
 }
 
 // look for sequential matches for tokens in search query
