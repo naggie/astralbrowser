@@ -8,6 +8,8 @@
 // TODO time search and reflect in UI (searched 5002 items in 34ms. 100+ results)
 import { joinPath } from './util';
 
+const MIN_REPORT_INTERVAL = 100;
+
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
@@ -21,9 +23,9 @@ export default class SearchEngine {
     totalBytes: number = 0;
     receivedBytes: number = 0;
     searchedBytes: number = 0;
-    lastReport: ProgressReport;
     searching: boolean = false;
     numSearched: number = 0;
+    lastReportTime: number = 0;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to mountPoint
@@ -149,8 +151,12 @@ export default class SearchEngine {
     }
 
     // emit a report, limited to around 100 per search
+    // TODO force report at start/end of search!
     protected maybeEmitReport() {
-        // check for significant changes else skip
+        if (performance.now() - this.lastReportTime < MIN_REPORT_INTERVAL) {
+            return;
+        }
+
         const report = {
             searching: this.searching,
             numSearched: this.numSearched,
@@ -162,7 +168,8 @@ export default class SearchEngine {
         }
 
         this.onProgressUpdate(report);
-        this.lastReport = report;
+        this.lastReportTime = performance.now();
+
     }
 }
 
