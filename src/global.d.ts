@@ -1,4 +1,7 @@
 /// <reference types="svelte" />
+
+// this way the interfaces will be in global scope without explicitly telling
+// the compiler to make everything in this file global
 declare global {
     interface Directory {
         type: "directory";
@@ -29,4 +32,5 @@ declare global {
     }
 }
 
+// necessary, else the file won't be included
 export {}
