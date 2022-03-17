@@ -82,7 +82,7 @@ export default class SearchEngine {
                 // add to index
                 this.index.push(path);
                 // transform and emit as result if appropriate
-                this.progressPath(path);
+                this.processPath(path);
             }
 
             this.maybeEmitReport();
@@ -102,14 +102,13 @@ export default class SearchEngine {
         this.query = query;
         this.start = performance.now();
         this.numSearched = 0;
-        this.numResults = 0;
         this.searching = true;
         this.maybeEmitReport(true);
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            this.processPath(path);
+            this.processPath(path, false);
             this.maybeEmitReport();
         }
 
@@ -152,10 +151,8 @@ export default class SearchEngine {
             return;
         }
 
-        // emit new results that current search is unaware of
-        // note an empty query does not match
-        if (matchesQuery(path, this.query)) {
-            this.processResult(path);
+        if (!matchesQuery(path, this.query)) {
+            return;
         }
 
         // this is a match but maybe not the highest match (if directory can be matched)
