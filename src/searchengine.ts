@@ -125,21 +125,19 @@ export default class SearchEngine {
     // matches that should be emptied when the invalidate results callback is
     // fired. Invalidation happens when a new search is carried out.
     onResult(result: string) {
-        throw new Error("onResult needs to be overridden");
+        throw new Error("onResult needs to be overridden before searching");
     }
 
     // called when the search query changes and the UI must remove all current
     // results
     onInvalidateResults() {
-        throw new Error("onInvalidateResults needs to be overridden");
+        throw new Error("onInvalidateResults needs to be overridden before searching");
     }
 
     // query is specified in case SearchEngine is running behind (so UI can
     // show a non-deterministic progress bar until the current search is
     // displayed)
-    onProgressUpdate(report: ProgressReport) {
-        throw new Error("onProgressUpdate needs to be overridden");
-    }
+    onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
     protected processPath(path: string) {
