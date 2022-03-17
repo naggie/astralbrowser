@@ -18,10 +18,13 @@
     // instead of outside this component, as a race can occur if this component
     // is not mounted yet; for instance on initial hash based search.
     $: searchEngine.newSearch(query);
-
 </script>
 
 
+{#if report.searching}
+<div class="accesswait"><div class="progress-line"></div></div>
+Searched {report.numSearched} items...
+{/if}
 
 <table>
     <thead>

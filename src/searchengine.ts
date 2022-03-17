@@ -144,6 +144,7 @@ export default class SearchEngine {
     protected processPath(path: string) {
         // assume one byte per character (+ /n) for approximation
         this.searchedBytes += path.length + 1;
+        this.numSearched += 1;
 
         this.maybeEmitReport();
 
