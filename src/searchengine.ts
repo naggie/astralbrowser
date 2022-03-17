@@ -108,7 +108,7 @@ export default class SearchEngine {
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            this.processPath(path, false);
+            this.processPath(path);
             this.maybeEmitReport();
         }
 

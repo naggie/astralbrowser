@@ -6,16 +6,22 @@
     export let mountPoint: string = "";
     export let query: string = "";
 
+    let report: ProgressReport;
+
     let results: string[] = [];
 
     searchEngine.onResult = result => results = [...results, result];
+    searchEngine.onProgressUpdate = progressReport => report = progressReport;
     searchEngine.onInvalidateResults = () => results = [];
 
     // it's important this is done after binding handlers so it has to be here
     // instead of outside this component, as a race can occur if this component
     // is not mounted yet; for instance on initial hash based search.
     $: searchEngine.newSearch(query);
+
 </script>
+
+
 
 <table>
     <thead>
