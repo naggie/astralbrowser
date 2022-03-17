@@ -1,11 +1,12 @@
 // TODO handle fetch errors
-// TODO  use web workers. don't forget myWorker.terminate(); on unmount
+// TODO use web workers. don't forget myWorker.terminate(); on unmount
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // TODO ensure gzip
 // TODO report number of files searched in UI
 // TODO emit search progress (0-100 in 1% steps) (also delimit start/stop to disable form element)
 // TODO display results count only when search has finished
 // TODO time search and reflect in UI (searched 5002 items in 34ms. 100+ results)
+// Web worker messaging: https://stackoverflow.com/questions/34409254/are-messages-sent-via-worker-postmessage-queued
 import { joinPath } from './util';
 
 const MIN_REPORT_INTERVAL = 100;
