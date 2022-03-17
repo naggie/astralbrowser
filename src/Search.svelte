@@ -22,8 +22,10 @@
 
 
 {#if report.searching}
-<div class="accesswait"><div class="progress-line"></div></div>
-Searched {report.numSearched} items...
+<div class="accesswait">
+    <div class="progress-line"></div>
+    Searched {report.numSearched} items...
+</div>
 {/if}
 
 <table>
