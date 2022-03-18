@@ -31,21 +31,39 @@ declare global {
         query: string;
     }
 
+    // for the worker abstraction which allows the search engine to be used
+    // such that it does not block the UI thread
     interface WorkerInitCmd {
         type: "init",
         indexUrl: string,
     }
 
-    interface WorkerInitCmd {
+    interface WorkerBuildIndexCmd {
         type: "buildIndex",
     }
 
-    interface WorkerInitCmd {
+    interface WorkerNewSearchCmd {
         type: "newSearch",
         query: string,
     }
 
     type WorkerCmd = WorkerInitCmd | WorkerBuildIndexCmd | WorkerNewSearchCmd;
+
+    interface WorkerResultResponse {
+        type: "result",
+        path: string,
+    }
+
+    interface WorkerProgressUpdateResponse {
+        type: "progressUpdate",
+        report: ProgressReport,
+    }
+
+    interface WorkerInvalidateResultsResponse {
+        type: "invalidateResults",
+    }
+
+    type WorkerResponse = WorkerResultResponse | WorkerProgressUpdateResponse | WorkerInvalidateResultsResponse;
 }
 
 // necessary, else the file won't be included
