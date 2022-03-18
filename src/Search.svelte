@@ -22,8 +22,10 @@
 
 
 {#if report.searching}
-<div class="accesswait">
-    <div class="progress-line"></div>
+<div class="astralbrowser-status">
+    <div class="astralbrowser-progress">
+        <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
+    </div>
     Searched {report.numSearched} items...
 </div>
 {/if}
@@ -48,3 +50,24 @@
     {/each}
     </tbody>
 </table>
+
+
+<style>
+    /* TODO: Migrate to global styles namespace so this can be re-used */
+    .astralbrowser-progress,
+    .astralbrowser-progress-bar {
+        height: 1px;
+        width: 100%;
+        margin: 0;
+    }
+
+    .astralbrowser-progress {
+        background-color: var(--bg);
+        display: flex;
+        margin: 20px 0;
+    }
+
+    .astralbrowser-progress-bar {
+        background-color: var(--active);
+    }
+</style>
