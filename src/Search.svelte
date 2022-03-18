@@ -21,7 +21,7 @@
 </script>
 
 
-{#if report.searching}
+{#if report}
 <div class="astralbrowser-status">
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
