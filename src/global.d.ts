@@ -30,6 +30,22 @@ declare global {
         // and make the UI reflect that
         query: string;
     }
+
+    interface WorkerInitCmd {
+        type: "init",
+        indexUrl: string,
+    }
+
+    interface WorkerInitCmd {
+        type: "buildIndex",
+    }
+
+    interface WorkerInitCmd {
+        type: "newSearch",
+        query: string,
+    }
+
+    type WorkerCmd = WorkerInitCmd | WorkerBuildIndexCmd | WorkerNewSearchCmd;
 }
 
 // necessary, else the file won't be included
