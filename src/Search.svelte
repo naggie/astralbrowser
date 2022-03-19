@@ -1,8 +1,7 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import SearchEngine from './searchengine';
     import { joinPath } from './util';
-    export let searchEngine: SearchEngine;
+    export let searchEngineWorker: Worker;
     export let mountPoint: string = "";
     export let query: string = "";
 
@@ -10,14 +9,28 @@
 
     let results: string[] = [];
 
-    searchEngine.onResult = result => results = [...results, result];
-    searchEngine.onProgressUpdate = progressReport => report = progressReport;
-    searchEngine.onInvalidateResults = () => results = [];
+    searchEngineWorker.onmessage = (event) {
+        const response: WorkerResponse = event.data;
+
+        switch(response.type) {
+            case "result":
+                results = [...results, response.result];
+                break;
+            case "progressUpdate":
+                report = response.report;
+                break;
+            case "invalidateResults":
+                results = [];
+                break;
+            default:
+                throw new Error("Unknown command");
+        }
+    }
 
     // it's important this is done after binding handlers so it has to be here
     // instead of outside this component, as a race can occur if this component
     // is not mounted yet; for instance on initial hash based search.
-    $: searchEngine.newSearch(query);
+    $: searchEngineWorker.postMessage({type:"newSearch", query: query});
 </script>
 
 
