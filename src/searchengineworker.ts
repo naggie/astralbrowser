@@ -1,4 +1,4 @@
-import { SearchEngine } from './searchengine';
+import SearchEngine from './searchengine';
 // Simple Web Worker wrapper for search engine to allow for a completely unblocked UI.
 
 // TODO consider https://www.npmjs.com/package/rollup-plugin-web-worker-loader
@@ -13,7 +13,7 @@ ctx.addEventListener("message", (event) => {
     let searchEngine: SearchEngine;
 
     switch(cmd.type) {
-        case "init:
+        case "init":
             searchEngine = new SearchEngine(cmd.indexUrl);
             searchEngine.onResult = result => ctx.postMessage({
                 type: "result",
@@ -23,7 +23,7 @@ ctx.addEventListener("message", (event) => {
                 type: "progressUpdate",
                 report: progressReport,
             });
-            searchEngine.onInvalidateResults = () => ctx.postMessage{type: "invalidateResults"};
+            searchEngine.onInvalidateResults = () => ctx.postMessage({type: "invalidateResults"});
             break;
         case "buildIndex":
             searchEngine.buildIndex();
@@ -32,6 +32,6 @@ ctx.addEventListener("message", (event) => {
             searchEngine.newSearch(cmd.query);
             break
         default:
-            raise new Error("Unknown command");
+            throw new Error("Unknown command");
     }
 });

@@ -26,7 +26,7 @@
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
-    Searched {report.numSearched} items...
+    Searched {report.numSearched} items in {report.elapsedMs}ms...
 </div>
 {/if}
 
