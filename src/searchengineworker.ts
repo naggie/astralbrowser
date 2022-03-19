@@ -7,28 +7,33 @@ import { SearchEngine } from './searchengine';
 // Not entirely sure about this. Will read later.
 const ctx: Worker = self as any;
 
-const searchEngine = new SearchEngine(indexUrl);
 
-searchEngine.onResult = result => results = [...results, result];
-searchEngine.onProgressUpdate = progressReport => report = progressReport;
-searchEngine.onInvalidateResults = () => results = [];
 
-// it's important this is done after binding handlers so it has to be here
-// instead of outside this component, as a race can occur if this component
-// is not mounted yet; for instance on initial hash based search.
-searchEngine.newSearch(query);
 
 ctx.addEventListener("message", (event) => {
-    var cmd: WorkerCmd = event.data;
+    const cmd: WorkerCmd = event.data;
+    let searchEngine: SearchEngine;
 
     switch(cmd.type) {
         case "init:
+            searchEngine = new SearchEngine(cmd.indexUrl);
+            searchEngine.onResult = result => ctx.postMessage({
+                type: "result",
+                path: result,
+            });
+            searchEngine.onProgressUpdate = progressReport => ctx.postMessage({
+                type: "progressUpdate",
+                report: progressReport,
+            });
+            searchEngine.onInvalidateResults = () => ctx.postMessage{type: "invalidateResults"};
             break;
         case "buildIndex":
+            searchEngine.buildIndex();
             break;
-        case "buildIndex":
+        case "newSearch":
+            searchEngine.newSearch(cmd.query);
             break
         default:
-            break;
+            raise new Error("Unknown command");
     }
 });
