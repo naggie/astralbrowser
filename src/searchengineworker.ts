@@ -8,8 +8,8 @@ import SearchEngine from './searchengine';
 // Not entirely sure about this. Will read later.
 const ctx: Worker = self as any;
 
-ctx.addEventListener("message", (event) => {
-    const cmd: WorkerCmd = event.data;
+ctx.addEventListener("message", (e) => {
+    const cmd: WorkerCmd = e.data;
     let searchEngine: SearchEngine;
 
     switch(cmd.type) {
