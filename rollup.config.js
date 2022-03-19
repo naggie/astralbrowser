@@ -14,13 +14,16 @@ export default [
         output: {
             format: 'umd',
             name: 'AstralBrowser',
-            file: 'public/build/astralbrowser.js'
+            file: 'public/build/astralbrowser.js',
+            sourcemap: true,
         },
         plugins: [
             svelte({
                 preprocess: sveltePreprocess(),
             }),
-            webWorkerLoader(),
+            webWorkerLoader({
+                sourcemap: true,
+            }),
             // we'll extract any component CSS out into
             // a separate file - better for performance
             css({ output: 'astralbrowser.css' }),
@@ -33,7 +36,7 @@ export default [
             typescript({
                 sourceMap: true,
             }),
-            terser(),
+            //terser(),
         ],
     },
 ];
