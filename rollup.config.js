@@ -6,6 +6,7 @@ import { terser } from 'rollup-plugin-terser';
 import sveltePreprocess from 'svelte-preprocess';
 import typescript from '@rollup/plugin-typescript';
 import css from 'rollup-plugin-css-only';
+import webWorkerLoader from 'rollup-plugin-web-worker-loader';
 
 export default [
     {
@@ -19,6 +20,7 @@ export default [
             svelte({
                 preprocess: sveltePreprocess(),
             }),
+            webWorkerLoader(),
             // we'll extract any component CSS out into
             // a separate file - better for performance
             css({ output: 'astralbrowser.css' }),
