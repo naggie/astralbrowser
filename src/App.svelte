@@ -24,12 +24,12 @@
     // when search bar is focussed, index is built
     const indexUrl = joinPath(mountPoint, '.index');
     const searchEngineWorker = new SearchEngineWorker();
-    SearchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
+    searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
         path = "";
-        SearchEngineWorker.postMessage({type:"buildIndex"}); // idempotent, concurrent!
+        searchEngineWorker.postMessage({type:"buildIndex"}); // idempotent, concurrent!
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
@@ -46,7 +46,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngine.buildIndex()}>
+<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngineWorker.postMessage({type:"buildIndex"})}>
         <input type="submit" hidden />
     </form>
 </div>
@@ -54,7 +54,7 @@
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
 {:else if query}
-<Search searchEngine={searchEngine} mountPoint={mountPoint} query={query} />
+<Search searchEngineWorker={searchEngineWorker} mountPoint={mountPoint} query={query} />
 {:else}
 Nothing to do.
 {/if}

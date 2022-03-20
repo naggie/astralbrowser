@@ -9,8 +9,8 @@
 
     let results: string[] = [];
 
-    searchEngineWorker.onmessage = (event) {
-        const response: WorkerResponse = event.data;
+    searchEngineWorker.onmessage = function(e) {
+        const response: WorkerResponse = e.data;
 
         switch(response.type) {
             case "result":
