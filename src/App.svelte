@@ -1,12 +1,10 @@
 <script lang="ts">
-    // TODO mount search on interest (focus etc) to start building index
     // TODO maybe instant search
-    // TODO deal with race where callback is registered after commencing search (query in search as before)
     import { hash } from './stores';
-    import SearchEngine from './searchengine';
     import LsDir from './LsDir.svelte';
     import Search from './Search.svelte';
     import { joinPath } from './util';
+    import SearchEngineWorker from 'web-worker:./searchengineworker';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
     // show for / only
@@ -25,12 +23,13 @@
 
     // when search bar is focussed, index is built
     const indexUrl = joinPath(mountPoint, '.index');
-    const searchEngine = new SearchEngine(indexUrl);
+    const searchEngineWorker = new SearchEngineWorker();
+    SearchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
         path = "";
-        searchEngine.buildIndex();  // idempotent!
+        SearchEngineWorker.postMessage({type:"buildIndex"}); // idempotent, concurrent!
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
