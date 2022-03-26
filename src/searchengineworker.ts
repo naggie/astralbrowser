@@ -3,27 +3,24 @@ import SearchEngine from './searchengine';
 
 // TODO consider https://www.npmjs.com/package/rollup-plugin-web-worker-loader
 // to avoid additional request in the critical path
-
 // https://www.jameslmilner.com/post/workers-with-webpack-and-typescript/
-// Not entirely sure about this. Will read later.
-const ctx: Worker = self as any;
 
-ctx.addEventListener("message", (e) => {
+self.addEventListener("message", (e) => {
     const cmd: WorkerCmd = e.data;
     let searchEngine: SearchEngine;
 
     switch(cmd.type) {
         case "init":
             searchEngine = new SearchEngine(cmd.indexUrl);
-            searchEngine.onResult = result => ctx.postMessage({
+            searchEngine.onResult = result => self.postMessage({
                 type: "result",
                 path: result,
             });
-            searchEngine.onProgressUpdate = progressReport => ctx.postMessage({
+            searchEngine.onProgressUpdate = progressReport => self.postMessage({
                 type: "progressUpdate",
                 report: progressReport,
             });
-            searchEngine.onInvalidateResults = () => ctx.postMessage({type: "invalidateResults"});
+            searchEngine.onInvalidateResults = () => self.postMessage({type: "invalidateResults"});
             break;
         case "buildIndex":
             searchEngine.buildIndex();
