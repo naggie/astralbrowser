@@ -14,7 +14,7 @@
 
         switch(response.type) {
             case "result":
-                results = [...results, response.result];
+                results = [...results, response.path];
                 break;
             case "progressUpdate":
                 report = response.report;
@@ -39,7 +39,7 @@
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
-    Searched {report.numSearched} items in {report.elapsedMs}ms...
+    Searched {report.numSearched} items in {report.elapsedMs}ms
 </div>
 {/if}
 
