@@ -43,27 +43,28 @@
 </div>
 {/if}
 
-<table>
-    <thead>
-      <tr>
-        <th>Name</th>
-      </tr>
-    </thead>
-    <tbody>
-    {#each results as path}
-        {#if path.endsWith("/")}
+{#if results}
+    <table>
+        <thead>
           <tr>
-            <td><a href={'#' + path}>{path}</a></td>
+            <th>Name</th>
           </tr>
-        {:else}
-          <tr>
-            <td><a href={joinPath(mountPoint, path)} download>{path}</a></td>
-          </tr>
-        {/if}
-    {/each}
-    </tbody>
-</table>
-
+        </thead>
+        <tbody>
+        {#each results as path}
+            {#if path.endsWith("/")}
+              <tr>
+                <td><a href={'#' + path}>{path}</a></td>
+              </tr>
+            {:else}
+              <tr>
+                <td><a href={joinPath(mountPoint, path)} download>{path}</a></td>
+              </tr>
+            {/if}
+        {/each}
+        </tbody>
+    </table>
+{/if}
 
 <style>
     /* TODO: Migrate to global styles namespace so this can be re-used */
