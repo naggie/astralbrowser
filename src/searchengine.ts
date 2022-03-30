@@ -103,6 +103,7 @@ export default class SearchEngine {
         this.query = query;
         this.start = performance.now();
         this.numSearched = 0;
+        this.searchedBytes = 0;
         this.searching = true;
         this.maybeEmitReport(true);
 
