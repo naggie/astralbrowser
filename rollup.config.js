@@ -18,11 +18,12 @@ export default [
             sourcemap: true,
         },
         plugins: [
-            svelte({
-                preprocess: sveltePreprocess(),
-            }),
             webWorkerLoader({
                 sourcemap: true,
+                extensions: ['.ts', '.js'],
+            }),
+            svelte({
+                preprocess: sveltePreprocess(),
             }),
             // we'll extract any component CSS out into
             // a separate file - better for performance
