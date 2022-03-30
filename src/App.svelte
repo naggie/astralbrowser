@@ -21,8 +21,9 @@
         window.location.hash = '?' + e.target.elements["query"].value;
     }
 
-    // when search bar is focussed, index is built
-    const indexUrl = joinPath(mountPoint, '.index');
+    // when search bar is focused, index is built
+    // note due to worker context, fully qualified url is required
+    const indexUrl = joinPath(window.location.origin, mountPoint, '.index');
     const searchEngineWorker = new SearchEngineWorker();
     searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
 
