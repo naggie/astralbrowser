@@ -23,7 +23,7 @@
 
     // when search bar is focused, index is built
     // note due to worker context, fully qualified url is required
-    const indexUrl = joinPath(window.location.origin, mountPoint, '.index');
+    const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
     const searchEngineWorker = new SearchEngineWorker();
     searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
 

@@ -2,8 +2,8 @@
 set -e
 
 BASE=/mnt/user-shares
-INDEX=${BASE}/.index
-INDEXTMP=${BASE}/.index.tmp
+INDEX=${BASE}/.index.txt
+INDEXTMP=${INDEX}.tmp
 
 # NOTE when serving with nginx, ensure the location has gzip enabled
 
