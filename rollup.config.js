@@ -24,6 +24,8 @@ export default [
             }),
             svelte({
                 preprocess: sveltePreprocess(),
+                // TODO: re-enable when github.com/darionco/rollup-plugin-web-worker-loader/issues/60 is fixed
+                emitCss: false,
             }),
             // we'll extract any component CSS out into
             // a separate file - better for performance
@@ -37,7 +39,7 @@ export default [
             typescript({
                 sourceMap: true,
             }),
-            //terser(),
+            terser(),
         ],
     },
 ];
