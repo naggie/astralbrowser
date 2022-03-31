@@ -6,8 +6,6 @@ let searchEngine: SearchEngine;
 
 self.addEventListener("message", (e) => {
     const cmd: WorkerCmd = e.data;
-    // TODO messages seem doubled....
-    console.log(cmd);   // TODO remove
 
     switch(cmd.type) {
         case "init":
