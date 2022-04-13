@@ -1,0 +1,17 @@
+[Unit]
+Description=naggie's NFS user share
+# as we're using DNS hostnames....
+After=nss-lookup.target
+# Could put dsnet service here as an After= dependency, but this machine does
+# not use dsnet for the VPN as it has a direct connection.
+
+[Mount]
+What=grendelkeep.***REMOVED***.io:/srv/software
+# must match file name (escaped with systemd-escape!)
+Where=/mnt/user-shares/naggie
+Options=ro,soft,bg,vers=4
+Type=nfs
+TimeoutSec=30
+
+[Install]
+WantedBy=multi-user.target
