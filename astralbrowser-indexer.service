@@ -4,4 +4,3 @@ Description=generates ***REMOVED*** astralbrowser index
 [Service]
 Type=oneshot
 ExecStart=/opt/***REMOVED***/bin/poc-indexer
-User=naggie
