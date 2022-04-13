@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-# TODO ensure NTP time sync
+# TODO ensure NTP time sync across hosts (not here!)
 
 
 sudo cp mounts/*.mount /etc/systemd/system/
@@ -11,4 +11,4 @@ sudo cp mounts/*.mount /etc/systemd/system/
 sudo systemctl daemon-reload
 
 # mount (they will be automounted on boot)
-sudo systemctl start 
+sudo systemctl start $(ls mounts/)
