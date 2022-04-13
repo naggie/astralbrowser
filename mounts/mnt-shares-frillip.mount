@@ -8,7 +8,7 @@ After=nss-lookup.target
 [Mount]
 What=tempestkeep.frillnet.***REMOVED***.io:/srv/***REMOVED***
 # must match file name (escaped with systemd-escape!)
-Where=/mnt/user-shares/frillip
+Where=/mnt/shares/frillip
 Options=ro,soft,bg,vers=4
 Type=nfs
 TimeoutSec=30
