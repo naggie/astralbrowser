@@ -241,5 +241,4 @@ function highestMatch(path: string, query: string) {
 
     return highestPath;
 }
-//console.log(highestMatch('./frillip/yes/PROWinx64/PRO1000/Winx64/NDIS63/e1k63x64.cat', 'frillip'))
 
