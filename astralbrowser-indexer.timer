@@ -1,0 +1,9 @@
+[Unit]
+Description=Runs indexer for astralbrowser
+
+[Timer]
+OnActiveSec=0
+OnUnitActiveSec=1h
+
+[Install]
+WantedBy=timers.target
