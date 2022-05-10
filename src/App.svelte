@@ -7,8 +7,6 @@
     import SearchEngineWorker from 'web-worker:./searchengineworker';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
-    // show for / only
-    export let readme: HTMLElement;
 
     let path: string = "/";
     let query: string = "";
@@ -36,9 +34,6 @@
         path = joinPath('/', $hash, '/');
         query = "";
     }
-
-    // show readme if appropriate (after load so it does not jump)
-    $: readme.style.display = path == '/' ? "block" : "none";
 </script>
 
 <div id="astralbrowser-toolbar">
