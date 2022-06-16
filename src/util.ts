@@ -42,3 +42,20 @@ export function parentDir(path: string) : string {
     fragments.pop();
     return joinPath("/", ...fragments, "/");
 }
+
+// split a name from a path. For instance:
+// /foo/bar/ -> /foo/ bar/
+// /foo/bar/baz.exe -> /foo/bar/ baz.exe
+export function splitName(path: string) : [string, string] {
+    const parts = path.split('/');
+    const end = parts.pop();
+
+    if (end == "") {
+        // directory
+        const directory = parts.pop();
+        return [parentDir(path), directory + "/"];
+    } else {
+        // file
+        return [parentDir(path), end];
+    }
+}

@@ -1,6 +1,6 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import { joinPath } from './util';
+    import { joinPath, splitName } from './util';
     export let searchEngineWorker: Worker;
     export let mountPoint: string = "";
     export let query: string = "";
@@ -31,6 +31,8 @@
     // instead of outside this component, as a race can occur if this component
     // is not mounted yet; for instance on initial hash based search.
     $: searchEngineWorker.postMessage({type:"newSearch", query: query});
+
+    // TODO show search results as name/path
 </script>
 
 
@@ -48,17 +50,20 @@
         <thead>
           <tr>
             <th>Name</th>
+            <th>Path</th>
           </tr>
         </thead>
         <tbody>
-        {#each results as path}
-            {#if path.endsWith("/")}
+        {#each results.map(splitName) as [path, name]}
+            {#if name.endsWith("/")}
               <tr>
+                <td><a href={'#' + path + name}>{name}</a></td>
                 <td><a href={'#' + path}>{path}</a></td>
               </tr>
             {:else}
               <tr>
-                <td><a href={joinPath(mountPoint, path)} download>{path}</a></td>
+                <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
+                <td><a href={'#' + path}>{path}</a></td>
               </tr>
             {/if}
         {/each}
