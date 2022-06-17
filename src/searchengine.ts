@@ -28,6 +28,7 @@ export default class SearchEngine {
     searching: boolean = false;
     numSearched: number = 0;
     lastReportTime: number = 0;
+    indexAgeMs: number = 0;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         // index file should be a line delimited list of files relative to mountPoint
@@ -45,6 +46,9 @@ export default class SearchEngine {
         this.indexStarted = true;
 
         const response = await fetch(this.indexUrl);
+
+        const lastModifiedStr = response.headers.get('Last-Modified');
+        this.indexAgeMs = (new Date()).getTime() - Date.parse(lastModifiedStr);
 
         if (response.status == 404) {
             throw new Error("Search index does not exist");
@@ -184,6 +188,7 @@ export default class SearchEngine {
             percentIndexDownloaded: Math.round(100*this.receivedBytes/this.totalBytes),
             elapsedMs: performance.now() - this.start,
             query: this.query,
+            indexAgeMs: this.indexAgeMs,
         }
 
         this.onProgressUpdate(report);

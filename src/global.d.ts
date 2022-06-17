@@ -29,6 +29,7 @@ declare global {
         // current query, so it's possible to tell if the search engine is behind
         // and make the UI reflect that
         query: string;
+        indexAgeMs: number;
     }
 
     // for the worker abstraction which allows the search engine to be used
