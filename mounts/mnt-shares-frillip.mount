@@ -7,7 +7,7 @@ After=nss-lookup.target
 # not use dsnet for the VPN as it has a direct connection.
 
 [Mount]
-What=tempestkeep.frillnet.***REMOVED***.io:/srv/***REMOVED***
+What=tempestkeep.frillnet.***REMOVED***.io:/srv/media
 # must match file name (escaped with systemd-escape!)
 Where=/mnt/shares/frillip
 Options=ro,soft,bg,vers=4
