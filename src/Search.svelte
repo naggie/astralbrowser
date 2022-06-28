@@ -62,12 +62,12 @@
             {#if name.endsWith("/")}
               <tr>
                 <td><a href={'#' + path + name}>{name}</a></td>
-                <td><a href={'#' + path}>{path}</a></td>
+                <td><a class="path" href={'#' + path}>{path}</a></td>
               </tr>
             {:else}
               <tr>
                 <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
-                <td><a href={'#' + path}>{path}</a></td>
+                <td><a class="path" href={'#' + path}>{path}</a></td>
               </tr>
             {/if}
         {/each}
@@ -92,5 +92,9 @@
 
     .astralbrowser-progress-bar {
         background-color: var(--active);
+    }
+
+    .path {
+        opacity: 0.8;
     }
 </style>
