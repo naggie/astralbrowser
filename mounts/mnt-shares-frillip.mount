@@ -12,7 +12,7 @@ What=tempestkeep.frillnet.***REMOVED***.io:/srv/media
 Where=/mnt/shares/frillip
 Options=ro,soft,bg,vers=4
 Type=nfs
-TimeoutSec=30
+TimeoutSec=10
 
 [Install]
 WantedBy=multi-user.target
