@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-set -e
+set -ex
 cd $(dirname $0)
 
 # TODO ensure NTP time sync across hosts (not here!)
