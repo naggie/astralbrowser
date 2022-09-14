@@ -7,7 +7,9 @@ After=nss-lookup.target
 # not use dsnet for the VPN as it has a direct connection.
 
 [Mount]
-What=grendelkeep.***REMOVED***.io:/srv/software
+# TODO switch back from IP as soon as Frill updates the DNS server
+#What=grendelkeep.***REMOVED***.io:/srv/software
+What=172.18.64.7:/srv/software
 # must match file name (escaped with systemd-escape!)
 Where=/mnt/shares/naggie
 Options=ro,soft,bg,vers=4
