@@ -11,3 +11,15 @@ cd $BASE
 find . -type f -not -path '*/.*' > ${INDEXTMP}
 mv ${INDEXTMP} ${INDEX}
 chown www-data:www-data ${INDEX}
+
+
+BASE=/mnt/depot
+INDEX=${BASE}/.index.txt
+INDEXTMP=${INDEX}.tmp
+
+# NOTE when serving with nginx, ensure the location has gzip enabled
+
+cd $BASE
+find . -type f -not -path '*/.*' > ${INDEXTMP}
+mv ${INDEXTMP} ${INDEX}
+chown www-data:www-data ${INDEX}
