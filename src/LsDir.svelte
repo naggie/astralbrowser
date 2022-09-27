@@ -71,5 +71,5 @@
 </table>
 
 {:catch error}
-<div class="nis nis-error">{error.message}</div>
+<p class="warningbox">{error.message}</p>
 {/await}
