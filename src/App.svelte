@@ -42,16 +42,19 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus|once={() => searchEngineWorker.postMessage({type:"buildIndex"})}>
+<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:change|once={() => searchEngineWorker.postMessage({type:"buildIndex"})}>
         <input type="submit" hidden />
     </form>
 </div>
 
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
-{:else if query}
+{/if}
+
+<!-- always here, to catch early error -->
 <Search searchEngineWorker={searchEngineWorker} mountPoint={mountPoint} query={query} />
-{:else}
+
+{#if !path && !query}
 Nothing to do.
 {/if}
 

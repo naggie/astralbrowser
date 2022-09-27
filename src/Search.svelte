@@ -43,7 +43,7 @@
 </script>
 
 
-{#if report}
+{#if report && report.numSearched > 0}
 <div class="astralbrowser-status">
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
@@ -55,13 +55,13 @@
 </div>
 {/if}
 
-{#if error}
+{#if error && query}
 <div class="astralbrowser-status">
     <p class="warningbox">{error}</p>
 </div>
 {/if}
 
-{#if results}
+{#if results.length > 0}
     <table>
         <thead>
           <tr>
