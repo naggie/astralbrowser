@@ -26,10 +26,8 @@
                 results = [];
                 break;
             case "error":
-                results = [];
-                report = undefined;
+                // locks up for good
                 error = response.error;
-                console.log('rr', response);
                 break;
             default:
                 throw new Error("Unknown command");
