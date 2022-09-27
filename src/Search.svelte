@@ -48,7 +48,7 @@
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
-    Searched {report.numSearched} items in {report.elapsedMs}ms
+    Searched {report.numSearched} items in {report.elapsedMs | 0}ms
     {#if report.indexAgeMs > MAX_INDEX_AGE}
     <p class="warningbox">Warning: index is old. Results may be invalid.</p>
     {/if}
