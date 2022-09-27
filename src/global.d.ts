@@ -64,7 +64,12 @@ declare global {
         type: "invalidateResults",
     }
 
-    type WorkerResponse = WorkerResultResponse | WorkerProgressUpdateResponse | WorkerInvalidateResultsResponse;
+    interface WorkerErrorResponse {
+        type: "error",
+        error: Error,
+    }
+
+    type WorkerResponse = WorkerResultResponse | WorkerProgressUpdateResponse | WorkerInvalidateResultsResponse | WorkerErrorResponse;
 }
 
 // necessary, else the file won't be included

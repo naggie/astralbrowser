@@ -4,29 +4,32 @@ import SearchEngine from './searchengine';
 
 let searchEngine: SearchEngine;
 
-self.addEventListener("message", (e) => {
+self.addEventListener("message", async (e) => {
     const cmd: WorkerCmd = e.data;
-
-    switch(cmd.type) {
-        case "init":
-            searchEngine = new SearchEngine(cmd.indexUrl);
-            searchEngine.onResult = result => self.postMessage({
-                type: "result",
-                path: result,
-            });
-            searchEngine.onProgressUpdate = progressReport => self.postMessage({
-                type: "progressUpdate",
-                report: progressReport,
-            });
-            searchEngine.onInvalidateResults = () => self.postMessage({type: "invalidateResults"});
-            break;
-        case "buildIndex":
-            searchEngine.buildIndex();
-            break;
-        case "newSearch":
-            searchEngine.newSearch(cmd.query);
-            break
-        default:
-            throw new Error("Unknown command");
+    try {
+        switch(cmd.type) {
+            case "init":
+                searchEngine = new SearchEngine(cmd.indexUrl);
+                searchEngine.onResult = result => self.postMessage({
+                    type: "result",
+                    path: result,
+                });
+                searchEngine.onProgressUpdate = progressReport => self.postMessage({
+                    type: "progressUpdate",
+                    report: progressReport,
+                });
+                searchEngine.onInvalidateResults = () => self.postMessage({type: "invalidateResults"});
+                break;
+            case "buildIndex":
+                await searchEngine.buildIndex();
+                break;
+            case "newSearch":
+                searchEngine.newSearch(cmd.query);
+                break
+            default:
+                throw new Error("Unknown command");
+        }
+    } catch(error) {
+        console.log({type: "error", error: error.message});
     }
 });

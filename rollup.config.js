@@ -39,7 +39,7 @@ export default [
             typescript({
                 sourceMap: true,
             }),
-            terser(),
+            //terser(),
         ],
     },
 ];

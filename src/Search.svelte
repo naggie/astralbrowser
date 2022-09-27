@@ -7,6 +7,7 @@
     const MAX_INDEX_AGE = 2 * 3600 * 1000;
 
     let report: ProgressReport;
+    let error: string;
 
     let results: string[] = [];
 
@@ -16,12 +17,19 @@
         switch(response.type) {
             case "result":
                 results = [...results, response.path];
+                error = undefined;
                 break;
             case "progressUpdate":
                 report = response.report;
                 break;
             case "invalidateResults":
                 results = [];
+                break;
+            case "error":
+                results = [];
+                report = undefined;
+                error = response.error;
+                console.log('rr', response);
                 break;
             default:
                 throw new Error("Unknown command");
@@ -46,6 +54,12 @@
     {#if report.indexAgeMs > MAX_INDEX_AGE}
     <p class="warningbox">Warning: index is old. Results may be invalid.</p>
     {/if}
+</div>
+{/if}
+
+{#if error}
+<div class="astralbrowser-status">
+    <p class="warningbox">{error}</p>
 </div>
 {/if}
 
