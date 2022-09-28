@@ -2,9 +2,9 @@
     // TODO maybe instant search
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
-    import Search from './Search.svelte';
     import { joinPath } from './util';
-    import SearchEngineWorker from 'web-worker:./searchengineworker';
+    import SearchResults from './searchresults';
+    import SearchResultsView from './SearchResultsView.svelte';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
 
@@ -22,18 +22,19 @@
     // when search bar is focused, index is built
     // note due to worker context, fully qualified url is required
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
-    const searchEngineWorker = new SearchEngineWorker();
-    searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl});
+    const searchResults = new SearchResults(indexUrl, 100);
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
         path = "";
-        searchEngineWorker.postMessage({type:"buildIndex"}); // idempotent, concurrent!
+        searchResults.buildIndex();
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
         query = "";
     }
+
+    $: searchResults.newSearch(query);
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -42,7 +43,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-<input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:change|once={() => searchEngineWorker.postMessage({type:"buildIndex"})}>
+        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={searchResults.buildIndex}>
         <input type="submit" hidden />
     </form>
 </div>
@@ -52,7 +53,7 @@
 {/if}
 
 <!-- always here, to catch early error -->
-<Search searchEngineWorker={searchEngineWorker} mountPoint={mountPoint} query={query} />
+<SearchResultsView searchResults={searchResults} mountPoint={mountPoint} />
 
 {#if !path && !query}
 Nothing to do.

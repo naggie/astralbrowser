@@ -30,7 +30,7 @@ export default class SearchEngine {
     lastReportTime: number = 0;
     indexAgeMs: number = 0;
 
-    constructor(indexUrl: string, resultLimit: number = 100) {
+    constructor(indexUrl: string, resultLimit: number) {
         // index file should be a line delimited list of files relative to mountPoint
         this.indexUrl = indexUrl;
         this.resultLimit = resultLimit;
