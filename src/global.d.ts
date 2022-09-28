@@ -37,6 +37,7 @@ declare global {
     interface WorkerInitCmd {
         type: "init",
         indexUrl: string,
+        resultLimit: number,
     }
 
     interface WorkerBuildIndexCmd {

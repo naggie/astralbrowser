@@ -9,7 +9,7 @@ self.addEventListener("message", async (e) => {
     try {
         switch(cmd.type) {
             case "init":
-                searchEngine = new SearchEngine(cmd.indexUrl);
+                searchEngine = new SearchEngine(cmd.indexUrl, cmd.resultLimit);
                 searchEngine.onResult = result => self.postMessage({
                     type: "result",
                     path: result,
