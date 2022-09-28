@@ -1,4 +1,5 @@
-import { readable, Readable } from "svelte/store";
+import { readable } from "svelte/store";
+import type { Readable } from "svelte/store";
 
 function getHash():string {
     const hash = window.location.hash.slice(1);  // remove hash
