@@ -4,6 +4,7 @@ build:
 	rm -rf public/build
 	mkdir -p public/build
 	echo ' ' > public/build/astralbrowser.css # may not exist due to https://github.com/darionco/rollup-plugin-web-worker-loader/issues/60
+	svelte-check
 	npm run build
 	# disable eslint as this is a built product
 	sed -i'' '1s;^;/* stylelint-disable */\n;' public/build/astralbrowser.css
