@@ -5,11 +5,13 @@ export default class SearchResults {
     results: string[] = [];
     report: ProgressReport;
     error: string;
-    searchEngineWorker: SearchEngineWorker;
+
+    // this was my 10th attempt at getting the type right...
+    searchEngineWorker: InstanceType<typeof SearchEngineWorker>;
 
     constructor(indexUrl: string, resultLimit: number = 100) {
         this.searchEngineWorker = new SearchEngineWorker();
-        this.searchEngineWorker.onmessage = function(e) {
+        this.searchEngineWorker.onmessage = (e) => {
             const response: WorkerResponse = e.data;
 
             switch(response.type) {

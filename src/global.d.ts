@@ -67,11 +67,27 @@ declare global {
 
     interface WorkerErrorResponse {
         type: "error",
-        error: Error,
+        error: string,
     }
 
     type WorkerResponse = WorkerResultResponse | WorkerProgressUpdateResponse | WorkerInvalidateResultsResponse | WorkerErrorResponse;
+
+
+    // necessary, else typescript won't be able to transform vanilla ts files
+    // that load a web worker, as it doesn't know type definitions. Rollup
+    // plugin to actually load the worker is completely separate.
+    declare module 'web-worker:*' {
+        const WorkerFactory: new () => Worker;
+        export default WorkerFactory;
+    }
+    //declare module 'web-worker:*' {
+    //    class WorkerFactory extends Worker {
+    //        constructor();
+    //    }
+    //    export default WorkerFactory;
+    //}
 }
 
 // necessary, else the file won't be included
 export {}
+
