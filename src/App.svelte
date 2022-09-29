@@ -43,7 +43,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={searchResults.buildIndex}>
+        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={() => searchResults.buildIndex()}>
         <input type="submit" hidden />
     </form>
 </div>
