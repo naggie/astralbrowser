@@ -1,35 +1,37 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
     import { joinPath, splitName } from './util';
-    export let searchResults: SearchResults;
+    export let results: string[];
+    export let report: ProgressReport;
+    export let error: string = "";
     export let mountPoint: string = "";
     const MAX_INDEX_AGE = 2 * 3600 * 1000;
 </script>
 
 
-{#if searchResults.report && searchResults.report.numSearched > 0}
+{#if report && report.numSearched > 0}
 <div class="astralbrowser-status">
     <div class="astralbrowser-progress">
-        <div class="astralbrowser-progress-bar" style="width:{searchResults.report.percentSearched}%"></div>
+        <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
-    Searched {searchResults.report.numSearched} items in {searchResults.report.elapsedMs | 0}ms
-    {#if searchResults.report.indexAgeMs > MAX_INDEX_AGE}
+    Searched {report.numSearched} items in {report.elapsedMs | 0}ms
+    {#if report.indexAgeMs > MAX_INDEX_AGE}
     <p class="warningbox">Warning: index is old. Results may be invalid.</p>
     {/if}
 
-    {#if !searchResults.report.searching && searchResults.report.numResults == 0}
+    {#if !report.searching && report.numResults == 0}
     <p>Nothing found.</p>
     {/if}
 </div>
 {/if}
 
-{#if searchResults.error}
+{#if error}
 <div class="astralbrowser-status">
-    <p class="warningbox">{searchResults.error}</p>
+    <p class="warningbox">{error}</p>
 </div>
 {/if}
 
-{#if searchResults.results.length > 0}
+{#if results.length > 0}
     <table>
         <thead>
           <tr>
@@ -38,7 +40,7 @@
           </tr>
         </thead>
         <tbody>
-        {#each searchResults.results.map(splitName) as [path, name]}
+        {#each results.map(splitName) as [path, name]}
             {#if name.endsWith("/")}
               <tr>
                 <td><a href={'#' + path + name}>{name}</a></td>

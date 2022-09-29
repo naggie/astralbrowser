@@ -3,13 +3,42 @@
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
     import { joinPath } from './util';
-    import SearchResults from './searchresults';
+    import SearchEngineWorker from 'web-worker:./searchengineworker';
     import SearchResultsView from './SearchResultsView.svelte';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
 
+    const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
+    let searchResults: string[] = [];
+    let searchReport: ProgressReport;
+    let searchError: string = "";
     let path: string = "/";
     let query: string = "";
+
+    const searchEngineWorker = new SearchEngineWorker();
+    // (when search bar is focused, index is built)
+    searchEngineWorker.onmessage = (e) => {
+        const response: WorkerResponse = e.data;
+
+        switch(response.type) {
+            case "result":
+                searchResults = [...searchResults, response.path];
+                searchError = undefined;
+                break;
+            case "progressUpdate":
+                searchReport = response.report;
+                break;
+            case "invalidateResults":
+                searchResults = [];
+                break;
+            case "error":
+                searchError = response.error;
+                break;
+            default:
+                throw new Error("Unknown worker response");
+        }
+    }
+    searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl, resultLimit: 100});
 
     function handlePathSubmit(e: Event) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
@@ -19,22 +48,17 @@
         window.location.hash = '?' + e.target.elements["query"].value;
     }
 
-    // when search bar is focused, index is built
-    // note due to worker context, fully qualified url is required
-    const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
-    const searchResults = new SearchResults(indexUrl, 100);
-
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
         path = "";
-        searchResults.buildIndex();
+        searchEngineWorker.postMessage({type:"buildIndex"});
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
         query = "";
     }
 
-    $: searchResults.newSearch(query);
+    $: searchEngineWorker.postMessage({type:"newSearch", query: query});
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -43,7 +67,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={() => searchResults.buildIndex()}>
+        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"}) }>
         <input type="submit" hidden />
     </form>
 </div>
@@ -51,7 +75,7 @@
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
 {:else if query}
-<SearchResultsView searchResults={searchResults} mountPoint={mountPoint} />
+<SearchResultsView results={searchResults} report={searchReport} error={searchError} mountPoint={mountPoint} />
 {:else}
 Nothing to do.
 {/if}
