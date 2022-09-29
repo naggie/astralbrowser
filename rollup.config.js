@@ -18,27 +18,26 @@ export default [
             sourcemap: true,
         },
         plugins: [
-            webWorkerLoader({
-                sourcemap: true,
-                extensions: ['.ts', '.js'],
-            }),
             svelte({
                 preprocess: sveltePreprocess(),
                 // TODO: re-enable when github.com/darionco/rollup-plugin-web-worker-loader/issues/60 is fixed
                 emitCss: false,
             }),
-            // we'll extract any component CSS out into
-            // a separate file - better for performance
-            css({ output: 'astralbrowser.css' }),
-
             resolve({
                 browser: true,
                 dedupe: ['svelte']
             }),
             commonjs(),
+            webWorkerLoader({
+                sourcemap: true,
+                extensions: ['.ts', '.js'],
+            }),
+            // we'll extract any component CSS out into
+            // a separate file - better for performance
             typescript({
                 sourceMap: true,
             }),
+            css({ output: 'astralbrowser.css' }),
             //terser(),
         ],
     },
