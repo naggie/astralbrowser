@@ -52,10 +52,7 @@
 <LsDir mountPoint={mountPoint} path={path} />
 {:else if query}
 <SearchResultsView searchResults={searchResults} mountPoint={mountPoint} />
-{/if}
-
-
-{#if !path && !query}
+{:else}
 Nothing to do.
 {/if}
 
