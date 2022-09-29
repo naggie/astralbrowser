@@ -50,10 +50,10 @@
 
 {#if path}
 <LsDir mountPoint={mountPoint} path={path} />
+{:else if query}
+<SearchResultsView searchResults={searchResults} mountPoint={mountPoint} />
 {/if}
 
-<!-- always here, to catch early error -->
-<SearchResultsView searchResults={searchResults} mountPoint={mountPoint} />
 
 {#if !path && !query}
 Nothing to do.
