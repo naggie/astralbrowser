@@ -40,11 +40,11 @@
     }
     searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl, resultLimit: 100});
 
-    function handlePathSubmit(e: Event) {
+    function handlePathSubmit(e: any) {
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
 
-    function handleSearchSubmit(e: Event) {
+    function handleSearchSubmit(e: any) {
         window.location.hash = '?' + e.target.elements["query"].value;
     }
 
