@@ -16,6 +16,10 @@
     {#if searchResults.report.indexAgeMs > MAX_INDEX_AGE}
     <p class="warningbox">Warning: index is old. Results may be invalid.</p>
     {/if}
+
+    {#if !searchResults.report.searching && searchResults.report.numResults == 0}
+    <p>Nothing found.</p>
+    {/if}
 </div>
 {/if}
 
