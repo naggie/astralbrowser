@@ -8,26 +8,25 @@
     const MAX_INDEX_AGE = 2 * 3600 * 1000;
 </script>
 
+{#if error}
+<div class="astralbrowser-status">
+    <p class="warningbox">{error}</p>
+</div>
+{/if}
 
 {#if report && report.numSearched > 0}
+{#if report.indexAgeMs > MAX_INDEX_AGE}
+<p class="warningbox">Warning: index is old. Results may be invalid.</p>
+{/if}
+
 <div class="astralbrowser-status">
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
     Searched {report.numSearched} items in {report.elapsedMs | 0}ms
-    {#if report.indexAgeMs > MAX_INDEX_AGE}
-    <p class="warningbox">Warning: index is old. Results may be invalid.</p>
-    {/if}
-
     {#if !report.searching && report.numResults == 0}
     <p>Nothing found.</p>
     {/if}
-</div>
-{/if}
-
-{#if error}
-<div class="astralbrowser-status">
-    <p class="warningbox">{error}</p>
 </div>
 {/if}
 
