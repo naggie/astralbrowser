@@ -47,6 +47,7 @@ Description={description}
 
 [Automount]
 Where={where}
+TimeoutIdleSec=600
 
 [Install]
 WantedBy=multi-user.target
