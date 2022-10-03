@@ -3,6 +3,7 @@ set -ex
 cd $(dirname $0)
 
 # TODO ensure NTP time sync across hosts (not just here!)
+sudo apt-get -y install nfs-common
 
 sudo cp ***REMOVED***astralbrowser-indexer.{service,timer} /etc/systemd/system/
 sudo cp poc-indexer /opt/***REMOVED***/bin
