@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 import sys
 from subprocess import run, PIPE
-from os import makedirs, path
+from os.path import join
 
 if len(sys.argv) != 3:
     print("Usage: %s <what> <where>" % sys.argv[0])
@@ -48,14 +48,12 @@ Where={where}
 WantedBy=multi-user.target
 """
 
-makedirs(where, exist_ok=True)
-
-with open(path(systemd_unit_dir, escape(path) + ".mount")) as f:
+with open(join(systemd_unit_dir, escape(where) + ".mount"), "w") as f:
     f.write(mount_template.format(description=where, what=what, where=where))
 
-with open(path(systemd_unit_dir, escape(path) + ".automount")) as f:
-    f.write(mount_template.format(description=where, where=where))
+with open(join(systemd_unit_dir, escape(where) + ".automount"), "w") as f:
+    f.write(automount_template.format(description=where, where=where))
 
 run(["systemctl", "daemon-reload"])
-run(["systemctl", "start", escape(path) + ".automount")
-run(["systemctl", "enable", escape(path) + ".automount")
+run(["systemctl", "start", escape(where) + ".automount"])
+run(["systemctl", "enable", escape(where) + ".automount"])
