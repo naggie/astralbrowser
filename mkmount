@@ -17,6 +17,10 @@ def escape(path):
     )
 
 
+def run_cmd(cmd):
+    print(run(cmd, check=True, stdout=PIPE).stdout.decode().strip())
+
+
 what = sys.argv[1]
 where = sys.argv[2]
 
@@ -54,6 +58,6 @@ with open(join(systemd_unit_dir, escape(where) + ".mount"), "w") as f:
 with open(join(systemd_unit_dir, escape(where) + ".automount"), "w") as f:
     f.write(automount_template.format(description=where, where=where))
 
-run(["systemctl", "daemon-reload"])
-run(["systemctl", "start", escape(where) + ".automount"])
-run(["systemctl", "enable", escape(where) + ".automount"])
+run_cmd(["systemctl", "daemon-reload"])
+run_cmd(["systemctl", "start", escape(where) + ".automount"])
+run_cmd(["systemctl", "enable", escape(where) + ".automount"])
