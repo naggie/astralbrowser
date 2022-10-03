@@ -18,7 +18,7 @@ def escape(path):
 
 
 def run_cmd(cmd):
-    print(run(cmd, check=True, stdout=PIPE).stdout.decode().strip())
+    print(run(cmd, check=True, stdout=PIPE).stdout.decode().strip(), end="")
 
 
 what = sys.argv[1]
