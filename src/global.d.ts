@@ -22,9 +22,7 @@ declare global {
         searching: boolean;
         numSearched: number;
         numResults: number;
-        // approximated via bytes of full content length
         percentSearched: number;
-        percentIndexDownloaded: number;
         elapsedMs: number;
         // current query, so it's possible to tell if the search engine is behind
         // and make the UI reflect that
