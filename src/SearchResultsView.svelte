@@ -35,7 +35,7 @@
 {/if}
 
 {#if results.length > 0}
-    <table>
+    <table style="table-layout: fixed;">
         <thead>
           <tr>
             <th>Name</th>
