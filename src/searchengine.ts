@@ -53,10 +53,11 @@ export default class SearchEngine {
         }
 
         const reader = response.body.getReader();
+        // default to zero if not set.
         this.totalBytes = +response.headers.get('Content-Length');
 
         // 3? newlines etc.
-        if (this.totalBytes < 3) {
+        if (this.totalBytes < 3 && response.headers.has("Content-Length")) {
             throw new Error("Search index is empty");
         }
 
