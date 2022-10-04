@@ -14,7 +14,7 @@
 </div>
 {/if}
 
-{#if report && report.numSearched > 0}
+{#if report }
 {#if report.indexAgeMs > MAX_INDEX_AGE}
 <p class="warningbox">Warning: index is old. Results may be invalid.</p>
 {/if}
