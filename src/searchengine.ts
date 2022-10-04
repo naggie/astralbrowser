@@ -2,8 +2,8 @@
 // TODO web workers: don't forget myWorker.terminate(); on unmount?
 // TODO stop searching on result limit?
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
-// TODO detect no gzip > 2000 bytes as per nginx config.
-// // gzip results in a 10x improvement so we want it..... grr
+// TODO detect no gzip > 2000 bytes as per nginx config. // gzip results in a 10x improvement so we want it..... grr
+// TODO consider pausing search at resultLimit, with method to resume (button)
 import { joinPath } from './util';
 
 const MIN_REPORT_INTERVAL = 100;
