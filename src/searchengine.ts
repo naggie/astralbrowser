@@ -1,12 +1,16 @@
 // TODO handle fetch errors
 // TODO web workers: don't forget myWorker.terminate(); on unmount?
+// TODO stop searching on result limit?
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
 // TODO detect no gzip > 2000 bytes as per nginx config.
-// TODO gzip, no Content-Length see https://serverfault.com/questions/529621/force-nginx-to-send-content-length-header-for-static-files-with-gzip for solutions
-// maybe a precompressed gzip, or a count at the top of file. https://nginx.org/en/docs/http/ngx_http_gzip_static_module.html#gzip_static
+// // gzip results in a 10x improvement so we want it..... grr
 import { joinPath } from './util';
 
 const MIN_REPORT_INTERVAL = 100;
+
+// index format: list of files from find command, with file count on first
+// line. See poc-indexer
+
 
 export default class SearchEngine {
     // a list of files, built and searched concurrently
@@ -19,11 +23,9 @@ export default class SearchEngine {
     duration: number;
     indexStarted: boolean = false;
     indexComplete: boolean = false;
-    totalBytes: number = 0;
-    receivedBytes: number = 0;
-    searchedBytes: number = 0;
-    searching: boolean = false;
+    numTotal: number = 0;
     numSearched: number = 0;
+    searching: boolean = false;
     lastReportTime: number = 0;
     indexAgeMs: number = 0;
 
@@ -54,11 +56,9 @@ export default class SearchEngine {
         }
 
         const reader = response.body.getReader();
-        // default to zero if not set.
-        this.totalBytes = +response.headers.get('Content-Length');
 
         // 3? newlines etc.
-        if (this.totalBytes < 3 && response.headers.has("Content-Length")) {
+        if (response.headers.has("Content-Length") && +response.headers.get("Content-Length") < 3) {
             throw new Error("Search index is empty");
         }
 
@@ -75,8 +75,6 @@ export default class SearchEngine {
                 break;
             }
 
-            this.receivedBytes += chunk.value.length;
-
             const path = new TextDecoder("utf-8").decode(chunk.value);
             const paths = path.split(/\r?\n/);
 
@@ -85,6 +83,10 @@ export default class SearchEngine {
             fragment = paths.pop();
 
             for (let path of paths) {
+                if (this.numSearched === 0 && Number.isInteger(Number(path))) {
+                    // first line should be a count (rather than relying on content-length to approximate progress)
+                    this.numTotal = parseInt(path);
+                }
                 // normalise path so no leading ./
                 path = joinPath(path);
                 // add to index
@@ -110,7 +112,6 @@ export default class SearchEngine {
         this.query = query;
         this.start = performance.now();
         this.numSearched = 0;
-        this.searchedBytes = 0;
         this.searching = true;
         this.maybeEmitReport(true);
 
@@ -150,7 +151,6 @@ export default class SearchEngine {
     // transform and emit as result if matches, is unique and less than 100 results
     protected processPath(path: string) {
         // assume one byte per character (+ /n) for approximation
-        this.searchedBytes += path.length + 1;
         this.numSearched += 1;
 
         this.maybeEmitReport();
@@ -187,8 +187,7 @@ export default class SearchEngine {
             searching: this.searching,
             numSearched: this.numSearched,
             numResults: this.results.length,
-            percentSearched: Math.round(100*this.searchedBytes/this.totalBytes),
-            percentIndexDownloaded: Math.round(100*this.receivedBytes/this.totalBytes),
+            percentSearched: Math.round(100*this.numSearched/this.numTotal),
             elapsedMs: performance.now() - this.start,
             query: this.query,
             indexAgeMs: this.indexAgeMs,
