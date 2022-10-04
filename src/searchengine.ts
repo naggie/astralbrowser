@@ -188,7 +188,7 @@ export default class SearchEngine {
             searching: this.searching,
             numSearched: this.numSearched,
             numResults: this.results.length,
-            percentSearched: Math.round(100*this.numSearched/this.numTotal),
+            percentSearched: this.numTotal ? Math.round(100*this.numSearched/this.numTotal) : 0,
             elapsedMs: performance.now() - this.start,
             query: this.query,
             indexAgeMs: this.indexAgeMs,
