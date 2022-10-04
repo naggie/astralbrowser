@@ -19,6 +19,10 @@
 <p class="warningbox">Warning: index is old. Results may be invalid.</p>
 {/if}
 
+{#if report.gzipWarning }
+<p class="warningbox">Warning: index not sent with compressed content encoding. Search is 10x slower.</p>
+{/if}
+
 <div class="astralbrowser-status">
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>

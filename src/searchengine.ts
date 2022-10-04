@@ -2,7 +2,6 @@
 // TODO web workers: don't forget myWorker.terminate(); on unmount?
 // TODO stop searching on result limit?
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
-// TODO detect no gzip > 2000 bytes as per nginx config. // gzip results in a 10x improvement so we want it..... grr
 // TODO consider pausing search at resultLimit, with method to resume (button)
 import { joinPath } from './util';
 
@@ -28,6 +27,7 @@ export default class SearchEngine {
     searching: boolean = false;
     lastReportTime: number = 0;
     indexAgeMs: number = 0;
+    gzipWarning: boolean = false;
 
     constructor(indexUrl: string, resultLimit: number) {
         // index file should be a line delimited list of files relative to mountPoint
@@ -58,7 +58,7 @@ export default class SearchEngine {
         const reader = response.body.getReader();
 
         // 3? newlines etc.
-        if (response.headers.has("Content-Length") && +response.headers.get("Content-Length") < 3) {
+        if (response.headers.has("content-length") && +response.headers.get("content-length") < 3) {
             throw new Error("Search index is empty");
         }
 
@@ -86,6 +86,7 @@ export default class SearchEngine {
                 if (this.numSearched === 0 && Number.isInteger(Number(path))) {
                     // first line should be a count (rather than relying on content-length to approximate progress)
                     this.numTotal = parseInt(path);
+                    this.gzipWarning = this.numTotal > 1000 && ["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
                 }
                 // normalise path so no leading ./
                 path = joinPath(path);
@@ -191,6 +192,7 @@ export default class SearchEngine {
             elapsedMs: performance.now() - this.start,
             query: this.query,
             indexAgeMs: this.indexAgeMs,
+            gzipWarning: this.gzipWarning,
         }
 
         this.onProgressUpdate(report);

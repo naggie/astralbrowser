@@ -28,6 +28,7 @@ declare global {
         // and make the UI reflect that
         query: string;
         indexAgeMs: number;
+        gzipWarning: boolean;
     }
 
     // for the worker abstraction which allows the search engine to be used
