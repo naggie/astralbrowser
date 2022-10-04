@@ -1,8 +1,9 @@
 // TODO handle fetch errors
 // TODO web workers: don't forget myWorker.terminate(); on unmount?
 // TODO next tick during sync search to prevent blocking too long? (every 100,000 items or something) (then search can be cancelled if query changes) -- await timeout of zero like the teaser
-// TODO detect no gzip
-// TODO fix when index is empty -- alert
+// TODO detect no gzip > 2000 bytes as per nginx config.
+// TODO gzip, no Content-Length see https://serverfault.com/questions/529621/force-nginx-to-send-content-length-header-for-static-files-with-gzip for solutions
+// maybe a precompressed gzip, or a count at the top of file. https://nginx.org/en/docs/http/ngx_http_gzip_static_module.html#gzip_static
 import { joinPath } from './util';
 
 const MIN_REPORT_INTERVAL = 100;
