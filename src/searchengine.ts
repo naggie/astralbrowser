@@ -78,6 +78,11 @@ export default class SearchEngine {
             const path = new TextDecoder("utf-8").decode(chunk.value);
             const paths = path.split(/\r?\n/);
 
+
+            // with nginx, content-length is only set if dynamic gzip is not
+            // on. content-length defaults to 0 due to + operator.
+            this.gzipWarning = +response.headers.get("content-length") > 100e3 && !["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
+
             // attach last fragment and get next
             paths[0] = fragment + paths[0];
             fragment = paths.pop();
@@ -86,7 +91,6 @@ export default class SearchEngine {
                 if (this.numSearched === 0 && Number.isInteger(Number(path))) {
                     // first line should be a count (rather than relying on content-length to approximate progress)
                     this.numTotal = parseInt(path);
-                    this.gzipWarning = this.numTotal > 1000  && !["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
                 }
                 // normalise path so no leading ./
                 path = joinPath(path);
