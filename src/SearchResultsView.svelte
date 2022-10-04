@@ -73,6 +73,7 @@
 
     .astralbrowser-progress-bar {
         background-color: var(--active);
+        transition: width 200ms;
     }
 
     .path {
