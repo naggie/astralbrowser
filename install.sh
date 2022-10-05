@@ -8,6 +8,10 @@ sudo apt-get -y install nfs-common
 sudo cp ***REMOVED***astralbrowser-indexer.{service,timer} /etc/systemd/system/
 sudo cp poc-indexer /opt/***REMOVED***/bin
 
+# enable ntp, nfs works best with sychronised clocks
+sudo cp timesyncd.conf /etc/systemd/
+sudo systemctl stop systemd-timesyncd.service
+sudo systemctl enable --now systemd-timesyncd.service
 
 # timer triggered services (--now first run only)
 # regardless of status.
