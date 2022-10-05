@@ -86,7 +86,7 @@ export default class SearchEngine {
                 if (this.numSearched === 0 && Number.isInteger(Number(path))) {
                     // first line should be a count (rather than relying on content-length to approximate progress)
                     this.numTotal = parseInt(path);
-                    this.gzipWarning = this.numTotal > 1000 && ["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
+                    this.gzipWarning = this.numTotal > 1000  && !["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
                 }
                 // normalise path so no leading ./
                 path = joinPath(path);
