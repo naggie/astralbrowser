@@ -81,7 +81,11 @@ export default class SearchEngine {
 
             // with nginx, content-length is only set if dynamic gzip is not
             // on. content-length defaults to 0 due to + operator.
-            this.gzipWarning = +response.headers.get("content-length") > 100e3 && !["gzip", "deflate", "br", "compress"].includes(response.headers.get("content-encoding"));
+            // nginx may also be configured to gzip only after a certain size,
+            // so only consider large indicies here.
+            this.gzipWarning = +response.headers.get("content-length") > 100e3
+            && !["gzip", "deflate", "br",
+                "compress"].includes(response.headers.get("content-encoding"));
 
             // attach last fragment and get next
             paths[0] = fragment + paths[0];
