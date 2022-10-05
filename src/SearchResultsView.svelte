@@ -70,7 +70,9 @@
     }
 
     .astralbrowser-progress {
-        background-color: var(--bg);
+        /* change back to var when re-enable when github.com/darionco/rollup-plugin-web-worker-loader/issues/60 is fixed and we can generate css */
+        /* background-color: var(--bg); */
+        background-color: white;
         display: flex;
         margin: 20px 0;
     }
