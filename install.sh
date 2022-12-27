@@ -19,5 +19,5 @@ sudo systemctl daemon-reload
 sudo systemctl enable --now ***REMOVED***astralbrowser-indexer.timer
 
 sudo ./mkmount oxygen.***REMOVED***.io:/srv/media /mnt/depot
-sudo ./mkmount grendelkeep.***REMOVED***.io:/srv/software /mnt/shares/naggie
+sudo ./mkmount grendelkeep.***REMOVED***.io:/srv/shared /mnt/shares/naggie
 sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/shares/frillip
