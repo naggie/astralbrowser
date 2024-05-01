@@ -12,6 +12,16 @@ sudo ./mkmount oxygen.***REMOVED***.io:/srv/media /mnt/depot
 sudo ./mkmount dilithium.***REMOVED***.io:/data/shared /mnt/shares/naggie
 sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/shares/frillip
 
+sudo mkdir -p /mnt/astralbrowser
+sudo chown www-data:www-data /run/astralbrowser
+
+sudo ln -sf /mnt/shares /mnt/astralbrowser/user_nfs_shares
+sudo ln -sf /mnt/depot/downloads /mnt/astralbrowser/downloads
+sudo ln -sf /mnt/depot/dsflix/downloads /mnt/astralbrowser/downloads
+sudo ln -sf /mnt/depot/dsflix/media/music /mnt/astralbrowser/music
+sudo ln -sf /mnt/depot/dsflix/media/movies /mnt/astralbrowser/movies
+sudo ln -sf /mnt/depot/dsflix/media/tv /mnt/astralbrowser/tv
+
 # enable ntp, nfs works best with sychronised clocks
 sudo cp timesyncd.conf /etc/systemd/
 sudo systemctl stop systemd-timesyncd.service
