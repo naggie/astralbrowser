@@ -3,7 +3,7 @@ Description=Runs indexer for astralbrowser
 
 [Timer]
 OnActiveSec=0
-OnUnitActiveSec=1h
+OnUnitActiveSec=6h
 
 [Install]
 WantedBy=timers.target
