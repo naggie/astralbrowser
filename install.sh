@@ -15,12 +15,12 @@ sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/shares/fril
 sudo mkdir -p /mnt/astralbrowser
 sudo chown www-data:www-data /mnt/astralbrowser
 
-sudo ln -sf /mnt/shares /mnt/astralbrowser/user_nfs_shares
-sudo ln -sf /mnt/depot/downloads /mnt/astralbrowser/downloads
-sudo ln -sf /mnt/depot/dsflix/downloads /mnt/astralbrowser/downloads
-sudo ln -sf /mnt/depot/dsflix/media/music /mnt/astralbrowser/music
-sudo ln -sf /mnt/depot/dsflix/media/movies /mnt/astralbrowser/movies
-sudo ln -sf /mnt/depot/dsflix/media/tv /mnt/astralbrowser/tv
+sudo ln -sfT /mnt/shares /mnt/astralbrowser/user_nfs_shares
+sudo ln -sfT /mnt/depot/downloads /mnt/astralbrowser/downloads
+sudo ln -sfT /mnt/depot/dsflix/downloads /mnt/astralbrowser/downloads
+sudo ln -sfT /mnt/depot/dsflix/media/music /mnt/astralbrowser/music
+sudo ln -sfT /mnt/depot/dsflix/media/movies /mnt/astralbrowser/movies
+sudo ln -sfT /mnt/depot/dsflix/media/tv /mnt/astralbrowser/tv
 
 # enable ntp, nfs works best with sychronised clocks
 sudo cp timesyncd.conf /etc/systemd/
