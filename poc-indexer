@@ -10,7 +10,7 @@ INDEXTMP2=${INDEXTMP}2
 # boost
 
 cd $BASE
-find . -type f -not -path '*/.*' > ${INDEXTMP}
+find -L . -type f -not -path '*/.*' > ${INDEXTMP}
 
 # prepend line count so search engine can show progress
 cat ${INDEXTMP} | wc -l > ${INDEXTMP2}
