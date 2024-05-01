@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -e
 
-BASE=/mnt/shares
+BASE=/mnt/astralbrowser
 INDEX=${BASE}/.index.txt
 INDEXTMP=${INDEX}.tmp
 INDEXTMP2=${INDEXTMP}2
