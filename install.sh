@@ -21,6 +21,7 @@ sudo ln -sfT /mnt/depot/dsflix/downloads /mnt/astralbrowser/downloads
 sudo ln -sfT /mnt/depot/dsflix/media/music /mnt/astralbrowser/music
 sudo ln -sfT /mnt/depot/dsflix/media/movies /mnt/astralbrowser/movies
 sudo ln -sfT /mnt/depot/dsflix/media/tv /mnt/astralbrowser/tv
+sudo ln -sfT /mnt/depot/audio/incoming/ /mnt/astralbrowser/incoming_audio
 
 # enable ntp, nfs works best with sychronised clocks
 sudo cp timesyncd.conf /etc/systemd/
