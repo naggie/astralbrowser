@@ -136,6 +136,10 @@ for dirpath, dirnames, filenames in walk(root):
         except FileNotFoundError:
             continue
 
+        # no possible use for these files
+        if size == 0:
+            continue
+
         file_list.append((size, filepath))
 
 # biggest first (user probably wants media, not .c files from some random repository)
