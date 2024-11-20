@@ -109,6 +109,7 @@ ignores = [
     "~$*",
 ]
 
+MIN_SIZE = 1024 # 1KB
 
 if len(sys.argv) != 2:
     print("Usage: %s <root>" % sys.argv[0])
@@ -137,7 +138,7 @@ for dirpath, dirnames, filenames in walk(root):
             continue
 
         # no possible use for these files
-        if size == 0:
+        if size < MIX_SIZE:
             continue
 
         file_list.append((size, filepath))
