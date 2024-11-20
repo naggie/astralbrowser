@@ -5,9 +5,10 @@ from os import path
 from os import chdir
 from fnmatch import fnmatch
 from functools import reduce
+from time import time
 
 # produces an index. Format:
-# <total count> <total size>
+# <total count> <total size> <timestamp>
 # <size> <path>
 # <size> <path>
 # ...
@@ -148,7 +149,7 @@ file_list.sort(key=lambda x: x[0], reverse=True)
 
 total_size = reduce(lambda acc, item: acc + item[0], file_list, 0)
 
-print("%d %d" % (len(file_list), total_size))
+print("%d %d" % (len(file_list), total_size, int(time()))
 
 for size, filepath in file_list:
     print("%d %s" % (size, filepath))

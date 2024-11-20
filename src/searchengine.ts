@@ -51,9 +51,6 @@ export default class SearchEngine {
 
         const response = await fetch(this.indexUrl);
 
-        const lastModifiedStr = response.headers.get('Last-Modified');
-        this.indexAgeMs = (new Date()).getTime() - Date.parse(lastModifiedStr);
-
         if (response.status == 404) {
             throw new Error("Search index does not exist");
         } else if (response.status != 200) {
@@ -99,9 +96,10 @@ export default class SearchEngine {
             for (let line of lines) {
                 if (this.numSearched === 0) {
                     // first line should be a count (rather than relying on content-length to approximate progress)
-                    let fragment = line.split();
-                    this.numTotal = parseInt(path[0]);
-                    this.totalSize = parseInt(path[1]);
+                    let fragments = line.split();
+                    this.numTotal = parseInt(fragments[0]);
+                    this.totalSize = parseInt(fragments[1]);
+                    this.indexAgeMs = Date.now() - parseInt(fragments[2]);
                 }
 
                 let fragments = line.split(" ", 2);
