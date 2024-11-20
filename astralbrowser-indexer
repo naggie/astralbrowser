@@ -3,6 +3,7 @@ import sys
 from os import walk
 from os import path
 from os import chdir
+from fnmatch import fnmatch
 from functools import reduce
 
 # produces an index. Format:
@@ -10,6 +11,103 @@ from functools import reduce
 # <size> <path>
 # <size> <path>
 # ...
+
+# adapted from my git ignores
+ignores = [
+    ".envrc",
+    ".fseventsd",
+    "*-r",
+    "*.__i",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.autosave",
+    "*.aux",
+    "*.axf",
+    "*.bak",
+    "*.bbl",
+    "*.bin",
+    "*.blg",
+    "*.build/",
+    "*.class",
+    "*.crf",
+    "*.d",
+    "*.dep",
+    "*.dist/",
+    "*.dll",
+    "*.dmg",
+    "*.dvi",
+    "*.egg-info",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.gz",
+    "*.hex",
+    "*.idx",
+    "*.ilg",
+    "*.ind",
+    "*.iso",
+    "*.ist",
+    "*.jar",
+    "*.lnp",
+    "*.lof",
+    "*.lot",
+    "*.lst",
+    "*.luac",
+    "*.maf",
+    "*.map",
+    "*.mtc",
+    "*.mtc1",
+    "*.o",
+    "*.onefile-build/",
+    "*.out",
+    "*.plg",
+    "*.pyc",
+    "*.pyg",
+    "*.rar",
+    "*.retry",
+    "*.so",
+    "*.synctex.gz",
+    "*.tar",
+    "*.toc",
+    "*.tra",
+    "*.uvopt",
+    "*.uvproj",
+    "*.zip",
+    "*~",
+    ".*.swp",
+    ".AppleDouble",
+    ".Parent",
+    ".DS_Store",
+    ".DS_Store?",
+    ".Python",
+    ".Spotlight-V100",
+    ".Trashes",
+    "._*",
+    ".build/",
+    ".coverage*",
+    ".direnv/",
+    ".hugo_build.lock",
+    ".tox",
+    ".venv",
+    ".~lock.*",
+    "Icon?",
+    "Thumbs.db",
+    "__pycache__",
+    "_build",
+    "coverage.txt",
+    "coverage.xml",
+    "coverage_html",
+    "dist",
+    "dump.rdb",
+    "ehthumbs.db",
+    "env" "node_modules/",
+    "pip-selfcheck.json",
+    "result",
+    "venv",
+    "xcuserdata",
+    "~$*",
+]
 
 
 if len(sys.argv) != 2:
@@ -25,6 +123,12 @@ file_list: list[tuple[int, str]] = []
 
 for dirpath, dirnames, filenames in walk(root):
     for filename in filenames:
+        if any(fnmatch(filename, ignore) for ignore in ignores):
+            continue
+
+        if any(fnmatch(path.basename(dirpath), ignore) for ignore in ignores):
+            continue
+
         filepath = path.join(dirpath, filename)
 
         try:
