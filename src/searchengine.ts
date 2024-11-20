@@ -7,8 +7,12 @@ import { joinPath } from './util';
 
 const MIN_REPORT_INTERVAL = 100;
 
-// index format: list of files from find command, with file count on first
-// line. See poc-indexer
+// index format:
+// <total count> <total size>
+// <size> <path>
+// <size> <path>
+// ...
+// see astralbrowser-indexer for more details
 
 
 export default class SearchEngine {
@@ -23,6 +27,7 @@ export default class SearchEngine {
     indexStarted: boolean = false;
     indexComplete: boolean = false;
     numTotal: number = 0;
+    totalSize: number = 0;
     numSearched: number = 0;
     searching: boolean = false;
     lastReportTime: number = 0;
@@ -75,8 +80,8 @@ export default class SearchEngine {
                 break;
             }
 
-            const path = new TextDecoder("utf-8").decode(chunk.value);
-            const paths = path.split(/\r?\n/);
+            const line = new TextDecoder("utf-8").decode(chunk.value);
+            const lines = line.split(/\r?\n/);
 
 
             // with nginx, content-length is only set if dynamic gzip is not
@@ -88,14 +93,21 @@ export default class SearchEngine {
                 "compress"].includes(response.headers.get("content-encoding"));
 
             // attach last fragment and get next
-            paths[0] = fragment + paths[0];
-            fragment = paths.pop();
+            lines[0] = fragment + lines[0];
+            fragment = lines.pop();
 
-            for (let path of paths) {
-                if (this.numSearched === 0 && Number.isInteger(Number(path))) {
+            for (let line of lines) {
+                if (this.numSearched === 0) {
                     // first line should be a count (rather than relying on content-length to approximate progress)
-                    this.numTotal = parseInt(path);
+                    let fragment = line.split();
+                    this.numTotal = parseInt(path[0]);
+                    this.totalSize = parseInt(path[1]);
                 }
+
+                let fragments = line.split(" ", 2);
+                let size = parseInt(fragments[0]);
+                let path = fragments[1];
+                
                 // normalise path so no leading ./
                 path = joinPath(path);
                 // add to index
@@ -196,6 +208,7 @@ export default class SearchEngine {
             searching: this.searching,
             numSearched: this.numSearched,
             numResults: this.results.length,
+            totalSize: this.totalSize,
             percentSearched: this.numTotal ? Math.round(100*this.numSearched/this.numTotal) : 0,
             elapsedMs: performance.now() - this.start,
             query: this.query,
