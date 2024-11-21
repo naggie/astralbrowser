@@ -6,7 +6,7 @@ cd $(dirname $0)
 sudo apt-get -y install nfs-common
 
 sudo cp ***REMOVED***astralbrowser-indexer.{service,timer} /etc/systemd/system/
-sudo cp poc-indexer /opt/***REMOVED***/bin
+sudo cp astralbot-indexer /opt/***REMOVED***/bin
 
 sudo ./mkmount oxygen.***REMOVED***.io:/srv/media /mnt/depot
 sudo ./mkmount dilithium.***REMOVED***.io:/data/shared /mnt/shares/naggie
