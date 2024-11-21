@@ -109,9 +109,9 @@ export default class SearchEngine {
                 // normalise path so no leading ./
                 path = joinPath(path);
                 // add to index
-                this.index.push(path);
+                this.index.push([size, path]);
                 // transform and emit as result if appropriate
-                this.processPath(path);
+                this.processPath(size, path);
             }
 
             this.maybeEmitReport();
@@ -168,7 +168,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processPath(path: string) {
+    protected processPath(size: int, path: string) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
@@ -191,8 +191,15 @@ export default class SearchEngine {
             return;
         }
 
-        this.onResult(highestPath);
-        this.results.push(highestPath);
+        if (path == highestPath) {
+            this.onResult([size, path]);
+            this.results.push([size, path]);
+            return;
+        }
+
+        // must be a directory
+        this.onResult([null, highestPath]);
+        this.results.push([null, highestPath]);
     }
 
     // emit a report, throttled. Note that setInterval cannot be used as
