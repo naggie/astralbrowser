@@ -120,7 +120,7 @@ export default class SearchEngine {
                 // add to index
                 this.index.push(result);
                 // transform and emit as result if appropriate
-                this.processPath(result);
+                this.processCandidate(result);
             }
 
             this.maybeEmitReport();
@@ -177,7 +177,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processCandidate(path: string) {
+    protected processCandidate(result: Result) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
@@ -187,21 +187,30 @@ export default class SearchEngine {
             return;
         }
 
-        if (!matchesQuery(path, this.query)) {
+        if (!matchesQuery(result.path, this.query)) {
             return;
         }
 
         // this is a match but maybe not the highest match (if directory can be matched)
         // if it is a directory, there are likely to be many results that
         // resolve to the same highest path. Only emit result if unique.
-        const highestPath = highestMatch(path, this.query);
+        const highestPath = highestMatch(result.path, this.query);
 
-        if (this.results.includes(highestPath)) {
-            return;
+        // check if already in results
+        for (const existing of this.results) {
+            if (highestPath == existing.result) {
+                return;
+            }
         }
 
-        this.onResult(highestPath);
-        this.results.push(highestPath);
+        if (highestMatch == result.path) {
+            this.onResult(result);
+            this.results.push(result);
+        } else {
+            const newResult = {path: highestPath};
+            this.onResult(newResult);
+            this.results.push(newResult);
+        }
     }
 
     // emit a report, throttled. Note that setInterval cannot be used as
