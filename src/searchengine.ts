@@ -102,7 +102,7 @@ export default class SearchEngine {
                     let fields = line.split(" ");
                     this.numTotal = parseInt(fields[0]);
                     this.totalSize = parseInt(fields[1]);
-                    this.indexAgeMs = Date.now() - parseInt(fields[2] * 1000);
+                    this.indexAgeMs = Date.now() - parseInt(fields[2]) * 1000;
                     continue;
                 }
 
