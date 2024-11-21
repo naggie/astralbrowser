@@ -3,6 +3,8 @@ import sys
 from os import walk
 from os import path
 from os import chdir
+from os import rename
+from os import chown
 from fnmatch import fnmatch
 from functools import reduce
 from time import time
@@ -12,6 +14,11 @@ from time import time
 # <size> <path>
 # <size> <path>
 # ...
+
+root = "/mnt/astralbrowser/"
+indexfile = path.join(root, ".index.txt")
+indextmp = path.join(root, ".index.tmp")
+user = "www-data"
 
 # adapted from my git ignores
 ignores = [
@@ -112,18 +119,12 @@ ignores = [
 
 MIN_SIZE = 1024 # 1KB
 
-if len(sys.argv) != 2:
-    print("Usage: %s <root>" % sys.argv[0])
-    sys.exit(1)
-
-root = sys.argv[1]
-
 chdir(root)
 
 # list of tuples: (size, path)
 file_list: list[tuple[int, str]] = []
 
-for dirpath, dirnames, filenames in walk(root):
+for dirpath, dirnames, filenames in walk(.):
     for filename in filenames:
         if any(fnmatch(filename, ignore) for ignore in ignores):
             continue
@@ -139,7 +140,7 @@ for dirpath, dirnames, filenames in walk(root):
             continue
 
         # no possible use for these files
-        if size < MIX_SIZE:
+        if size < MIN_SIZE:
             continue
 
         file_list.append((size, filepath))
@@ -149,7 +150,12 @@ file_list.sort(key=lambda x: x[0], reverse=True)
 
 total_size = reduce(lambda acc, item: acc + item[0], file_list, 0)
 
-print("%d %d" % (len(file_list), total_size, int(time()))
+with open("index.txt", "w") as f:
+    f.write("%d %d %d\n" % (len(file_list), total_size, int(time())))
 
-for size, filepath in file_list:
-    print("%d %s" % (size, filepath))
+    for size, filepath in file_list:
+        f.write("%d %s\n" % (size, filepath))
+
+# atomic update
+rename(indextmp, indexfile)
+chown(indexfile, user, user)
