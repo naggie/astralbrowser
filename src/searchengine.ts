@@ -89,22 +89,27 @@ export default class SearchEngine {
             && !["gzip", "deflate", "br",
                 "compress"].includes(response.headers.get("content-encoding"));
 
-            // attach last fragment and get next
+            // attach last fragment and get next. May result in no lines yet!
             lines[0] = fragment + lines[0];
             fragment = lines.pop();
 
+
             for (let line of lines) {
-                if (this.numSearched === 0) {
-                    // first line should be a count (rather than relying on content-length to approximate progress)
-                    let fragments = line.split();
-                    this.numTotal = parseInt(fragments[0]);
-                    this.totalSize = parseInt(fragments[1]);
-                    this.indexAgeMs = Date.now() - parseInt(fragments[2]);
+                // this loop is run many times, possibly zero times if the
+                // first line is not complete on the first chunk
+                // so have to detect the first line
+                if (this.indexAgeMs == 0) {
+                    // must be header
+                    let fields = line.split(" ");
+                    this.numTotal = parseInt(fields[0]);
+                    this.totalSize = parseInt(fields[1]);
+                    this.indexAgeMs = Date.now() - parseInt(fields[2]);
+                    continue;
                 }
 
-                let fragments = line.split(" ", 2);
-                let size = parseInt(fragments[0]);
-                let path = fragments[1];
+                let fields = line.split(" ", 2);
+                let size = parseInt(fields[0]);
+                let path = fields[1];
                 
                 // normalise path so no leading ./
                 path = joinPath(path);
@@ -136,8 +141,8 @@ export default class SearchEngine {
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
-        for (const path of this.index) {
-            this.processPath(path);
+        for (const [size, path] of this.index) {
+            this.processPath(size, path);
             this.maybeEmitReport();
         }
 
@@ -168,7 +173,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processPath(size: int, path: string) {
+    protected processPath(size: number, path: string) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
