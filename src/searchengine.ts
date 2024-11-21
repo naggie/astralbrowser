@@ -92,20 +92,20 @@ export default class SearchEngine {
             lines[0] = fragment + lines[0];
             fragment = lines.pop();
 
+            // so have to detect the first line
+            // first iteration may have no lines!
+            if (lines.length > 0 && this.indexAgeMs == 0) {
+                // must be header
+                let fields = lines.shift().split(" ");
+                this.numTotal = parseInt(fields[0]);
+                this.totalSize = parseInt(fields[1]);
+                this.indexAgeMs = Date.now() - parseInt(fields[2]) * 1000;
+                continue;
+            }
 
+            // this loop is run many times, possibly zero times if the
+            // first line is not complete on the first chunk
             for (let line of lines) {
-                // this loop is run many times, possibly zero times if the
-                // first line is not complete on the first chunk
-                // so have to detect the first line
-                if (this.indexAgeMs == 0) {
-                    // must be header
-                    let fields = line.split(" ");
-                    this.numTotal = parseInt(fields[0]);
-                    this.totalSize = parseInt(fields[1]);
-                    this.indexAgeMs = Date.now() - parseInt(fields[2]) * 1000;
-                    continue;
-                }
-
                 let fields = line.split(" ", 2);
                 let size = parseInt(fields[0]);
                 let path = fields[1];
