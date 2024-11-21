@@ -70,6 +70,14 @@ export default class SearchEngine {
 
         this.maybeEmitReport(true);
 
+        // with nginx, content-length is only set if dynamic gzip is not
+        // on. content-length defaults to 0 due to + operator.
+        // nginx may also be configured to gzip only after a certain size,
+        // so only consider large indicies here.
+        this.gzipWarning = +response.headers.get("content-length") > 100e3
+        && !["gzip", "deflate", "br",
+            "compress"].includes(response.headers.get("content-encoding"));
+
         while(true) {
             const chunk = await reader.read();
 
@@ -79,15 +87,6 @@ export default class SearchEngine {
 
             const line = new TextDecoder("utf-8").decode(chunk.value);
             const lines = line.split(/\r?\n/);
-
-
-            // with nginx, content-length is only set if dynamic gzip is not
-            // on. content-length defaults to 0 due to + operator.
-            // nginx may also be configured to gzip only after a certain size,
-            // so only consider large indicies here.
-            this.gzipWarning = +response.headers.get("content-length") > 100e3
-            && !["gzip", "deflate", "br",
-                "compress"].includes(response.headers.get("content-encoding"));
 
             // attach last fragment and get next. May result in no lines yet!
             lines[0] = fragment + lines[0];
