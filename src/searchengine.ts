@@ -102,7 +102,7 @@ export default class SearchEngine {
                     let fields = line.split(" ");
                     this.numTotal = parseInt(fields[0]);
                     this.totalSize = parseInt(fields[1]);
-                    this.indexAgeMs = Date.now() - parseInt(fields[2]);
+                    this.indexAgeMs = Date.now() - parseInt(fields[2] * 1000);
                     continue;
                 }
 
@@ -113,9 +113,9 @@ export default class SearchEngine {
                 // normalise path so no leading ./
                 path = joinPath(path);
                 // add to index
-                this.index.push([size, path]);
+                this.index.push(path);
                 // transform and emit as result if appropriate
-                this.processPath(size, path);
+                this.processPath(path);
             }
 
             this.maybeEmitReport();
@@ -140,8 +140,8 @@ export default class SearchEngine {
 
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
-        for (const [size, path] of this.index) {
-            this.processPath(size, path);
+        for (const path of this.index) {
+            this.processPath(path);
             this.maybeEmitReport();
         }
 
@@ -172,7 +172,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processPath(size: number, path: string) {
+    protected processPath(path: string) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
@@ -195,15 +195,8 @@ export default class SearchEngine {
             return;
         }
 
-        if (path == highestPath) {
-            this.onResult([size, path]);
-            this.results.push([size, path]);
-            return;
-        }
-
-        // must be a directory
-        this.onResult([null, highestPath]);
-        this.results.push([null, highestPath]);
+        this.onResult(highestPath);
+        this.results.push(highestPath);
     }
 
     // emit a report, throttled. Note that setInterval cannot be used as
