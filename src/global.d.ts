@@ -12,8 +12,8 @@ declare global {
     interface File {
         name: string;
         type: "file";
-        mtime: string;
-        size: number;
+        mtime?: string;
+        size?: number;
     }
 
     interface Result {
