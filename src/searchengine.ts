@@ -21,7 +21,7 @@ export default class SearchEngine {
     index: string[] = [];
     query: string = "";
     resultLimit: number;
-    results: string[] = [];
+    results: Result[] = [];
     start: number;
     duration: number;
     indexStarted: boolean = false;
@@ -108,14 +108,19 @@ export default class SearchEngine {
             for (let line of lines) {
                 let fields = line.split(" ", 2);
                 let size = parseInt(fields[0]);
-                let path = fields[1];
-                
                 // normalise path so no leading ./
-                path = joinPath(path);
+                let path = joinPath(fields[1]);
+                                
+                let result: Result = {
+                    size: size,
+                    path: path,
+                    mtime: 0,
+                }
+
                 // add to index
-                this.index.push(path);
+                this.index.push(result);
                 // transform and emit as result if appropriate
-                this.processPath(path);
+                this.processPath(result);
             }
 
             this.maybeEmitReport();
@@ -141,7 +146,7 @@ export default class SearchEngine {
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            this.processPath(path);
+            this.processCandidate(path);
             this.maybeEmitReport();
         }
 
@@ -156,7 +161,7 @@ export default class SearchEngine {
     // called whenever a single match is found. Use to build an array of
     // matches that should be emptied when the invalidate results callback is
     // fired. Invalidation happens when a new search is carried out.
-    onResult(result: string) {
+    onResult(result: Result) {
         throw new Error("onResult needs to be overridden before searching");
     }
 
@@ -172,7 +177,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processPath(path: string) {
+    protected processCandidate(path: string) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
