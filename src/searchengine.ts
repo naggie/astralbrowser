@@ -60,7 +60,7 @@ export default class SearchEngine {
         const reader = response.body.getReader();
 
         // 3? newlines etc.
-        if (response.headers.has("content-length") && +response.headers.get("content-length") < 3) {
+        if (response.headers.has("content-length") && +response.headers.get("content-length") < 1024) {
             throw new Error("Search index is empty");
         }
 
