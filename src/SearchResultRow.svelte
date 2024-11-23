@@ -15,7 +15,7 @@
                     <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
                     <td><a class="path" href={'#' + path}>{path}</a></td>
                 {/if}
-                <td>
+                <td style="width:96px">
                     {#if result.size }
                         {humanFileSize(result.size)}
                     {:else}
