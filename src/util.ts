@@ -27,11 +27,9 @@ export function humanRelativeTime(dateString: string): string{
     return dateString;
 }
 
-// get an absolute (relative to base) from a name considering the current path
+// remove ./ /./ etc
 export function joinPath(...fragments: string[]) :string {
-    // remove ./ /./ etc
-    fragments = fragments.filter(fragment => fragment != ".");
-    return fragments.join('/').replace(/\/+/g, '/');
+    return fragments.join('/').replace(/\/+/g, '/').replace("./", "");
 }
 
 export function parentDir(path: string) : string {
