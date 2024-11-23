@@ -1,0 +1,30 @@
+<script lang="ts">
+    // can handle a million files whilst still being responsive!
+    import { joinPath, splitName, humanFileSize } from './util';
+    export let result: Result;
+    export let mountPoint: string;
+
+    const [path, name] = splitName(result.path);
+</script>
+
+          <tr>
+                {#if name.endsWith("/")}
+                    <td><a href={'#' + path + name}>{name}</a></td>
+                    <td><a class="path" href={'#' + path}>{path}</a></td>
+                {:else}
+                    <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
+                    <td><a class="path" href={'#' + path}>{path}</a></td>
+                {/if}
+                <td>
+                    {#if result.size }
+                        {humanFileSize(result.size)}
+                    {:else}
+                        -
+                    {/if}
+                </td>
+            </tr>
+<style>
+    .path {
+        opacity: 0.8;
+    }
+</style>
