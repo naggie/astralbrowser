@@ -4,7 +4,7 @@ from os import walk
 from os import path
 from os import chdir
 from os import rename
-from os import chown
+from shutil import chown
 from fnmatch import fnmatch
 from functools import reduce
 from time import time
@@ -151,7 +151,7 @@ file_list.sort(key=lambda x: x[0], reverse=True)
 
 total_size = reduce(lambda acc, item: acc + item[0], file_list, 0)
 
-with open("index.txt", "w") as f:
+with open(indextmp, "w") as f:
     f.write("%d %d %d\n" % (len(file_list), total_size, int(time())))
 
     for size, filepath in file_list:
