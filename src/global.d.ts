@@ -18,12 +18,12 @@ declare global {
 
     interface Result {
         path: string;
-        size: number;
-        mtime: number;
+        size?: number;
+        mtime?: number;
     }
 
     type Listing = Array<File|Directory>;
-    type Result = Array<Result>;
+    type Results = Array<Result>;
 
     interface ProgressReport {
         searching: boolean;

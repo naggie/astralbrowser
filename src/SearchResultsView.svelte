@@ -1,7 +1,7 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
     import { joinPath, splitName } from './util';
-    export let results: string[];
+    export let results: Result[];
     export let report: ProgressReport;
     export let error: string = "";
     export let mountPoint: string = "";
@@ -43,7 +43,7 @@
           </tr>
         </thead>
         <tbody>
-        {#each results.map(splitName) as [path, name]}
+        {#each results.map((result) => splitName(result.path)) as [path, name]}
             {#if name.endsWith("/")}
               <tr>
                 <td><a href={'#' + path + name}>{name}</a></td>
