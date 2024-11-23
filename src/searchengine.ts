@@ -18,10 +18,10 @@ const MIN_REPORT_INTERVAL = 100;
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
-    index: string[] = [];
+    index: Result[] = [];
     query: string = "";
     resultLimit: number;
-    results: string[] = [];
+    results: Result[] = [];
     start: number;
     duration: number;
     indexStarted: boolean = false;
@@ -108,14 +108,18 @@ export default class SearchEngine {
             for (let line of lines) {
                 let fields = line.split(" ", 2);
                 let size = parseInt(fields[0]);
-                let path = fields[1];
-                
                 // normalise path so no leading ./
-                path = joinPath(path);
+                let path = joinPath(fields[1]);
+                                
+                let result: Result = {
+                    size: size,
+                    path: path,
+                }
+
                 // add to index
-                this.index.push(path);
+                this.index.push(result);
                 // transform and emit as result if appropriate
-                this.processPath(path);
+                this.processCandidate(result);
             }
 
             this.maybeEmitReport();
@@ -141,7 +145,7 @@ export default class SearchEngine {
         // emit results for existing index (this works without locking as
         // there's only 1 thread and this is blocking/synchronous
         for (const path of this.index) {
-            this.processPath(path);
+            this.processCandidate(path);
             this.maybeEmitReport();
         }
 
@@ -156,7 +160,7 @@ export default class SearchEngine {
     // called whenever a single match is found. Use to build an array of
     // matches that should be emptied when the invalidate results callback is
     // fired. Invalidation happens when a new search is carried out.
-    onResult(result: string) {
+    onResult(result: Result) {
         throw new Error("onResult needs to be overridden before searching");
     }
 
@@ -172,7 +176,7 @@ export default class SearchEngine {
     onProgressUpdate(report: ProgressReport) {}
 
     // transform and emit as result if matches, is unique and less than 100 results
-    protected processPath(path: string) {
+    protected processCandidate(result: Result) {
         // assume one byte per character (+ /n) for approximation
         this.numSearched += 1;
 
@@ -182,21 +186,31 @@ export default class SearchEngine {
             return;
         }
 
-        if (!matchesQuery(path, this.query)) {
+        if (!matchesQuery(result.path, this.query)) {
             return;
         }
 
         // this is a match but maybe not the highest match (if directory can be matched)
         // if it is a directory, there are likely to be many results that
         // resolve to the same highest path. Only emit result if unique.
-        const highestPath = highestMatch(path, this.query);
+        const highestPath = highestMatch(result.path, this.query);
 
-        if (this.results.includes(highestPath)) {
-            return;
+        // check if already in results
+        for (const existing of this.results) {
+            if (highestPath == existing.path) {
+                return;
+            }
         }
 
-        this.onResult(highestPath);
-        this.results.push(highestPath);
+        if (highestPath == result.path) {
+            this.onResult(result);
+            this.results.push(result);
+        } else {
+            // must be a directory
+            const newResult = {path: highestPath};
+            this.onResult(newResult);
+            this.results.push(newResult);
+        }
     }
 
     // emit a report, throttled. Note that setInterval cannot be used as
@@ -252,7 +266,7 @@ function matchesQuery(path: string, query: string): boolean {
 
 // returns the highest path that still matches the query (so results can show
 // directories too. Requires de-duping of results)
-function highestMatch(path: string, query: string) {
+function highestMatch(path: string, query: string): string {
     const parts = path.split(/\/+/);
     const levels = parts.length;  // has to be const as .lenth changes
     const isDir = path.endsWith("/");
