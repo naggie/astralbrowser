@@ -12,11 +12,18 @@ declare global {
     interface File {
         name: string;
         type: "file";
-        mtime: string;
-        size: number;
+        mtime?: string;
+        size?: number;
+    }
+
+    interface Result {
+        path: string;
+        size?: number;
+        mtime?: number;
     }
 
     type Listing = Array<File|Directory>;
+    type Results = Array<Result>;
 
     interface ProgressReport {
         searching: boolean;
@@ -28,6 +35,7 @@ declare global {
         // and make the UI reflect that
         query: string;
         indexAgeMs: number;
+        totalSize: number;
         gzipWarning: boolean;
     }
 
@@ -52,7 +60,7 @@ declare global {
 
     interface WorkerResultResponse {
         type: "result",
-        path: string,
+        result: Result,
     }
 
     interface WorkerProgressUpdateResponse {

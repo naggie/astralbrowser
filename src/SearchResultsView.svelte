@@ -1,7 +1,7 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import { joinPath, splitName } from './util';
-    export let results: string[];
+    import SearchResultsRow from './SearchResultRow.svelte';
+    export let results: Result[];
     export let report: ProgressReport;
     export let error: string = "";
     export let mountPoint: string = "";
@@ -39,22 +39,13 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Path</th>
+            <th style="width:60%;">Path</th>
+            <th style="width:96px">Size</th> 
           </tr>
         </thead>
         <tbody>
-        {#each results.map(splitName) as [path, name]}
-            {#if name.endsWith("/")}
-              <tr>
-                <td><a href={'#' + path + name}>{name}</a></td>
-                <td><a class="path" href={'#' + path}>{path}</a></td>
-              </tr>
-            {:else}
-              <tr>
-                <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
-                <td><a class="path" href={'#' + path}>{path}</a></td>
-              </tr>
-            {/if}
+        {#each results as result}
+            <SearchResultsRow result={result} mountPoint={mountPoint} />
         {/each}
         </tbody>
     </table>
@@ -80,9 +71,5 @@
     .astralbrowser-progress-bar {
         background-color: var(--active);
         transition: width 200ms;
-    }
-
-    .path {
-        opacity: 0.8;
     }
 </style>
