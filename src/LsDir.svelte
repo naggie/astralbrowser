@@ -36,12 +36,12 @@
 {#await listingReq}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
-<table>
+<table style="table-layout: fixed;">
     <thead>
       <tr>
         <th>Name</th>
-        <th>Size</th>
-        <th>Modified</th>
+        <th style="width:100px">Size</th>
+        <th style="width:280px">Modified</th>
       </tr>
     </thead>
     <tbody>
