@@ -122,7 +122,8 @@ MIN_SIZE = 1024 # 1KB
 chdir(root)
 
 # list of tuples: (size, path)
-file_list: list[tuple[int, str]] = []
+#file_list: list[tuple[int, str]] = []
+file_list = []  # older python!
 
 for dirpath, dirnames, filenames in walk("."):
     for filename in filenames:
