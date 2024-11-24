@@ -125,7 +125,7 @@ chdir(root)
 #file_list: list[tuple[int, str]] = []
 file_list = []  # older python!
 
-for dirpath, dirnames, filenames in walk("."):
+for dirpath, dirnames, filenames in walk(".", followlinks=True):
     for filename in filenames:
         if any(fnmatch(filename, ignore) for ignore in ignores):
             continue
