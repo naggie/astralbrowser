@@ -31,5 +31,10 @@ sudo systemctl enable --now systemd-timesyncd.service
 # timer triggered services (--now first run only)
 # regardless of status.
 sudo systemctl daemon-reload
-sudo systemctl enable --now ***REMOVED***astralbrowser-indexer.timer
+
+if hostname | grep -q staging; then
+    sudo systemctl disable --now ***REMOVED***astralbrowser-indexer.timer
+else
+    sudo systemctl enable --now ***REMOVED***astralbrowser-indexer.timer
+fi
 
