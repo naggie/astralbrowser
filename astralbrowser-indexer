@@ -17,7 +17,7 @@ from time import time
 
 root = "/mnt/astralbrowser/"
 indexfile = path.join(root, ".index.txt")
-indextmp = path.join(root, ".index.tmp")
+indextmp = path.join(root, ".index-tmp.txt")
 user = "www-data"
 
 # adapted from my git ignores
