@@ -39,7 +39,7 @@
         <thead>
           <tr>
             <th>Name</th>
-            <th>Path</th>
+            <th style="width:60%;">Path</th>
             <th style="width:96px">Size</th> 
           </tr>
         </thead>
