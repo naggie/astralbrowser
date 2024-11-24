@@ -106,7 +106,7 @@ export default class SearchEngine {
             // this loop is run many times, possibly zero times if the
             // first line is not complete on the first chunk
             for (let line of lines) {
-                let fields = line.substring(line.indexOf(" ") + 1);
+                let fields = line.split(/ (.*)/);
                 let size = parseInt(fields[0]);
                 // normalise path so no leading ./
                 let path = joinPath(fields[1]);
