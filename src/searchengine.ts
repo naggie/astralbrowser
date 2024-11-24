@@ -114,7 +114,6 @@ export default class SearchEngine {
                 let result: Result = {
                     size: size,
                     path: path,
-                    mtime: 0,
                 }
 
                 // add to index
@@ -207,6 +206,7 @@ export default class SearchEngine {
             this.onResult(result);
             this.results.push(result);
         } else {
+            // must be a directory
             const newResult = {path: highestPath};
             this.onResult(newResult);
             this.results.push(newResult);
