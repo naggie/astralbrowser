@@ -1,6 +1,6 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import { joinPath, splitName } from './util';
+    import { joinPath, splitName, humanFileSize } from './util';
     export let results: Result[];
     export let report: ProgressReport;
     export let error: string = "";
@@ -40,6 +40,7 @@
           <tr>
             <th>Name</th>
             <th>Path</th>
+            <th>Size</th>
           </tr>
         </thead>
         <tbody>
@@ -55,6 +56,15 @@
                 <td><a class="path" href={'#' + path}>{path}</a></td>
               </tr>
             {/if}
+            <tr>
+                <td>
+                    {#if result.size }
+                        {humanFileSize(result.size)}
+                    {:else}
+                        -
+                    {/if}
+                </td>
+            </tr>
         {/each}
         </tbody>
     </table>
