@@ -124,7 +124,7 @@ chdir(root)
 # list of tuples: (size, path)
 file_list: list[tuple[int, str]] = []
 
-for dirpath, dirnames, filenames in walk(.):
+for dirpath, dirnames, filenames in walk("."):
     for filename in filenames:
         if any(fnmatch(filename, ignore) for ignore in ignores):
             continue
