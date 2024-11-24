@@ -18,7 +18,7 @@ const MIN_REPORT_INTERVAL = 100;
 export default class SearchEngine {
     // a list of files, built and searched concurrently
     indexUrl: string ;
-    index: string[] = [];
+    index: Result[] = [];
     query: string = "";
     resultLimit: number;
     results: Result[] = [];
@@ -198,12 +198,12 @@ export default class SearchEngine {
 
         // check if already in results
         for (const existing of this.results) {
-            if (highestPath == existing.result) {
+            if (highestPath == existing.path) {
                 return;
             }
         }
 
-        if (highestMatch == result.path) {
+        if (highestPath == result.path) {
             this.onResult(result);
             this.results.push(result);
         } else {
@@ -266,7 +266,7 @@ function matchesQuery(path: string, query: string): boolean {
 
 // returns the highest path that still matches the query (so results can show
 // directories too. Requires de-duping of results)
-function highestMatch(path: string, query: string) {
+function highestMatch(path: string, query: string): string {
     const parts = path.split(/\/+/);
     const levels = parts.length;  // has to be const as .lenth changes
     const isDir = path.endsWith("/");

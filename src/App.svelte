@@ -9,7 +9,7 @@
     export let mountPoint: string;
 
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
-    let searchResults: string[] = [];
+    let searchResults: Result[] = [];
     let searchReport: ProgressReport;
     let searchError: string = "";
     let path: string = "/";
@@ -22,7 +22,7 @@
 
         switch(response.type) {
             case "result":
-                searchResults = [...searchResults, response.path];
+                searchResults = [...searchResults, response.result];
                 searchError = undefined;
                 break;
             case "progressUpdate":
