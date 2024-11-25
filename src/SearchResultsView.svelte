@@ -5,7 +5,8 @@
     export let report: ProgressReport;
     export let error: string = "";
     export let mountPoint: string = "";
-    const MAX_INDEX_AGE = 2 * 3600 * 1000;
+    // indexer runs every 24h
+    const MAX_INDEX_AGE = 28 * 3600 * 1000;
 </script>
 
 {#if error}
