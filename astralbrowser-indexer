@@ -109,12 +109,14 @@ ignores = [
     "dist",
     "dump.rdb",
     "ehthumbs.db",
-    "env" "node_modules/",
+    "env",
+    "node_modules/",
     "pip-selfcheck.json",
     "result",
     "venv",
     "xcuserdata",
     "~$*",
+    ".git",
 ]
 
 MIN_SIZE = 1024 # 1KB
