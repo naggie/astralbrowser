@@ -11,6 +11,7 @@ sudo cp astralbrowser-indexer /opt/***REMOVED***/bin
 sudo ./mkmount oxygen.***REMOVED***.io:/srv/media /mnt/depot
 sudo ./mkmount dilithium.***REMOVED***.io:/data/shared /mnt/shares/naggie
 sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/shares/frillip
+sudo ./mkmount 172.18.64.22:/mnt/user/media /mnt/astralbrowser/blackbeard
 
 sudo mkdir -p /mnt/astralbrowser
 sudo chown www-data:www-data /mnt/astralbrowser
