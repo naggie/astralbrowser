@@ -6,6 +6,7 @@ from os.path import join
 if len(sys.argv) != 3:
     print("Usage: %s <what> <where>" % sys.argv[0])
     print("\nMount an nfs share with systemd, reliably")
+    print("Example: %s 172.18.0.2:/mnt/media /mnt/nfs/media" % sys.argv[0])
     sys.exit(1)
 
 
