@@ -63,7 +63,7 @@
 
 <div id="astralbrowser-toolbar">
     <form id="astralbrowser-toolbar-path" on:submit|preventDefault={handlePathSubmit}>
-        <input type="text" value={path || "Search results"} name="path" spellcheck="false" disabled={!!query}>
+        <input type="text" value={path || query && "Search results"} name="path" spellcheck="false" disabled={!!query}>
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
