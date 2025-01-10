@@ -50,7 +50,7 @@
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
-        path = "";
+        path = "/";
         searchEngineWorker.postMessage({type:"buildIndex"});
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
@@ -72,12 +72,10 @@
     </form>
 </div>
 
-{#if path}
-<LsDir mountPoint={mountPoint} path={path} />
-{:else if query}
+{#if query}
 <SearchResultsView results={searchResults} report={searchReport} error={searchError} mountPoint={mountPoint} />
 {:else}
-Nothing to do.
+<LsDir mountPoint={mountPoint} path={path} />
 {/if}
 
 <style>
