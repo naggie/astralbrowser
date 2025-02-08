@@ -13,6 +13,7 @@ sudo ./mkmount oxygen.***REMOVED***.io:/data/software /mnt/astralbrowser/softwar
 sudo ./mkmount oxygen.***REMOVED***.io:/data/movies /mnt/astralbrowser/movies
 sudo ./mkmount oxygen.***REMOVED***.io:/data/tv /mnt/astralbrowser/tv
 sudo ./mkmount oxygen.***REMOVED***.io:/data/music /mnt/astralbrowser/music
+sudo ./mkmount oxygen.***REMOVED***.io:/data/downloads /mnt/astralbrowser/downloads
 
 sudo ./mkmount dilithium.***REMOVED***.io:/data/shared /mnt/astralbrowser/nfs/naggie
 sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/astralbrowser/nfs/frillip
