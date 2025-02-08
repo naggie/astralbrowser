@@ -8,21 +8,15 @@ sudo apt-get -y install nfs-common
 sudo cp ***REMOVED***astralbrowser-indexer.{service,timer} /etc/systemd/system/
 sudo cp astralbrowser-indexer /opt/***REMOVED***/bin
 
-sudo ./mkmount oxygen.***REMOVED***.io:/srv/media /mnt/depot
-sudo ./mkmount dilithium.***REMOVED***.io:/data/shared /mnt/shares/naggie
-sudo ./mkmount tempestkeep.frillnet.***REMOVED***.io:/srv/media /mnt/shares/frillip
-sudo ./mkmount 172.18.64.22:/mnt/user/media /mnt/astralbrowser/blackbeard
+sudo ./mkmount oxygen.***REMOVED***.io:/data/nfs /mnt/astralbrowser/nfs
+sudo ./mkmount oxygen.***REMOVED***.io:/data/downloads /mnt/astralbrowser/downloads
+sudo ./mkmount oxygen.***REMOVED***.io:/data/software /mnt/astralbrowser/software
+sudo ./mkmount oxygen.***REMOVED***.io:/data/movies /mnt/astralbrowser/movies
+sudo ./mkmount oxygen.***REMOVED***.io:/data/tv /mnt/astralbrowser/tv
+sudo ./mkmount oxygen.***REMOVED***.io:/data/music /mnt/astralbrowser/music
 
 sudo mkdir -p /mnt/astralbrowser
 sudo chown www-data:www-data /mnt/astralbrowser
-
-sudo ln -sfT /mnt/shares /mnt/astralbrowser/user_nfs_shares
-sudo ln -sfT /mnt/depot/downloads /mnt/astralbrowser/downloads
-sudo ln -sfT /mnt/depot/dsflix/downloads /mnt/astralbrowser/downloads
-sudo ln -sfT /mnt/depot/dsflix/media/music /mnt/astralbrowser/music
-sudo ln -sfT /mnt/depot/dsflix/media/movies /mnt/astralbrowser/movies
-sudo ln -sfT /mnt/depot/dsflix/media/tv /mnt/astralbrowser/tv
-sudo ln -sfT /mnt/depot/audio/incoming/ /mnt/astralbrowser/incoming_audio
 
 # enable ntp, nfs works best with sychronised clocks
 sudo cp timesyncd.conf /etc/systemd/
