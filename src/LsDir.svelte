@@ -36,7 +36,7 @@
 {#await listingReq}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
-<table style="table-layout: fixed;">
+<table style="table-layout: fixed; word-wrap: break-word;">
     <thead>
       <tr>
         <th>Name</th>
