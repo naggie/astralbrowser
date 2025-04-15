@@ -95,6 +95,15 @@
         width:30%;
     }
 
+    #astralbrowser-toolbar form input[name=path],
+    #astralbrowser-toolbar form input[name="path"]:focus {
+        border: none!important;
+        background: transparent;
+        color: var(--heading);
+        box-shadow: none;
+        padding-left: 0;
+    }
+
     :global(.astralbrowser-parent-directory:before) {
         content: "\21B0";
         display: inline-block;
