@@ -94,4 +94,13 @@
     #astralbrowser-toolbar-search {
         width:30%;
     }
+
+    :global(.astralbrowser-directory:before) {
+        content: "\1F4C1";
+        display: inline-block;
+        margin-right: 0.5em;
+        filter: saturate(0);
+        position: relative;
+        top: -1px;
+    }
 </style>

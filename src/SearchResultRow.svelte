@@ -9,7 +9,7 @@
 
           <tr>
                 {#if name.endsWith("/")}
-                    <td><a href={'#' + path + name}>{name}</a></td>
+                    <td><a class="astralbrowser-directory" href={'#' + path + name}>{name}</a></td>
                     <td><a class="path" href={'#' + path}>{path}</a></td>
                 {:else}
                     <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
