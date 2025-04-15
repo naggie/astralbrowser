@@ -47,7 +47,7 @@
     <tbody>
     {#if path != "/"}
       <tr>
-        <td><a href={'#' + parentDir(path)}>../</a></td>
+        <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../</a></td>
         <td>-</td>
         <td>-</td>
       </tr>

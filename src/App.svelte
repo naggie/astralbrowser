@@ -95,6 +95,14 @@
         width:30%;
     }
 
+    :global(.astralbrowser-parent-directory:before) {
+        content: "\21B0";
+        display: inline-block;
+        margin-right: 0.5em;
+        position: relative;
+        top: -1px;
+    }
+
     :global(.astralbrowser-directory:before) {
         content: "\1F4C1";
         display: inline-block;
