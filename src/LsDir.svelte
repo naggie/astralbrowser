@@ -55,7 +55,7 @@
     {#each listing as item}
         {#if item.type == "directory"}
           <tr>
-            <td><a href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
+            <td><a class="astralbrowser-directory" href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
             <td>-</td>
             <td>{humanRelativeTime(item.mtime)}</td>
           </tr>
