@@ -36,7 +36,7 @@
 {/if}
 
 {#if results.length > 0}
-    <table style="table-layout: fixed;">
+    <table style="table-layout: fixed; word-wrap: break-word;">
         <thead>
           <tr>
             <th>Name</th>
