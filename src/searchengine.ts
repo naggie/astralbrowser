@@ -100,7 +100,6 @@ export default class SearchEngine {
                 this.numTotal = parseInt(fields[0]);
                 this.totalSize = parseInt(fields[1]);
                 this.indexAgeMs = Date.now() - parseInt(fields[2]) * 1000;
-                continue;
             }
 
             // this loop is run many times, possibly zero times if the
