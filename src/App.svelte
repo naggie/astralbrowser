@@ -5,8 +5,11 @@
     import { joinPath } from './util';
     import SearchEngineWorker from 'web-worker:./searchengineworker';
     import SearchResultsView from './SearchResultsView.svelte';
+    import { onMount } from 'svelte';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
+
+    let input: HTMLInputElement;
 
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
     let searchResults: Result[] = [];
@@ -14,6 +17,7 @@
     let searchError: string = "";
     let path: string = "/";
     let query: string = "";
+    let inputQuery: string = "";
 
     const searchEngineWorker = new SearchEngineWorker();
     // (when search bar is focused, index is built)
@@ -44,14 +48,21 @@
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
 
-    function handleSearchSubmit(e: any) {
-        window.location.hash = '?' + e.target.elements["query"].value;
+
+    // set initial inputQuery from hash
+    if ($hash.startsWith("?")) {
+        inputQuery = $hash.slice(1);
     }
+
+    /* conditional to avoid initial change resulting in just #? in URL */
+    $: if (window.location.hash || inputQuery) window.location.hash = '?' + inputQuery.trim();
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
-        path = "/";
-        searchEngineWorker.postMessage({type:"buildIndex"});
+        path = "";
+        if (inputQuery.length > 0) {
+            searchEngineWorker.postMessage({type:"buildIndex"});
+        }
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
@@ -59,6 +70,10 @@
     }
 
     $: searchEngineWorker.postMessage({type:"newSearch", query: query});
+
+    onMount(() => {
+        input.focus();
+    });
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -66,8 +81,8 @@
         <input type="text" value={path || query && "Search results"} name="path" spellcheck="false" disabled={!!query}>
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"}) }>
+    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={() => {}}>
+        <input type="text" bind:value={inputQuery} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
         <input type="submit" hidden />
     </form>
 </div>
