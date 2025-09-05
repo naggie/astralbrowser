@@ -14,6 +14,7 @@
     let searchError: string = "";
     let path: string = "/";
     let query: string = "";
+    let inputQuery: string = "";
 
     const searchEngineWorker = new SearchEngineWorker();
     // (when search bar is focused, index is built)
@@ -44,13 +45,16 @@
         window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
     }
 
-    function handleSearchSubmit(e: any) {
-        window.location.hash = '?' + e.target.elements["query"].value;
+    $: window.location.hash = '?' + inputQuery.trim();
+
+    // set initial inputQuery from hash
+    if ($hash.startsWith("?")) {
+        inputQuery = $hash.slice(1);
     }
 
     $: if ($hash.startsWith("?")) {
         query = $hash.slice(1);
-        path = "/";
+        path = "";
         searchEngineWorker.postMessage({type:"buildIndex"});
     } else {
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
@@ -66,8 +70,8 @@
         <input type="text" value={path || query && "Search results"} name="path" spellcheck="false" disabled={!!query}>
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={handleSearchSubmit}>
-        <input type="text" value={query} name="query" placeholder="Search" spellcheck="false" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"}) }>
+    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={() => {}}>
+        <input type="text" bind:value={inputQuery} name="query" placeholder="Search" spellcheck="false" autocomplete="off" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"})} />
         <input type="submit" hidden />
     </form>
 </div>
