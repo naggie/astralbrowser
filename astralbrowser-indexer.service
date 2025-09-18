@@ -4,3 +4,6 @@ Description=generates ***REMOVED*** astralbrowser index
 [Service]
 Type=oneshot
 ExecStart=/opt/***REMOVED***/bin/astralbrowser-indexer
+
+Environment=ASTRALBROWSER_USER=www-data
+Environment=ASTRALBROWSER_ROOT=/mnt/astralbrowser/
