@@ -36,6 +36,7 @@ declare global {
         query: string;
         indexAgeMs: number;
         totalSize: number;
+        numTotal: number;
         gzipWarning: boolean;
     }
 

@@ -224,6 +224,7 @@ export default class SearchEngine {
             numSearched: this.numSearched,
             numResults: this.results.length,
             totalSize: this.totalSize,
+            numTotal: this.numTotal,
             percentSearched: this.numTotal ? Math.round(100*this.numSearched/this.numTotal) : 0,
             elapsedMs: performance.now() - this.start,
             query: this.query,
