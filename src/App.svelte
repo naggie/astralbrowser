@@ -5,8 +5,11 @@
     import { joinPath } from './util';
     import SearchEngineWorker from 'web-worker:./searchengineworker';
     import SearchResultsView from './SearchResultsView.svelte';
+    import { onMount } from 'svelte';
     // path is what user sees, mountpoint is where path exists
     export let mountPoint: string;
+
+    let input: HTMLInputElement;
 
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
     let searchResults: Result[] = [];
@@ -63,6 +66,10 @@
     }
 
     $: searchEngineWorker.postMessage({type:"newSearch", query: query});
+
+    onMount(() => {
+        input.focus();
+    });
 </script>
 
 <div id="astralbrowser-toolbar">
@@ -71,7 +78,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" on:submit|preventDefault={() => {}}>
-        <input type="text" bind:value={inputQuery} name="query" placeholder="Search" spellcheck="false" autocomplete="off" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"})} />
+        <input type="text" bind:value={inputQuery} name="query" placeholder="Search" spellcheck="false" autocomplete="off" on:focus={() => searchEngineWorker.postMessage({type:"buildIndex"})} bind:this={input} />
         <input type="submit" hidden />
     </form>
 </div>
