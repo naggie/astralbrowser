@@ -8,6 +8,7 @@ from shutil import chown
 from fnmatch import fnmatch
 from functools import reduce
 from time import time
+from os import environ
 
 # produces an index. Format:
 # <total count> <total size> <timestamp>
@@ -15,10 +16,10 @@ from time import time
 # <size> <path>
 # ...
 
-root = "/mnt/astralbrowser/"
+root = environ["ASTRALBROWSER_ROOT"]
+user = environ["ASTRALBROWSER_USER"]
 indexfile = path.join(root, ".index.txt")
 indextmp = path.join(root, ".index-tmp.txt")
-user = "www-data"
 
 # adapted from my git ignores
 ignores = [
