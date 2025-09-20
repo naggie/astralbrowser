@@ -4,22 +4,24 @@
     export let mountPoint: string;
     export let path: string = "/";
     export let listing: Listing;
-    let selected: number = -1;
+    let selected: number = path == "/" ? -1 : -2;
+
+    // TODO refactor to avoid duplication with SearchResultsView?
+    // by always prepending parent dir entry to listing?
 
     let tbody: HTMLElement;
 
-    /* TODO: factor this, same code in LsDirListing.svelte */
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "ArrowDown") {
             if (selected < listing.length - 1) {
                 selected += 1;
             } else {
                 // wrap around
-                selected = 0;
+                selected = path != "/" ? -1 : 0;
             }
             e.preventDefault();
         } else if (e.key === "ArrowUp") {
-            if (selected > 0) {
+            if (selected > 0 || (selected == 0 && path != "/")) {
                 selected -= 1;
             } else {
                 // wrap around
@@ -51,7 +53,7 @@
     </thead>
     <tbody bind:this={tbody}>
     {#if path != "/"}
-      <tr>
+      <tr class:selected={selected == -1}>
         <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../</a></td>
         <td>-</td>
         <td>-</td>
