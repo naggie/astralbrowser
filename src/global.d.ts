@@ -22,7 +22,8 @@ declare global {
         mtime?: number;
     }
 
-    type Listing = Array<File|Directory>;
+    type ListingItem = File|Directory;
+    type Listing = Array<ListingItem>;
     type Results = Array<Result>;
 
     interface ProgressReport {
