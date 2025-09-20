@@ -1,5 +1,6 @@
 <script lang="ts">
-    import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
+    import {joinPath} from './util';
+    import LsDirListing from './LsDirListing.svelte';
     export let mountPoint: string;
 
     export let path: string = "/";
@@ -36,40 +37,7 @@
 {#await listingReq}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
-<table style="table-layout: fixed; word-wrap: break-word;">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th style="width:100px">Size</th>
-        <th style="width:280px">Modified</th>
-      </tr>
-    </thead>
-    <tbody>
-    {#if path != "/"}
-      <tr>
-        <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../</a></td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-    {/if}
-    {#each listing as item}
-        {#if item.type == "directory"}
-          <tr>
-            <td><a class="astralbrowser-directory" href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
-            <td>-</td>
-            <td>{humanRelativeTime(item.mtime)}</td>
-          </tr>
-        {:else if item.type == "file"}
-          <tr>
-            <td><a href={joinPath(mountPoint, path, item.name)} download>{item.name}</a></td>
-            <td>{humanFileSize(item.size)}</td>
-            <td>{humanRelativeTime(item.mtime)}</td>
-          </tr>
-        {/if}
-    {/each}
-    </tbody>
-</table>
-
+    <LsDirListing {mountPoint} {path} {listing} />
 {:catch error}
 <p class="warningbox">{error.message}</p>
 {/await}
