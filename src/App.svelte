@@ -67,7 +67,9 @@
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', $hash, '/');
         query = "";
-        inputQuery = "";
+        if ($hash.startsWith("/")) {
+            inputQuery = "";
+        }
     }
 
     $: searchEngineWorker.postMessage({type:"newSearch", query: query});
