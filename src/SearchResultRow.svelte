@@ -18,7 +18,7 @@
             <td><a class="astralbrowser-directory" href={'#' + path + name}>{name}</a></td>
             <td><a class="path" href={'#' + path}>{path}</a></td>
         {:else}
-            <td><a href={joinPath(mountPoint, path, name)} download>{name}</a></td>
+            <td><a href={joinPath(mountPoint, path, name)}>{name}</a></td>
             <td><a class="path" href={'#' + path}>{path}</a></td>
         {/if}
         <td style="width:96px">
