@@ -14,6 +14,7 @@
     const MAX_INDEX_AGE = 28 * 3600 * 1000;
 
 
+    /* TODO: factor this, same code in LsDir.svelte */
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "ArrowDown") {
             if (selected < results.length - 1) {
