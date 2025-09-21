@@ -55,7 +55,7 @@
     <tbody bind:this={tbody}>
     {#if path != "/"}
       <tr class:selected={selected == -1}>
-        <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../ [parent directory]</a></td>
+        <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../ <em>parent directory</em></a></td>
         <td>-</td>
         <td>-</td>
       </tr>
