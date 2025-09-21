@@ -5,10 +5,7 @@
     export let mountPoint: string;
     export let path: string = "/";
     export let listing: Listing;
-
-    // this will surface as the first real item in the listing -- never the parent dir
-    // good, as the parent dir is usually not selected
-    let selected: number = -1;
+    let selected: number = path == "/" ? -1 : -2;
 
     // TODO refactor to avoid duplication with SearchResultsView?
     // by always prepending parent dir entry to listing?
