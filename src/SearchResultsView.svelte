@@ -1,7 +1,7 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
     import { onMount } from 'svelte';
-    import SearchResultsRow from './SearchResultRow.svelte';
+    import SearchResultRow from './SearchResultRow.svelte';
     export let results: Result[];
     export let report: ProgressReport;
     export let error: string = "";
@@ -84,7 +84,7 @@
         </thead>
         <tbody bind:this={tbody}>
         {#each results as result, i}
-            <SearchResultsRow result={result} mountPoint={mountPoint} selected={i === selected} />
+            <SearchResultRow result={result} mountPoint={mountPoint} selected={i === selected} />
         {/each}
         </tbody>
     </table>

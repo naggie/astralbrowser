@@ -1,6 +1,7 @@
 <script lang="ts">
-    import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
+    import { parentDir } from './util';
     import { onMount } from 'svelte';
+    import LsDirRow from './LsDirRow.svelte';
     export let mountPoint: string;
     export let path: string = "/";
     export let listing: Listing;
@@ -60,17 +61,7 @@
       </tr>
     {/if}
     {#each listing as item, i}
-        <tr class:selected={i === selected}>
-            {#if item.type == "directory"}
-                <td><a class="astralbrowser-directory" href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
-                <td>-</td>
-                <td>{humanRelativeTime(item.mtime)}</td>
-            {:else if item.type == "file"}
-                <td><a href={joinPath(mountPoint, path, item.name)} download>{item.name}</a></td>
-                <td>{humanFileSize(item.size)}</td>
-                <td>{humanRelativeTime(item.mtime)}</td>
-            {/if}
-      </tr>
+        <LsDirRow {item} {mountPoint} {path} selected={i == selected} />
     {/each}
     </tbody>
 </table>
