@@ -59,7 +59,9 @@
 {/await}
 
 {#if readme}
-<strong>README.md</strong>
-<br/>
-<pre><code>{readme}</code></pre>
+<pre><code>
+# README.md
+
+{readme}
+</code></pre>
 {/if}
