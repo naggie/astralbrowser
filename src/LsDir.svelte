@@ -1,12 +1,17 @@
 <script lang="ts">
-    import { humanFileSize, humanRelativeTime, joinPath, parentDir } from './util';
+    import {joinPath} from './util';
+    import LsDirListing from './LsDirListing.svelte';
     export let mountPoint: string;
 
     export let path: string = "/";
 
     let listingReq: Promise<Listing>;
+    let readme: string = "";
 
     async function load_path(path: string) : Promise<Listing> {
+        // invalidate readme
+        readme = "";
+
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', path, '/');
 
@@ -27,7 +32,19 @@
             throw new Error("Error loading directory");
         }
 
-        return response.json();
+        const listing: Listing = Array.from(await response.json());
+
+        // look for README.md and remove it from listing, download and display it later
+        for (let i = 0; i < listing.length; i++) {
+            if (listing[i].name == "README.md" && listing[i].type == "file") {
+                listing.splice(i, 1);
+                const readmeResp = await fetch( joinPath(mountPoint, path, "README.md"));
+                readme = await readmeResp.text();
+                break; // important to break here, otherwise i may be out of bounds
+            }
+        }
+
+        return listing;
     }
 
     $: listingReq = load_path(path);
@@ -36,40 +53,15 @@
 {#await listingReq}
 <div class="accesswait"><div class="progress-line"></div></div>
 {:then listing}
-<table style="table-layout: fixed; word-wrap: break-word;">
-    <thead>
-      <tr>
-        <th>Name</th>
-        <th style="width:100px">Size</th>
-        <th style="width:280px">Modified</th>
-      </tr>
-    </thead>
-    <tbody>
-    {#if path != "/"}
-      <tr>
-        <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../</a></td>
-        <td>-</td>
-        <td>-</td>
-      </tr>
-    {/if}
-    {#each listing as item}
-        {#if item.type == "directory"}
-          <tr>
-            <td><a class="astralbrowser-directory" href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
-            <td>-</td>
-            <td>{humanRelativeTime(item.mtime)}</td>
-          </tr>
-        {:else if item.type == "file"}
-          <tr>
-            <td><a href={joinPath(mountPoint, path, item.name)} download>{item.name}</a></td>
-            <td>{humanFileSize(item.size)}</td>
-            <td>{humanRelativeTime(item.mtime)}</td>
-          </tr>
-        {/if}
-    {/each}
-    </tbody>
-</table>
-
+    <LsDirListing {mountPoint} {path} {listing} />
 {:catch error}
 <p class="warningbox">{error.message}</p>
 {/await}
+
+{#if readme}
+<pre><code>
+# README.md
+
+{readme}
+</code></pre>
+{/if}
