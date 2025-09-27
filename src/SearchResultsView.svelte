@@ -1,12 +1,50 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import SearchResultsRow from './SearchResultRow.svelte';
+    import { onMount } from 'svelte';
+    import SearchResultRow from './SearchResultRow.svelte';
     export let results: Result[];
     export let report: ProgressReport;
     export let error: string = "";
     export let mountPoint: string = "";
+    export let selected: number = -1;
+
+    let tbody: HTMLTableSectionElement;
+
     // indexer runs every 24h
     const MAX_INDEX_AGE = 28 * 3600 * 1000;
+
+
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key === "ArrowDown") {
+            if (selected < results.length - 1) {
+                selected += 1;
+            } else {
+                // wrap around
+                selected = 0;
+            }
+            e.preventDefault();
+        } else if (e.key === "ArrowUp") {
+            if (selected > 0) {
+                selected -= 1;
+            } else {
+                // wrap around
+                selected = results.length - 1;
+            }
+            e.preventDefault();
+        } else if (e.key === "Enter") {
+            const a = tbody.querySelector("tr.selected a:first-child") as HTMLAnchorElement;
+            if (a) {
+                a.click();
+            }
+        }
+    }
+
+    onMount(() => {
+        window.addEventListener("keydown", handleKeydown);
+        return () => {
+            window.removeEventListener("keydown", handleKeydown);
+        }
+    });
 </script>
 
 {#if error}
@@ -44,9 +82,9 @@
             <th style="width:96px">Size</th> 
           </tr>
         </thead>
-        <tbody>
-        {#each results as result}
-            <SearchResultsRow result={result} mountPoint={mountPoint} />
+        <tbody bind:this={tbody}>
+        {#each results as result, i}
+            <SearchResultRow result={result} mountPoint={mountPoint} selected={i === selected} />
         {/each}
         </tbody>
     </table>
@@ -63,14 +101,13 @@
 
     .astralbrowser-progress {
         /* change back to var when re-enable when github.com/darionco/rollup-plugin-web-worker-loader/issues/60 is fixed and we can generate css */
-        /* background-color: var(--bg); */
-        background-color: white;
+        background-color: black;
         display: flex;
         margin: 20px 0;
     }
 
     .astralbrowser-progress-bar {
-        background-color: var(--active);
+        background-color: white;
         transition: width 200ms;
     }
 </style>
