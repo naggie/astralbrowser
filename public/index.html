@@ -1,29 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
-	<meta charset='utf-8'>
-	<meta name='viewport' content='width=device-width,initial-scale=1'>
+    <head>
+        <meta charset='utf-8'>
+        <meta name='viewport' content='width=device-width,initial-scale=1'>
 
-	<title>Svelte app</title>
+        <title>Svelte app</title>
 
-	<link rel='icon' type='image/png' href='/favicon.png'>
-	<link rel='stylesheet' href='/global.css'>
-	<link rel='stylesheet' href='/build/bundle.css'>
+        <link rel='icon' type='image/png' href='/favicon.png'>
+        <link rel='stylesheet' href='/global.css'>
+        <link rel='stylesheet' href='/build/astralbrowser.css'>
 
-	<script defer src='/build/bundle.js'></script>
-    <style>
-        body {
-            position:fixed;
-            top:0;
-            left:0;
-            width:100%;
-            height:100%;
-            box-sizing:border-box;
-            display:flex;
-        }
-    </style>
-</head>
+        <script src='/build/astralbrowser.js'></script>
+        <style>
+        </style>
+    </head>
 
-<body>
-</body>
+    <body>
+        <div id="astralbrowser" class="wide fadebox"></div>
+        <script>
+            new AstralBrowser({
+                target: document.getElementById("astralbrowser"),
+                props: {
+                    mountPoint: '/demotree/',
+                }
+            });
+        </script>
+    </body>
 </html>
