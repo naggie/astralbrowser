@@ -10,7 +10,7 @@ pkgs.mkShell {
   ];
 
   shellHook = ''
-    echo "🚀 Astralbrowser demo environment loaded"
+    echo "Astralbrowser demo environment loaded"
     echo ""
     echo "Available commands:"
     echo "  make demo    - Build and start the demo server"
