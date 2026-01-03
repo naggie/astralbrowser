@@ -6,6 +6,19 @@ downloaded from the server.
 
 To run a demo of astralbrowser with a sample file tree:
 
+### Using Nix (recommended)
+
+If you have Nix installed, enter the development shell to get all required dependencies:
+
+```bash
+nix-shell
+make demo
+```
+
+### Manual setup
+
+Ensure you have Node.js (v20+) and nginx installed, then:
+
 ```bash
 make demo
 ```
