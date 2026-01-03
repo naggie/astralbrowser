@@ -19,4 +19,4 @@ dev_server:
 	npm run dev
 
 demo: deps build
-	nginx -c $(shell pwd)/demo.nginx.conf -p $(shell pwd)
+	nginx -c $(shell pwd)/demo/nginx.conf -p $(shell pwd)
