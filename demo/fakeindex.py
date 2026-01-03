@@ -11,8 +11,9 @@ from os import walk
 from os import makedirs
 import json
 from time import time
+SCRIPT_DIR = path.dirname(path.abspath(__file__))
 
-DEMO_DIR = "demotree"
+DEMO_DIR = path.join(SCRIPT_DIR, "tree")
 INDEX_FILE = path.join(DEMO_DIR, ".index.txt")
 
 
@@ -122,6 +123,6 @@ for dirpath, dirnames, filenames in walk(DEMO_DIR):
             "size": random.randint(0, 10**9),
         }
         index_entries.append(entry)
-    index_file_path = path.join(dirpath, "index.json")
+    index_file_path = path.join(dirpath, "index.html")  # use index.html for github pages to simulate nginx json autoindex
     with open(index_file_path, "w") as f:
         json.dump(index_entries, f, indent=4)

@@ -44,6 +44,14 @@
             }
         }
 
+        // remove .index.txt as well, it's the index file...
+        for (let i = 0; i < listing.length; i++) {
+            if (listing[i].name == ".index.txt" && listing[i].type == "file") {
+                listing.splice(i, 1);
+                break; // important to break here, otherwise i may be out of bounds
+            }
+        }
+
         return listing;
     }
 
