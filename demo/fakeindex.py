@@ -10,6 +10,7 @@ from os import path
 from os import walk
 from os import makedirs
 import json
+from time import time
 
 DEMO_DIR = "demotree"
 INDEX_FILE = path.join(DEMO_DIR, ".index.txt")
@@ -31,10 +32,6 @@ movie_exts = [".mkv", ".mp4"]
 music_formats = ["FLAC", "MP3", "AAC", "OGG"]
 music_exts = [".flac", ".mp3", ".m4a", ".ogg"]
 
-# pre-generate a list of fake artists so some artists have multiple albums
-artists = [slugify(fake.name()) for _ in range(500)]
-
-
 
 def slugify(text: str) -> str:
     return (
@@ -43,6 +40,10 @@ def slugify(text: str) -> str:
         .strip("-")
         or "untitled"
     )
+
+
+# pre-generate a list of fake artists so some artists have multiple albums
+artists = [slugify(fake.name()) for _ in range(1000)]
 
 
 def fake_game_path():
@@ -86,8 +87,13 @@ for _ in range(10**5):
     files.append(file)
 
 with open(INDEX_FILE, "w") as f:
+    # header -- file count, total size and timestamp
+    f.write(
+        "%d %d %d\n" % (len(files), 10 ** 9, int(time() + 86400 * 3650))
+    )  # 10 years in future
     for file in files:
-        f.write(file + "\n")
+        # format is size in bytes path
+        f.write("%d %s\n" % (random.randint(0, 10**9), file))
 
 # create directories and empty files for each entry
 for file in files:
@@ -105,18 +111,14 @@ for dirpath, dirnames, filenames in walk(DEMO_DIR):
         entry = {
             "name": dirname,
             "type": "directory",
-            "mtime": fake.date_time_this_decade().strftime(
-                "%a, %d %b %Y %H:%M:%S GMT"
-            ),
+            "mtime": fake.date_time_this_decade().strftime("%a, %d %b %Y %H:%M:%S GMT"),
         }
         index_entries.append(entry)
     for filename in filenames:
         entry = {
             "name": filename,
             "type": "file",
-            "mtime": fake.date_time_this_decade().strftime(
-                "%a, %d %b %Y %H:%M:%S GMT"
-            ),
+            "mtime": fake.date_time_this_decade().strftime("%a, %d %b %Y %H:%M:%S GMT"),
             "size": random.randint(0, 10**9),
         }
         index_entries.append(entry)
