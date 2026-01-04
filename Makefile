@@ -18,5 +18,5 @@ deps:
 dev_server:
 	npm run dev
 
-demo: build
+demo: deps build
 	nginx -c $(shell pwd)/demo.nginx.conf -p $(shell pwd)
