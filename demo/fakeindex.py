@@ -6,6 +6,14 @@ Generate plausible file paths for games, movies, and music into .index.txt
 
 from faker import Faker
 import random
+from os import path
+from os import walk
+from os import makedirs
+import json
+
+DEMO_DIR = "demotree"
+INDEX_FILE = path.join(DEMO_DIR, ".index.txt")
+
 
 fake = Faker()
 random.seed(42)
@@ -23,6 +31,10 @@ movie_exts = [".mkv", ".mp4"]
 music_formats = ["FLAC", "MP3", "AAC", "OGG"]
 music_exts = [".flac", ".mp3", ".m4a", ".ogg"]
 
+# pre-generate a list of fake artists so some artists have multiple albums
+artists = [slugify(fake.name()) for _ in range(500)]
+
+
 
 def slugify(text: str) -> str:
     return (
@@ -39,7 +51,7 @@ def fake_game_path():
     platform = random.choice(game_platforms)
     fmt = random.choice(game_formats)
     ext = random.choice(game_exts)
-    return f"/Games/{platform}/{fmt}/{title} ({year}){ext}"
+    return f"./Games/{platform}/{fmt}/{title} ({year}){ext}"
 
 
 def fake_movie_path():
@@ -49,21 +61,65 @@ def fake_movie_path():
     res = random.choice(movie_res)
     codec = random.choice(movie_codecs)
     ext = random.choice(movie_exts)
-    return f"/Media/Movies/{title}.{year}.{fmt}.{res}.{codec}{ext}"
+    return f"./Media/Movies/{title}.{year}.{fmt}.{res}.{codec}{ext}"
 
 
 def fake_music_path():
-    artist = slugify(fake.name())
+    artist = random.choice(artists)
     album = slugify(fake.catch_phrase())
     track_no = random.randint(1, 18)
     track_title = slugify(fake.word().title())
     fmt = random.choice(music_formats)
     ext = random.choice(music_exts)
-    return f"/Media/Music/{artist}/{album}/{fmt}/{track_no:02d} - {track_title}{ext}"
+    return f"./Media/Music/{artist}/{album}/{fmt}/{track_no:02d} - {track_title}{ext}"
 
 
 generators = [fake_game_path, fake_movie_path, fake_music_path]
 
-with open(".index.txt", "w") as f:
-    for _ in range(10**5):
-        f.write(random.choice(generators)() + "\n")
+files = []
+
+makedirs(DEMO_DIR, exist_ok=True)
+
+# make fake index with 100,000 entries
+for _ in range(10**5):
+    file = random.choice(generators)()
+    files.append(file)
+
+with open(INDEX_FILE, "w") as f:
+    for file in files:
+        f.write(file + "\n")
+
+# create directories and empty files for each entry
+for file in files:
+    full_path = path.join(DEMO_DIR, file)
+    dir_name = path.dirname(full_path)
+    makedirs(dir_name, exist_ok=True)
+    with open(full_path, "w") as f:
+        f.write("")
+
+# make a fake autoindex entry in each dir, saving as index.json so github pages
+# can pretend to be nginx autoindex with random mtime and size values
+for dirpath, dirnames, filenames in walk(DEMO_DIR):
+    index_entries = []
+    for dirname in dirnames:
+        entry = {
+            "name": dirname,
+            "type": "directory",
+            "mtime": fake.date_time_this_decade().strftime(
+                "%a, %d %b %Y %H:%M:%S GMT"
+            ),
+        }
+        index_entries.append(entry)
+    for filename in filenames:
+        entry = {
+            "name": filename,
+            "type": "file",
+            "mtime": fake.date_time_this_decade().strftime(
+                "%a, %d %b %Y %H:%M:%S GMT"
+            ),
+            "size": random.randint(0, 10**9),
+        }
+        index_entries.append(entry)
+    index_file_path = path.join(dirpath, "index.json")
+    with open(index_file_path, "w") as f:
+        json.dump(index_entries, f, indent=4)
