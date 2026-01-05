@@ -18,11 +18,8 @@
     <body>
         <div id="astralbrowser" class="wide fadebox"></div>
         <script>
-            new AstralBrowser({
-                target: document.getElementById("astralbrowser"),
-                props: {
-                    mountPoint: '/tree/',
-                }
+            AstralBrowser(document.getElementById("astralbrowser"), {
+                mountPoint: '/tree/',
             });
         </script>
     </body>

@@ -11,11 +11,9 @@
     } = $props();
 
     let readme: string = $state("");
+    let listing: Promise<Listing> = $state(Promise.resolve([]));
 
     async function load_path(path: string) : Promise<Listing> {
-        // invalidate readme
-        readme = "";
-
         // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', path, '/');
 
@@ -36,12 +34,12 @@
             throw new Error("Error loading directory");
         }
 
-        const listing: Listing = Array.from(await response.json());
+        const listingData: Listing = Array.from(await response.json());
 
         // look for README.md and remove it from listing, download and display it later
-        for (let i = 0; i < listing.length; i++) {
-            if (listing[i].name == "README.md" && listing[i].type == "file") {
-                listing.splice(i, 1);
+        for (let i = 0; i < listingData.length; i++) {
+            if (listingData[i].name == "README.md" && listingData[i].type == "file") {
+                listingData.splice(i, 1);
                 const readmeResp = await fetch( joinPath(mountPoint, path, "README.md"));
                 readme = await readmeResp.text();
                 break; // important to break here, otherwise i may be out of bounds
@@ -49,23 +47,26 @@
         }
 
         // remove .index.txt as well, it's the index file...
-        for (let i = 0; i < listing.length; i++) {
-            if (listing[i].name == ".index.txt" && listing[i].type == "file") {
-                listing.splice(i, 1);
+        for (let i = 0; i < listingData.length; i++) {
+            if (listingData[i].name == ".index.txt" && listingData[i].type == "file") {
+                listingData.splice(i, 1);
                 break; // important to break here, otherwise i may be out of bounds
             }
         }
 
-        return listing;
+        return listingData;
     }
 
-    let listingReq = $derived(load_path(path));
+    $effect(() => {
+        readme = "";
+        listing = load_path(path);
+    });
 </script>
 
-{#await listingReq}
+{#await listing}
 <div class="accesswait"><div class="progress-line"></div></div>
-{:then listing}
-    <LsDirListing {mountPoint} {path} {listing} />
+{:then listingData}
+    <LsDirListing {mountPoint} {path} listing={listingData} />
 {:catch error}
 <p class="warningbox">{error.message}</p>
 {/await}

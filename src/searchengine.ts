@@ -22,8 +22,8 @@ export default class SearchEngine {
     query: string = "";
     resultLimit: number;
     results: Result[] = [];
-    start: number;
-    duration: number;
+    start: number = 0;
+    duration: number = 0;
     indexStarted: boolean = false;
     indexComplete: boolean = false;
     numTotal: number = 0;
@@ -57,10 +57,15 @@ export default class SearchEngine {
             throw new Error("Error loading search index");
         }
 
+        if (!response.body) {
+            throw new Error("Response body is null");
+        }
+
         const reader = response.body.getReader();
 
         // 3? newlines etc.
-        if (response.headers.has("content-length") && +response.headers.get("content-length") < 1024) {
+        const contentLength = response.headers.get("content-length");
+        if (contentLength && +contentLength < 1024) {
             throw new Error("Search index is empty");
         }
 
@@ -74,9 +79,10 @@ export default class SearchEngine {
         // on. content-length defaults to 0 due to + operator.
         // nginx may also be configured to gzip only after a certain size,
         // so only consider large indicies here.
-        this.gzipWarning = +response.headers.get("content-length") > 100e3
+        const contentEncoding = response.headers.get("content-encoding");
+        this.gzipWarning = contentLength ? +contentLength > 100e3
         && !["gzip", "deflate", "br",
-            "compress"].includes(response.headers.get("content-encoding"));
+            "compress"].includes(contentEncoding || "") : false;
 
         while(true) {
             const chunk = await reader.read();
@@ -90,13 +96,15 @@ export default class SearchEngine {
 
             // attach last fragment and get next. May result in no lines yet!
             lines[0] = fragment + lines[0];
-            fragment = lines.pop();
+            fragment = lines.pop() || "";
 
             // so have to detect the first line
             // first iteration may have no lines!
             if (lines.length > 0 && this.indexAgeMs == 0) {
                 // must be header
-                let fields = lines.shift().split(" ");
+                const firstLine = lines.shift();
+                if (!firstLine) continue;
+                let fields = firstLine.split(" ");
                 this.numTotal = parseInt(fields[0]);
                 this.totalSize = parseInt(fields[1]);
                 this.indexAgeMs = Date.now() - parseInt(fields[2]) * 1000;

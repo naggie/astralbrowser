@@ -28,7 +28,7 @@
         <td>{humanRelativeTime(item.mtime)}</td>
     {:else if item.type == "file"}
         <td><a href={joinPath(mountPoint, path, item.name)}>{item.name}</a></td>
-        <td>{humanFileSize(item.size)}</td>
-        <td>{humanRelativeTime(item.mtime)}</td>
+        <td>{item.size ? humanFileSize(item.size) : "-"}</td>
+        <td>{item.mtime ? humanRelativeTime(item.mtime) : "-"}</td>
     {/if}
 </tr>

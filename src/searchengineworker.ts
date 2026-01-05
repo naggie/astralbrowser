@@ -30,6 +30,7 @@ self.addEventListener("message", async (e) => {
                 throw new Error("Unknown command");
         }
     } catch(error) {
-        self.postMessage({type: "error", error: error.message});
+        const message = error instanceof Error ? error.message : String(error);
+        self.postMessage({type: "error", error: message});
     }
 });

@@ -10,7 +10,7 @@ import webWorkerLoader from 'rollup-plugin-web-worker-loader';
 
 export default [
     {
-        input: 'src/App.svelte',
+        input: 'src/main.ts',
         output: {
             format: 'umd',
             name: 'AstralBrowser',

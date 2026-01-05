@@ -10,7 +10,7 @@
         selected = -1 
     }: { 
         results: Result[], 
-        report: ProgressReport, 
+        report: ProgressReport | undefined, 
         error?: string, 
         mountPoint?: string, 
         selected?: number 

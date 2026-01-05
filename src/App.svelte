@@ -13,7 +13,7 @@
 
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
     let searchResults: Result[] = $state([]);
-    let searchReport: ProgressReport = $state(undefined);
+    let searchReport: ProgressReport | undefined = $state(undefined);
     let searchError: string = $state("");
     let path: string = $state("/");
     let query: string = $state("");
@@ -26,7 +26,7 @@
         switch(response.type) {
             case "result":
                 searchResults = [...searchResults, response.result];
-                searchError = undefined;
+                searchError = "";
                 break;
             case "progressUpdate":
                 searchReport = response.report;
@@ -46,7 +46,8 @@
     function handlePathSubmit(e: Event) {
         e.preventDefault();
         const form = e.target as HTMLFormElement;
-        window.location.hash = joinPath("/", form.elements["path"].value, "/");
+        const pathInput = form.elements.namedItem("path") as HTMLInputElement;
+        window.location.hash = joinPath("/", pathInput.value, "/");
     }
 
     // React to hash changes
