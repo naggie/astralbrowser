@@ -3,7 +3,7 @@
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
     import { joinPath } from './util';
-    import SearchEngineWorker from 'web-worker:./searchengineworker';
+    import SearchEngineWorker from './searchengineworker?worker';
     import SearchResultsView from './SearchResultsView.svelte';
     import { onMount } from 'svelte';
     // path is what user sees, mountpoint is where path exists
