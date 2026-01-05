@@ -1,12 +1,20 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
-    import { onMount } from 'svelte';
     import SearchResultRow from './SearchResultRow.svelte';
-    export let results: Result[];
-    export let report: ProgressReport;
-    export let error: string = "";
-    export let mountPoint: string = "";
-    export let selected: number = -1;
+    
+    let { 
+        results, 
+        report, 
+        error = "", 
+        mountPoint = "", 
+        selected = -1 
+    }: { 
+        results: Result[], 
+        report: ProgressReport, 
+        error?: string, 
+        mountPoint?: string, 
+        selected?: number 
+    } = $props();
 
     let tbody: HTMLTableSectionElement;
 
@@ -39,7 +47,7 @@
         }
     }
 
-    onMount(() => {
+    $effect(() => {
         window.addEventListener("keydown", handleKeydown);
         return () => {
             window.removeEventListener("keydown", handleKeydown);

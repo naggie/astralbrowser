@@ -1,17 +1,26 @@
 <script lang="ts">
     // can handle a million files whilst still being responsive!
     import { joinPath, splitName, humanFileSize } from './util';
-    export let result: Result;
-    export let mountPoint: string;
-    export let selected: boolean = false;
+    
+    let { 
+        result, 
+        mountPoint, 
+        selected = false 
+    }: { 
+        result: Result, 
+        mountPoint: string, 
+        selected?: boolean 
+    } = $props();
 
     let tr: HTMLTableRowElement;
 
     const [path, name] = splitName(result.path);
 
-    $: if (tr && selected) {
-        tr.scrollIntoView({block: "nearest"});
-    }
+    $effect(() => {
+        if (tr && selected) {
+            tr.scrollIntoView({block: "nearest"});
+        }
+    });
 </script>
     <tr class:selected bind:this={tr}>
         {#if name.endsWith("/")}

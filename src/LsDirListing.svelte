@@ -1,11 +1,23 @@
 <script lang="ts">
     import { parentDir } from './util';
-    import { onMount } from 'svelte';
     import LsDirRow from './LsDirRow.svelte';
-    export let mountPoint: string;
-    export let path: string = "/";
-    export let listing: Listing;
-    let selected: number = path == "/" ? -1 : -2;
+    
+    let { 
+        mountPoint, 
+        path = "/", 
+        listing 
+    }: { 
+        mountPoint: string, 
+        path?: string, 
+        listing: Listing 
+    } = $props();
+    
+    let selected: number = $state(-1);
+
+    // Reset selected when path changes
+    $effect(() => {
+        selected = path == "/" ? -1 : -2;
+    });
 
     // TODO refactor to avoid duplication with SearchResultsView?
     // by always prepending parent dir entry to listing?
@@ -37,7 +49,7 @@
         }
     }
 
-    onMount(() => {
+    $effect(() => {
         window.addEventListener("keydown", handleKeydown);
         return () => {
             window.removeEventListener("keydown", handleKeydown);

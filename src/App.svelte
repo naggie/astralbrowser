@@ -5,18 +5,18 @@
     import { joinPath } from './util';
     import SearchEngineWorker from 'web-worker:./searchengineworker';
     import SearchResultsView from './SearchResultsView.svelte';
-    import { onMount } from 'svelte';
+    
     // path is what user sees, mountpoint is where path exists
-    export let mountPoint: string;
+    let { mountPoint }: { mountPoint: string } = $props();
 
     let input: HTMLInputElement;
 
     const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
-    let searchResults: Result[] = [];
-    let searchReport: ProgressReport;
-    let searchError: string = "";
-    let path: string = "/";
-    let query: string = "";
+    let searchResults: Result[] = $state([]);
+    let searchReport: ProgressReport = $state(undefined);
+    let searchError: string = $state("");
+    let path: string = $state("/");
+    let query: string = $state("");
 
     const searchEngineWorker = new SearchEngineWorker();
     // (when search bar is focused, index is built)
@@ -43,35 +43,46 @@
     }
     searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl, resultLimit: 100});
 
-    function handlePathSubmit(e: any) {
-        window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
+    function handlePathSubmit(e: Event) {
+        e.preventDefault();
+        const form = e.target as HTMLFormElement;
+        window.location.hash = joinPath("/", form.elements["path"].value, "/");
     }
 
+    // React to hash changes
+    $effect(() => {
+        const currentHash = $hash;
+        if (currentHash) {
+            // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
+            path = joinPath('/', currentHash, '/');
+            query = "";
+        }
+    });
 
-    $: if ($hash) {
-        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-        path = joinPath('/', $hash, '/');
-        query = "";
-    }
+    // React to query changes
+    $effect(() => {
+        searchEngineWorker.postMessage({type:"newSearch", query: query});
+    });
 
-    $: searchEngineWorker.postMessage({type:"newSearch", query: query});
+    // React to query changes for building index
+    $effect(() => {
+        if (query) {
+            searchEngineWorker.postMessage({type:"buildIndex"});
+            path = "/";
+        }
+    });
 
-    $: if(query) {
-        searchEngineWorker.postMessage({type:"buildIndex"});
-        path = "/";
-    }
-
-    onMount(() => {
-        input.focus();
+    $effect(() => {
+        input?.focus();
     });
 </script>
 
 <div id="astralbrowser-toolbar">
-    <form id="astralbrowser-toolbar-path" on:submit|preventDefault={handlePathSubmit}>
+    <form id="astralbrowser-toolbar-path" onsubmit={handlePathSubmit}>
         <input type="text" value={query && "Search results" || path} name="path" spellcheck="false" disabled={!!query}>
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={() => {}}>
+    <form id="astralbrowser-toolbar-search" onsubmit={(e) => { e.preventDefault(); }}>
         <input type="text" bind:value={query} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
         <input type="submit" hidden />
     </form>

@@ -1,14 +1,25 @@
 <script lang="ts">
     import { humanFileSize, humanRelativeTime, joinPath } from './util';
-    export let item: ListingItem;
-    export let mountPoint: string;
-    export let path: string = "/";
-    export let selected: boolean = false;
+    
+    let { 
+        item, 
+        mountPoint, 
+        path = "/", 
+        selected = false 
+    }: { 
+        item: ListingItem, 
+        mountPoint: string, 
+        path?: string, 
+        selected?: boolean 
+    } = $props();
+    
     let tr: HTMLTableRowElement;
 
-    $: if (tr && selected) {
-        tr.scrollIntoView({block: "nearest"});
-    }
+    $effect(() => {
+        if (tr && selected) {
+            tr.scrollIntoView({block: "nearest"});
+        }
+    });
 </script>
 <tr class:selected bind:this={tr}>
     {#if item.type == "directory"}

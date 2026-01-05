@@ -1,12 +1,16 @@
 <script lang="ts">
     import {joinPath} from './util';
     import LsDirListing from './LsDirListing.svelte';
-    export let mountPoint: string;
+    
+    let { 
+        mountPoint, 
+        path = "/" 
+    }: { 
+        mountPoint: string, 
+        path?: string 
+    } = $props();
 
-    export let path: string = "/";
-
-    let listingReq: Promise<Listing>;
-    let readme: string = "";
+    let readme: string = $state("");
 
     async function load_path(path: string) : Promise<Listing> {
         // invalidate readme
@@ -55,7 +59,7 @@
         return listing;
     }
 
-    $: listingReq = load_path(path);
+    let listingReq = $derived(load_path(path));
 </script>
 
 {#await listingReq}
