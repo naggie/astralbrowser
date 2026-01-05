@@ -1,8 +1,4 @@
 /node_modules/
 /public/build/
 
-.DS_Store
-
-# Nginx temporary files
-/tmp/nginx-demo.pid
-/logs/
+/demo/tree
