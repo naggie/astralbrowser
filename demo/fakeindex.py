@@ -63,7 +63,7 @@ def fake_movie_path():
     res = random.choice(movie_res)
     codec = random.choice(movie_codecs)
     ext = random.choice(movie_exts)
-    return f"./Media/Movies/{title}.{year}.{fmt}.{res}.{codec}{ext}"
+    return f"./Movies/{title}.{year}.{fmt}.{res}.{codec}{ext}"
 
 
 def fake_music_path():
@@ -73,7 +73,7 @@ def fake_music_path():
     track_title = slugify(fake.word().title())
     fmt = random.choice(music_formats)
     ext = random.choice(music_exts)
-    return f"./Media/Music/{artist}/{album}/{fmt}/{track_no:02d} - {track_title}{ext}"
+    return f"./Music/{artist}/{album}/{fmt}/{track_no:02d} - {track_title}{ext}"
 
 
 generators = [fake_game_path, fake_movie_path, fake_music_path]
