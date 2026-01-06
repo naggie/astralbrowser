@@ -17,7 +17,7 @@ export default defineConfig({
     outDir: 'public/build',
     emptyOutDir: true,
     lib: {
-      entry: '/src/main.ts',
+      entry: './src/main.ts',
       name: 'AstralBrowser',
       formats: ['umd'],
       fileName: () => 'astralbrowser.js',
