@@ -11,7 +11,7 @@
 
     let input: HTMLInputElement;
 
-    const indexUrl = joinPath(window.location.origin, mountPoint, '.index.txt');
+    const indexUrl = new URL(joinPath(mountPoint, '.index.txt'), window.location.origin).href;
     let searchResults: Result[] = [];
     let searchReport: ProgressReport;
     let searchError: string = "";
