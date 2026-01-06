@@ -3,7 +3,7 @@ all: deps build
 build:
 	rm -rf public/build
 	mkdir -p public/build
-	echo ' ' > public/build/astralbrowser.css # may not exist due to https://github.com/darionco/rollup-plugin-web-worker-loader/issues/60
+	echo ' ' > public/build/astralbrowser.css # may not exist
 	./node_modules/.bin/svelte-check
 	npm run build
 	# disable eslint as this is a built product
