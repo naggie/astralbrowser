@@ -32,13 +32,17 @@ jobs:
         uses: actions/setup-python@v5
         with:
           python-version: '3.x'
-          cache: 'pip'
 
       - name: Install Python dependencies
-        run: pip install -r requirements.txt
+        run: |
+          python -m venv venv
+          source venv/bin/activate
+          pip install faker
 
       - name: Build site
-        run: make pages
+        run: |
+          source venv/bin/activate
+          make pages
 
       - name: Setup Pages
         uses: actions/configure-pages@v4
