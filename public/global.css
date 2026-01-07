@@ -37,9 +37,11 @@ body {
 }
 
 #astralbrowser {
+    background: linear-gradient(to bottom, var(--bg-highlight) -200px, transparent 200px);
     width: 100%;
     max-width: 1200px;
     margin-top: 50px;
+    padding: 20px;
 }
 
 input {
