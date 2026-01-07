@@ -45,18 +45,10 @@
         }
 
         // remove .index.txt as well, it's the index file...
-        // as well as index.html as that's part of the demo, which fakes nginx autoindexing
         for (let i = 0; i < listing.length; i++) {
             if (listing[i].name == ".index.txt" && listing[i].type == "file") {
                 listing.splice(i, 1);
                 break; // important to break here, otherwise i may be out of bounds
-            }
-        }
-
-        for (let i = 0; i < listing.length; i++) {
-            if (listing[i].name == "index.html" && listing[i].type == "file") {
-                listing.splice(i, 1);
-                break;
             }
         }
 
