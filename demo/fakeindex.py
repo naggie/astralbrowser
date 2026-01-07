@@ -76,14 +76,15 @@ def fake_music_path():
     return f"./Music/{artist}/{album}/{fmt}/{track_no:02d} - {track_title}{ext}"
 
 
-generators = [fake_game_path, fake_movie_path, fake_music_path]
+# more chance to generate music paths because there are subdirectories
+generators = [fake_game_path, fake_movie_path] + [fake_music_path] * 10
 
 files = []
 
 makedirs(DEMO_DIR, exist_ok=True)
 
-# make fake index with 100,000 entries
-for _ in range(10**5):
+# make fake index with 50,000 entries
+for _ in range(50000):
     file = random.choice(generators)()
     files.append(file)
 
