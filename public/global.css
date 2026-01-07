@@ -44,6 +44,11 @@ body {
     padding: 20px;
 }
 
+
+#astralbrowser td:last-child {
+    font-size: 14px;
+}
+
 input {
     /* safari hides cursor otherwise */
     user-select: text !important;
