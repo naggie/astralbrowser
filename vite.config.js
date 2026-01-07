@@ -9,6 +9,7 @@ export default defineConfig({
       compilerOptions: {
         customElement: false,
       },
+      emitCss: true,
     })
   ],
   publicDir: false, // Don't copy public directory during build
