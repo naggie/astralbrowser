@@ -18,7 +18,7 @@ dev_server:
 	npm run dev
 
 demo: deps build
-	FAKEINDEX_NOAUTOINDEX=1 test -d etc/tree || ./demo/fakeindex.py
+	FAKEINDEX_NOAUTOINDEX=1 test -d etc/tree || ./etc/fakeindex.py
 	nginx -c $(shell pwd)/etc/nginx.conf -p $(shell pwd)
 
 pages: deps build
