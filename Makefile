@@ -20,6 +20,7 @@ dev_server:
 demo: deps build
 	FAKEINDEX_NOAUTOINDEX=1 test -d ./public/tree || ./etc/fakeindex.py
 	cp ./etc/DEMO-README.md ./public/tree/README.md
+	cp ./etc/demo-index.json ./public/tree/index.html
 	nginx -c $(shell pwd)/etc/nginx.conf -p $(shell pwd)
 
 pages: deps build
