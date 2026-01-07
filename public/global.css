@@ -28,19 +28,30 @@ body {
     display: flex;
     margin: 0;
     line-height: 1.2em;
-    justify-content: center;
-
+    justify-content: left;
+    align-items: center;
+    flex-direction: column;
 }
 
 * {
     box-sizing: border-box;
 }
 
+h1 {
+    text-transform: uppercase;
+    font-weight: normal;
+    text-align: center;
+    font-size: 22px;
+    letter-spacing: 4px;
+    color: #333;
+    margin-top: 40px;
+}
+
 #astralbrowser {
     background: linear-gradient(to bottom, var(--bg-highlight) -200px, transparent 200px);
     width: 100%;
     max-width: 1200px;
-    margin-top: 50px;
+    margin-top: 30px;
     padding: 20px;
 }
 
