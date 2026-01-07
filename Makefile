@@ -26,3 +26,4 @@ pages: deps build
 	test ! -d public/tree || rm -rf public/tree
 	FAKEINDEX_DELETEFILES=1 ./etc/fakeindex.py
 	cp ./etc/DEMO-README.md ./public/tree/README.md
+	cp ./etc/demo-index.json ./public/tree/index.html

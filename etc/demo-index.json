@@ -1,0 +1,23 @@
+[
+    {
+        "name": "Music",
+        "type": "directory",
+        "mtime": "Tue, 12 Dec 2023 22:16:16 GMT"
+    },
+    {
+        "name": "Movies",
+        "type": "directory",
+        "mtime": "Wed, 13 Nov 2024 11:00:17 GMT"
+    },
+    {
+        "name": "Games",
+        "type": "directory",
+        "mtime": "Wed, 20 Nov 2024 23:42:42 GMT"
+    },
+    {
+        "name": "README.md",
+        "type": "file",
+        "mtime": "Fri, 28 Jul 2023 02:36:02 GMT",
+        "size": 217457226
+    }
+]
