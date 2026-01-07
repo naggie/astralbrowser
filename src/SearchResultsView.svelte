@@ -66,7 +66,11 @@
     <div class="astralbrowser-progress">
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
-    Searched {report.numSearched} items in {report.elapsedMs | 0}ms
+    {#if report.numSearched > 0}
+        Searched {report.numSearched} items in {report.elapsedMs | 0}ms
+    {:else}
+        Searching...
+    {/if}
     {#if !report.searching && report.numResults == 0}
     <p>Nothing found.</p>
     {/if}
