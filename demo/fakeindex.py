@@ -9,6 +9,7 @@ import random
 from os import path
 from os import walk
 from os import makedirs
+from os import environ
 import json
 from time import time
 
@@ -109,6 +110,9 @@ for file in files:
 # make a fake autoindex entry in each dir, saving as index.json so github pages
 # can pretend to be nginx autoindex with random mtime and size values
 for dirpath, dirnames, filenames in walk(DEMO_DIR):
+    if "FAKEINDEX_NOAUTOINDEX" in environ:
+        break
+
     index_entries = []
     for dirname in dirnames:
         entry = {

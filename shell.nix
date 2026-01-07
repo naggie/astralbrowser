@@ -7,6 +7,8 @@ pkgs.mkShell {
     
     # nginx for serving the demo
     nginx
+
+    python313Packages.faker
   ];
 
   shellHook = ''
