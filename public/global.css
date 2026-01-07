@@ -1,0 +1,136 @@
+:root {
+    --bg: #D4FFD4;
+    --bg-highlight: #c1f7c1;
+    --line: rgba(0, 0, 0, 0.4);
+    --text: #333;
+    --text-muted: #555;
+    --heading: #111;
+    --a: #585858;
+    --active: #000;
+    --focus: #444;
+    --bad: #782121;
+}
+
+*:focus {
+    /* remove dotted outline from links */
+    outline: none;
+}
+
+html {
+    touch-action: pan-y pinch-zoom; /* no touch delays */
+}
+
+body {
+    font-family: sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    font-size: 20px;
+    display: flex;
+    margin: 0;
+    line-height: 1.2em;
+    justify-content: center;
+
+}
+
+* {
+    box-sizing: border-box;
+}
+
+#astralbrowser {
+    width: 100%;
+    max-width: 1200px;
+    margin-top: 50px;
+}
+
+input {
+    /* safari hides cursor otherwise */
+    user-select: text !important;
+}
+
+input,
+a.button {
+    font-size: 20px;
+    padding: 4px 9px;
+    margin: 8px 0;
+    border-radius: 0;
+    font-family: var(--sans-serif);
+    user-select: none;
+}
+
+a,
+a:visited {
+    color: var(--a);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--active) !important;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 40px 0;
+    user-select: text;
+    font-size: 16px;
+    border-radius: 3px;
+    overflow: visible;
+}
+
+table th,
+table td {
+    text-align: left;
+    padding: 10px 5px;
+    padding: 0.6em;
+    vertical-align: middle;
+}
+
+table thead th {
+    border-bottom: 1px solid var(--line);
+    color: var(--heading);
+}
+
+table tbody th {
+    border-right: 1px solid var(--line);
+    color: var(--heading);
+}
+
+table p {
+    text-align: justify;
+    text-justify: inter-word;
+}
+
+table tr:nth-child(even) {
+    background: var(--bg-highlight);
+}
+
+table tr.selected {
+    outline: 2px solid var(--active);
+}
+
+.warningbox {
+    background: var(--bad);
+    color: white;
+    font-size: 18px;
+    padding: 10px;
+    border-radius: 3px;
+    margin: 40px 0;
+    user-select: none;
+    font-family: var(--sans-serif);
+}
+
+.astralbrowser-progress {
+    background: var(--bg-highlight) !important;
+    height: 2px !important;
+}
+
+.astralbrowser-progress-bar {
+    background: var(--line) !important;
+    height: 2px !important;
+}
+
+.astralbrowser-status {
+    font-size: 18px;
+    font-style: italic;
+    color: var(--text-muted);
+}
