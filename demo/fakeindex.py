@@ -11,6 +11,7 @@ from os import walk
 from os import makedirs
 import json
 from time import time
+
 SCRIPT_DIR = path.dirname(path.abspath(__file__))
 
 DEMO_DIR = path.join(SCRIPT_DIR, "tree")
@@ -91,7 +92,7 @@ for _ in range(50000):
 with open(INDEX_FILE, "w") as f:
     # header -- file count, total size and timestamp
     f.write(
-        "%d %d %d\n" % (len(files), 10 ** 9, int(time() + 86400 * 3650))
+        "%d %d %d\n" % (len(files), 10**9, int(time() + 86400 * 3650))
     )  # 10 years in future
     for file in files:
         # format is size in bytes path
@@ -124,6 +125,8 @@ for dirpath, dirnames, filenames in walk(DEMO_DIR):
             "size": random.randint(0, 10**9),
         }
         index_entries.append(entry)
-    index_file_path = path.join(dirpath, "index.html")  # use index.html for github pages to simulate nginx json autoindex
+    index_file_path = path.join(
+        dirpath, "index.html"
+    )  # use index.html for github pages to simulate nginx json autoindex
     with open(index_file_path, "w") as f:
         json.dump(index_entries, f, indent=4)
