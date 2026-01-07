@@ -1,5 +1,4 @@
 /node_modules/
 /public/build/
 /dist/
-
-/demo/tree
+/public/tree

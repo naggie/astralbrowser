@@ -15,7 +15,7 @@ from time import time
 
 SCRIPT_DIR = path.dirname(path.abspath(__file__))
 
-DEMO_DIR = path.join(SCRIPT_DIR, "tree")
+DEMO_DIR = path.join(SCRIPT_DIR, "../public/tree")
 INDEX_FILE = path.join(DEMO_DIR, ".index.txt")
 
 
