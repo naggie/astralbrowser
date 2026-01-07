@@ -3,7 +3,6 @@ all: deps build
 build:
 	rm -rf public/build
 	mkdir -p public/build
-	echo ' ' > public/build/astralbrowser.css # may not exist
 	./node_modules/.bin/svelte-check
 	npm run build
 	# disable eslint as this is a built product
