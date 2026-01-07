@@ -20,3 +20,7 @@ dev_server:
 demo: deps build
 	FAKEINDEX_NOAUTOINDEX=1 test -d demo/tree || ./demo/fakeindex.py
 	nginx -c $(shell pwd)/demo/nginx.conf -p $(shell pwd)
+
+pages: deps build
+	./demo/fakeindex.py
+	cp -a public/* demo/
