@@ -23,5 +23,6 @@ demo: deps build
 	nginx -c $(shell pwd)/etc/nginx.conf -p $(shell pwd)
 
 pages: deps build
-	./etc/fakeindex.py
+	test ! -d public/tree || rm -rf public/tree
+	FAKEINDEX_DELETEFILES=1 ./etc/fakeindex.py
 	cp ./etc/DEMO-README.md ./public/tree/README.md

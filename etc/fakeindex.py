@@ -10,6 +10,7 @@ from os import path
 from os import walk
 from os import makedirs
 from os import environ
+from os import remove
 import json
 from time import time
 
@@ -134,3 +135,9 @@ for dirpath, dirnames, filenames in walk(DEMO_DIR):
     )  # use index.html for github pages to simulate nginx json autoindex
     with open(index_file_path, "w") as f:
         json.dump(index_entries, f, indent=4)
+
+
+if "FAKEINDEX_DELETEFILES" in environ:
+    for file in files:
+        full_path = path.join(DEMO_DIR, file)
+        remove(full_path)
