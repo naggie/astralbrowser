@@ -78,6 +78,18 @@ a.button {
     user-select: none;
 }
 
+#astralbrowser-toolbar-search input {
+    outline: 1px solid var(--line);
+    background: white;
+    border-width: 0;
+}
+
+#astralbrowser-toolbar-search input:focus {
+    outline: 1px solid var(--focus);
+    background: white;
+    border-width: 0;
+}
+
 a,
 a:visited {
     color: var(--a);
