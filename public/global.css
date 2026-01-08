@@ -47,14 +47,14 @@ h1 {
     font-size: 22px;
     letter-spacing: 4px;
     color: #333;
-    margin-top: 40px;
+    margin-top: 66px;
 }
 
 #astralbrowser {
     background: linear-gradient(to bottom, var(--bg-highlight) -200px, transparent 200px);
     width: 100%;
     max-width: 1200px;
-    margin-top: 30px;
+    margin-top: 50px;
     padding: 20px;
 }
 
