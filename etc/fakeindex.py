@@ -80,14 +80,13 @@ def fake_music_path():
 
 
 # more chance to generate music paths because there are subdirectories
-generators = [fake_game_path, fake_movie_path] + [fake_music_path] * 10
+generators = [fake_game_path] * 10 + [fake_movie_path] + [fake_music_path] * 15
 
 files = []
 
 makedirs(DEMO_DIR, exist_ok=True)
 
-# make fake index with 50,000 entries
-for _ in range(50000):
+for _ in range(200 * 10**3):
     file = random.choice(generators)()
     files.append(file)
 
