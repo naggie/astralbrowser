@@ -1,16 +1,3 @@
-:root {
-    --bg: #D4FFFF;
-    --bg-highlight: #c1f7ef;
-    --line: rgba(0, 0, 0, 0.4);
-    --text: #333;
-    --text-muted: #555;
-    --heading: #111;
-    --a: #585858;
-    --active: #000;
-    --focus: #444;
-    --bad: #782121;
-}
-
 *:focus {
     /* remove dotted outline from links */
     outline: none;
@@ -22,8 +9,8 @@ html {
 
 body {
     font-family: sans-serif;
-    background: var(--bg);
-    color: var(--text);
+    background: #b3eaff;
+    color: #111;
     font-size: 14px;
     display: flex;
     margin: 0;
@@ -51,12 +38,13 @@ h1 {
 }
 
 #astralbrowser {
-    background: linear-gradient(to bottom, var(--bg-highlight) -200px, transparent 200px);
+    background: linear-gradient(to bottom, #ac9df7 -800px, #c1f7ef66 600px);
     width: 100%;
     max-width: 1200px;
-    margin-top: 50px;
+    margin: 50px 0;
     padding: 20px;
-    box-shadow: 1px 1px 2px #0002;
+    box-shadow: 1px 1px 3px #0002;
+    border: 1px solid #0002;
 }
 
 
@@ -80,31 +68,31 @@ a.button {
 }
 
 #astralbrowser-toolbar-search input {
-    outline: 1px solid var(--line);
+    outline: 1px solid rgba(0, 0, 0, 0.4);
     background: white;
     border-width: 0;
 }
 
 #astralbrowser-toolbar-search input:focus {
-    outline: 1px solid var(--focus);
+    outline: 1px solid #444;
     background: white;
     border-width: 0;
 }
 
 a,
 a:visited {
-    color: var(--a);
+    color: #333;
     text-decoration: none;
 }
 
 a:hover {
-    color: var(--active) !important;
+    color: #000 !important;
 }
 
 table {
     width: 100%;
     border-collapse: collapse;
-    margin: 40px 0;
+    margin-top: 40px;
     user-select: text;
     font-size: 16px;
     border-radius: 3px;
@@ -120,13 +108,13 @@ table td {
 }
 
 table thead th {
-    border-bottom: 1px solid var(--line);
-    color: var(--heading);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+    color: #000;
 }
 
 table tbody th {
-    border-right: 1px solid var(--line);
-    color: var(--heading);
+    border-right: 1px solid rgba(0, 0, 0, 0.4);
+    color: #000;
 }
 
 table p {
@@ -135,15 +123,15 @@ table p {
 }
 
 table tr:nth-child(even) {
-    background: var(--bg-highlight);
+    background: #0001;
 }
 
 table tr.selected {
-    outline: 2px solid var(--active);
+    outline: 2px solid #000;
 }
 
 .warningbox {
-    background: var(--bad);
+    background: #782121;
     color: white;
     font-size: 18px;
     padding: 10px;
@@ -154,17 +142,17 @@ table tr.selected {
 }
 
 .astralbrowser-progress {
-    background: var(--bg-highlight) !important;
+    background: #c1f7ef !important;
     height: 2px !important;
 }
 
 .astralbrowser-progress-bar {
-    background: var(--line) !important;
+    background: rgba(0, 0, 0, 0.4) !important;
     height: 2px !important;
 }
 
 .astralbrowser-status {
     font-size: 18px;
     font-style: italic;
-    color: var(--text-muted);
+    color: #555;
 }
