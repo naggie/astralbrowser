@@ -59,7 +59,9 @@
 </script>
 
 {#await listingReq}
-<div class="accesswait"><div class="progress-line"></div></div>
+    <div class="astralbrowser-progress">
+        <div class="astralbrowser-progress-bar astralbrowser-progress-bar-nondeterministic"></div>
+    </div>
 {:then listing}
     <LsDirListing {mountPoint} {path} {listing} />
 {:catch error}

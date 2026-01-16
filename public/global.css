@@ -67,6 +67,10 @@ a.button {
     user-select: none;
 }
 
+#astralbrowser-toolbar {
+    margin-bottom: 20px;
+}
+
 #astralbrowser-toolbar-search input {
     outline: 1px solid rgba(0, 0, 0, 0.4);
     background: white;
@@ -141,6 +145,33 @@ table tr.selected {
     font-family: var(--sans-serif);
 }
 
+@keyframes running-progress {
+    0% {
+        margin-left: 0;
+        margin-right: 100%;
+    }
+
+    10% {
+        margin-left: 0;
+        margin-right: 100%;
+    }
+
+    50% {
+        margin-left: 25%;
+        margin-right: 25%;
+    }
+
+    90% {
+        margin-left: 100%;
+        margin-right: 0;
+    }
+
+    100% {
+        margin-left: 100%;
+        margin-right: 0;
+    }
+}
+
 .astralbrowser-progress {
     background: #c1f7ef !important;
     height: 2px !important;
@@ -149,6 +180,10 @@ table tr.selected {
 .astralbrowser-progress-bar {
     background: rgba(0, 0, 0, 0.4) !important;
     height: 2px !important;
+}
+
+.astralbrowser-progress-bar-nondeterministic {
+    animation: running-progress 2s infinite linear;
 }
 
 .astralbrowser-status {
