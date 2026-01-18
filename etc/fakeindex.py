@@ -82,13 +82,13 @@ def fake_music_path():
 # more chance to generate music paths because there are subdirectories
 generators = [fake_game_path] * 10 + [fake_movie_path] + [fake_music_path] * 15
 
-files = []
+files = set()  # duplicates possible
 
 makedirs(DEMO_DIR, exist_ok=True)
 
 for _ in range(200 * 10**3):
     file = random.choice(generators)()
-    files.append(file)
+    files.add(file)
 
 with open(INDEX_FILE, "w") as f:
     # header -- file count, total size and timestamp
@@ -134,7 +134,6 @@ for dirpath, dirnames, filenames in walk(DEMO_DIR):
     )  # use index.html for github pages to simulate nginx json autoindex
     with open(index_file_path, "w") as f:
         json.dump(index_entries, f, indent=4)
-
 
 if "FAKEINDEX_DELETEFILES" in environ:
     for file in files:
