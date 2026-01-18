@@ -13,7 +13,7 @@ body {
     color: #111;
     font-size: 14px;
     display: flex;
-    margin: 0;
+    margin: 0 10px;
     line-height: 1.2em;
     justify-content: left;
     align-items: center;
