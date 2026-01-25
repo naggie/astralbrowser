@@ -38,13 +38,12 @@ h1 {
 }
 
 #astralbrowser {
-    background: linear-gradient(to bottom, #ac9df7 -800px, #c1f7ef66 600px);
+    background: linear-gradient(to bottom, #ac9df7 -800px, #c1f7ef66 300px, transparent 600px);
     width: 100%;
     max-width: 1200px;
     margin: 50px 0;
     padding: 20px;
-    box-shadow: 1px 1px 3px #0002;
-    border: 1px solid #0002;
+    min-height: 600px;
 }
 
 
