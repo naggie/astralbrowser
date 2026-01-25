@@ -44,6 +44,9 @@ h1 {
     margin: 50px 0;
     padding: 20px;
     min-height: 600px;
+    /* cool but causes jumping issues
+     * box-shadow: 1px 1px 3px #0002;
+    border: 1px solid #0002;*/
 }
 
 
