@@ -1,9 +1,4 @@
 # Astralbrowser packages. Call with pkgs.callPackage ./default.nix { }.
-#
-# Uses a single src = ./. so that Nix copies the entire repo into the store
-# once. Using sub-paths like ./public/build fails when the nix file is
-# evaluated from a git submodule checkout where that directory doesn't exist
-# as a standalone store path.
 {
   pkgs ? import <nixpkgs> { },
 }:
@@ -12,16 +7,19 @@ let
   python = pkgs.python3.withPackages (ps: [ ps.inotify ]);
 in
 {
-  # Pre-built Svelte frontend assets (astralbrowser.js, astralbrowser.css)
-  frontend = pkgs.stdenv.mkDerivation {
+  # Svelte frontend -- built from source via vite
+  frontend = pkgs.buildNpmPackage {
     pname = "astralbrowser-frontend";
     version = "0.0.1";
     inherit src;
-    phases = [ "installPhase" ];
+    npmDepsHash = "sha256-FkFjIzj86jl6UWcC4Rynx1mzSlkTkWRjMyE6COoHomw=";
+    buildPhase = ''
+      npm run build
+    '';
     installPhase = ''
       mkdir -p $out
-      cp $src/public/build/astralbrowser.js $out/
-      cp $src/public/build/astralbrowser.css $out/
+      cp public/build/astralbrowser.js $out/
+      cp public/build/astralbrowser.css $out/
     '';
   };
 
