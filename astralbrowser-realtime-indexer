@@ -252,7 +252,9 @@ def handle_event(event):
         # adding watches for new subdirectories automatically.
         return
 
-    if "IN_CLOSE_WRITE" in type_names or "IN_MOVED_TO" in type_names:
+    # IN_CREATE is needed because some operations (hard links, reflinks,
+    # overlayfs copies) produce IN_CREATE without a subsequent IN_CLOSE_WRITE.
+    if "IN_CREATE" in type_names or "IN_CLOSE_WRITE" in type_names or "IN_MOVED_TO" in type_names:
         try:
             size = os.path.getsize(abs_path)
         except (FileNotFoundError, PermissionError):
@@ -262,13 +264,17 @@ def handle_event(event):
             return
 
         with lock:
+            is_new = rel_path not in index
             index[rel_path] = size
+        if is_new:
+            print("new: %s" % rel_path, file=sys.stderr)
         rewrite_needed.set()
 
     elif "IN_DELETE" in type_names or "IN_MOVED_FROM" in type_names:
         with lock:
             if rel_path in index:
                 del index[rel_path]
+                print("deleted: %s" % rel_path, file=sys.stderr)
                 rewrite_needed.set()
 
 
@@ -287,7 +293,8 @@ def main():
     i = inotify.adapters.InotifyTree(
         root,
         mask=(
-            inotify.constants.IN_CLOSE_WRITE
+            inotify.constants.IN_CREATE
+            | inotify.constants.IN_CLOSE_WRITE
             | inotify.constants.IN_DELETE
             | inotify.constants.IN_MOVED_FROM
             | inotify.constants.IN_MOVED_TO
