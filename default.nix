@@ -1,8 +1,14 @@
 # Astralbrowser packages. Call with pkgs.callPackage ./default.nix { }.
+#
+# Uses a single src = ./. so that Nix copies the entire repo into the store
+# once. Using sub-paths like ./public/build fails when the nix file is
+# evaluated from a git submodule checkout where that directory doesn't exist
+# as a standalone store path.
 {
   pkgs ? import <nixpkgs> { },
 }:
 let
+  src = ./.;
   python = pkgs.python3.withPackages (ps: [ ps.inotify ]);
 in
 {
@@ -10,12 +16,12 @@ in
   frontend = pkgs.stdenv.mkDerivation {
     pname = "astralbrowser-frontend";
     version = "0.0.1";
-    src = ./public/build;
+    inherit src;
     phases = [ "installPhase" ];
     installPhase = ''
       mkdir -p $out
-      cp $src/astralbrowser.js $out/
-      cp $src/astralbrowser.css $out/
+      cp $src/public/build/astralbrowser.js $out/
+      cp $src/public/build/astralbrowser.css $out/
     '';
   };
 
@@ -23,7 +29,7 @@ in
   indexer = pkgs.stdenv.mkDerivation {
     pname = "astralbrowser-indexer";
     version = "0.0.1";
-    src = ./.;
+    inherit src;
     phases = [ "installPhase" ];
     installPhase = ''
       mkdir -p $out/bin
@@ -36,7 +42,7 @@ in
   realtime-indexer = pkgs.stdenv.mkDerivation {
     pname = "astralbrowser-realtime-indexer";
     version = "0.0.1";
-    src = ./.;
+    inherit src;
     phases = [ "installPhase" ];
     installPhase = ''
       mkdir -p $out/bin
