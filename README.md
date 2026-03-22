@@ -35,3 +35,30 @@ This will:
 
 The nginx server runs in non-daemon mode, so press Ctrl+C to stop it.
 
+## Indexers
+
+Two indexers are provided:
+
+### `astralbrowser-indexer` (batch)
+
+Walks the entire file tree and writes `.index.txt` atomically. Designed to run
+periodically via a systemd timer (default: every 24h). See
+`install-indexer-example.sh`.
+
+### `astralbrowser-realtime-indexer` (inotify)
+
+Long-running daemon that uses inotify to watch `ASTRALBROWSER_ROOT` recursively.
+All changes (additions, removals, modifications) trigger an atomic full rewrite
+of `.index.txt` in a background thread, rate-limited to once every 5 seconds to
+coalesce rapid changes.
+
+Requires the `inotify` Python package (`pip install inotify`, or
+`python313Packages.inotify` in Nix).
+
+```bash
+export ASTRALBROWSER_ROOT=/var/www/file/
+./astralbrowser-realtime-indexer
+```
+
+See `install-realtime-indexer-example.sh` for systemd installation.
+

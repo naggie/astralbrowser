@@ -1,0 +1,13 @@
+[Unit]
+Description=astralbrowser realtime indexer using inotify (example service file)
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/astralbrowser-realtime-indexer
+
+Environment=ASTRALBROWSER_USER=www-data
+Environment=ASTRALBROWSER_ROOT=/var/www/file/
+
+[Install]
+WantedBy=multi-user.target

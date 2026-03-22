@@ -9,6 +9,7 @@ pkgs.mkShell {
     nginx
 
     python313Packages.faker
+    python313Packages.inotify
   ];
 
   shellHook = ''

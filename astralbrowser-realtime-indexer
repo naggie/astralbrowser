@@ -1,0 +1,319 @@
+#!/usr/bin/env python3
+"""
+Realtime indexer for astralbrowser. Uses inotify to watch ASTRALBROWSER_ROOT
+recursively and keeps .index.txt up to date.
+
+All changes (additions, removals, modifications) trigger an atomic full rewrite
+of .index.txt in a background thread, rate-limited to once every 5 seconds to
+coalesce rapid changes. A full rewrite is always needed because the header line
+contains totals (count, size, timestamp) that must stay consistent.
+"""
+import sys
+import os
+import threading
+import time
+import signal
+from os import environ, path, rename
+from shutil import chown
+from fnmatch import fnmatch
+from functools import reduce
+
+import inotify.adapters
+import inotify.constants
+
+root = environ["ASTRALBROWSER_ROOT"]
+user = environ["ASTRALBROWSER_USER"]
+indexfile = path.join(root, ".index.txt")
+indextmp = path.join(root, ".index-tmp.txt")
+
+# Same ignore list as the batch indexer
+IGNORES = [
+    ".envrc",
+    ".fseventsd",
+    "*-r",
+    "*.__i",
+    "*.acn",
+    "*.acr",
+    "*.alg",
+    "*.autosave",
+    "*.aux",
+    "*.axf",
+    "*.bak",
+    "*.bbl",
+    "*.bin",
+    "*.blg",
+    "*.build/",
+    "*.class",
+    "*.crf",
+    "*.d",
+    "*.dep",
+    "*.dist/",
+    "*.dll",
+    "*.dmg",
+    "*.dvi",
+    "*.egg-info",
+    "*.glg",
+    "*.glo",
+    "*.gls",
+    "*.gz",
+    "*.hex",
+    "*.idx",
+    "*.ilg",
+    "*.ind",
+    "*.iso",
+    "*.ist",
+    "*.jar",
+    "*.lnp",
+    "*.lof",
+    "*.lot",
+    "*.lst",
+    "*.luac",
+    "*.maf",
+    "*.map",
+    "*.mtc",
+    "*.mtc1",
+    "*.o",
+    "*.onefile-build/",
+    "*.out",
+    "*.plg",
+    "*.pyc",
+    "*.pyg",
+    "*.rar",
+    "*.retry",
+    "*.so",
+    "*.synctex.gz",
+    "*.tar",
+    "*.toc",
+    "*.tra",
+    "*.uvopt",
+    "*.uvproj",
+    "*.zip",
+    "*~",
+    ".*.swp",
+    ".AppleDouble",
+    ".Parent",
+    ".DS_Store",
+    ".DS_Store?",
+    ".Python",
+    ".Spotlight-V100",
+    ".Trashes",
+    "._*",
+    ".build/",
+    ".coverage*",
+    ".direnv/",
+    ".hugo_build.lock",
+    ".tox",
+    ".venv",
+    ".~lock.*",
+    "Icon?",
+    "Thumbs.db",
+    "__pycache__",
+    "_build",
+    "coverage.txt",
+    "coverage.xml",
+    "coverage_html",
+    "dist",
+    "dump.rdb",
+    "ehthumbs.db",
+    "env",
+    "node_modules/",
+    "pip-selfcheck.json",
+    "result",
+    "venv",
+    "xcuserdata",
+    "~$*",
+    ".git",
+]
+
+MIN_SIZE = 1024  # 1KB
+
+# --- state protected by lock ---
+lock = threading.Lock()
+# dict of relative_path -> size, the authoritative index
+index = {}
+# set when any change happens and a full rewrite is needed
+rewrite_needed = threading.Event()
+# --------------------------------
+
+shutdown = threading.Event()
+
+
+def is_ignored(name):
+    return any(fnmatch(name, pat) for pat in IGNORES)
+
+
+def is_path_ignored(relpath):
+    """Check if any component of the path matches an ignore pattern."""
+    for part in relpath.split(os.sep):
+        if is_ignored(part):
+            return True
+    return False
+
+
+def write_header(f, file_list):
+    total_size = reduce(lambda acc, item: acc + item[0], file_list, 0)
+    f.write("%d %d %d\n" % (len(file_list), total_size, int(time.time())))
+
+
+def full_rewrite():
+    """Atomically rewrite the entire index file from the in-memory state."""
+    with lock:
+        snapshot = list(index.items())
+
+    # biggest first, matching the batch indexer's sort order
+    snapshot.sort(key=lambda x: x[1], reverse=True)
+
+    file_list = [(size, filepath) for filepath, size in snapshot]
+
+    with open(indextmp, "w") as f:
+        write_header(f, file_list)
+        for size, filepath in file_list:
+            f.write("%d %s\n" % (size, filepath))
+
+    rename(indextmp, indexfile)
+    chown(indexfile, user, user)
+
+
+def rewrite_thread():
+    """Background thread that performs rate-limited full rewrites.
+
+    Wakes when rewrite_needed is set, waits 5 seconds (coalescing multiple
+    removals), then rewrites.
+    """
+    try:
+        while not shutdown.is_set():
+            rewrite_needed.wait(timeout=1.0)
+            if shutdown.is_set():
+                break
+            if not rewrite_needed.is_set():
+                continue
+
+            rewrite_needed.clear()
+            # Rate limit: wait 5s to coalesce rapid changes
+            shutdown.wait(timeout=5.0)
+            if shutdown.is_set():
+                break
+
+            full_rewrite()
+    except Exception:
+        import traceback
+        traceback.print_exc()
+        # Kill the main process so we don't silently run with a stale index
+        os.kill(os.getpid(), signal.SIGTERM)
+
+
+def initial_scan():
+    """Walk the tree to build the initial in-memory index, same as the batch indexer."""
+    os.chdir(root)
+    for dirpath, dirnames, filenames in os.walk(".", followlinks=True):
+        for filename in filenames:
+            if is_ignored(filename):
+                continue
+            if is_ignored(path.basename(dirpath)):
+                continue
+
+            filepath = path.join(dirpath, filename)
+
+            try:
+                size = path.getsize(filepath)
+            except (FileNotFoundError, PermissionError):
+                continue
+
+            if size < MIN_SIZE:
+                continue
+
+            index[filepath] = size
+
+    full_rewrite()
+
+
+def handle_event(event):
+    header, type_names, watch_path, filename = event
+
+    if not filename:
+        return
+
+    # New directory created -- inotify_simple won't auto-watch it, but
+    # inotify.adapters.InotifyTree does handle this for us.
+    # We only care about file events.
+
+    abs_path = path.join(watch_path, filename)
+    rel_path = os.path.relpath(abs_path, root)
+    # Normalise to ./ prefix to match the batch indexer format
+    rel_path = "./" + rel_path
+
+    if is_path_ignored(rel_path):
+        return
+
+    is_dir = "IN_ISDIR" in type_names
+
+    if is_dir:
+        # We don't index directories, only files. InotifyTree handles
+        # adding watches for new subdirectories automatically.
+        return
+
+    if "IN_CLOSE_WRITE" in type_names or "IN_MOVED_TO" in type_names:
+        try:
+            size = os.path.getsize(abs_path)
+        except (FileNotFoundError, PermissionError):
+            return
+
+        if size < MIN_SIZE:
+            return
+
+        with lock:
+            index[rel_path] = size
+        rewrite_needed.set()
+
+    elif "IN_DELETE" in type_names or "IN_MOVED_FROM" in type_names:
+        with lock:
+            if rel_path in index:
+                del index[rel_path]
+                rewrite_needed.set()
+
+
+def main():
+    def on_signal(signum, frame):
+        print("astralbrowser-realtime-indexer: shutting down", file=sys.stderr)
+        shutdown.set()
+        rewrite_needed.set()  # wake the rewrite thread so it exits
+
+    signal.signal(signal.SIGTERM, on_signal)
+    signal.signal(signal.SIGINT, on_signal)
+
+    # Start watching BEFORE the initial scan so events that occur during the
+    # walk queue in the kernel's inotify buffer. After the scan, we drain
+    # those events — duplicates are harmless (dict upsert).
+    i = inotify.adapters.InotifyTree(
+        root,
+        mask=(
+            inotify.constants.IN_CLOSE_WRITE
+            | inotify.constants.IN_DELETE
+            | inotify.constants.IN_MOVED_FROM
+            | inotify.constants.IN_MOVED_TO
+        ),
+    )
+
+    print("astralbrowser-realtime-indexer: scanning %s" % root, file=sys.stderr)
+    initial_scan()
+    print(
+        "astralbrowser-realtime-indexer: initial scan complete, %d files indexed"
+        % len(index),
+        file=sys.stderr,
+    )
+
+    writer = threading.Thread(target=rewrite_thread, daemon=True)
+    writer.start()
+
+    print("astralbrowser-realtime-indexer: watching for changes", file=sys.stderr)
+
+    for event in i.event_gen(yield_nones=False):
+        if shutdown.is_set():
+            break
+        handle_event(event)
+
+    writer.join(timeout=10)
+
+
+if __name__ == "__main__":
+    main()
