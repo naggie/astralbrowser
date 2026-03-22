@@ -28,6 +28,8 @@ indextmp = path.join(root, ".index-tmp.txt")
 
 # Same ignore list as the batch indexer
 IGNORES = [
+    path.basename(indexfile),
+    path.basename(indextmp),
     ".envrc",
     ".fseventsd",
     "*-r",
