@@ -62,3 +62,21 @@ export ASTRALBROWSER_ROOT=/var/www/file/
 
 See `install-realtime-indexer-example.sh` for systemd installation.
 
+## NixOS Module
+
+A NixOS module is provided for the realtime indexer. Import `module.nix` and
+configure:
+
+```nix
+imports = [ /path/to/astralbrowser/module.nix ];
+
+services.astralbrowser-indexer = {
+  enable = true;
+  root = "/data/shared/";
+  user = "nginx";
+};
+```
+
+`default.nix` also provides packages for the frontend assets and both indexers
+via `pkgs.callPackage ./default.nix { }`.
+
