@@ -125,7 +125,6 @@ IGNORES = [
     ".git",
 ]
 
-MIN_SIZE = 1024  # 1KB
 MAX_WATCHES_SYSCTL = "/proc/sys/fs/inotify/max_user_watches"
 
 # --- state protected by lock ---
@@ -223,9 +222,6 @@ def initial_scan():
             except (FileNotFoundError, PermissionError):
                 continue
 
-            if size < MIN_SIZE:
-                continue
-
             index[filepath] = size
 
     dir_count = len(set(path.dirname(p) for p in index))
@@ -269,9 +265,6 @@ def handle_event(event):
         try:
             size = os.path.getsize(abs_path)
         except (FileNotFoundError, PermissionError):
-            return
-
-        if size < MIN_SIZE:
             return
 
         with lock:

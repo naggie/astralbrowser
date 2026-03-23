@@ -120,8 +120,6 @@ ignores = [
     ".git",
 ]
 
-MIN_SIZE = 1024 # 1KB
-
 chdir(root)
 
 # list of tuples: (size, path)
@@ -141,10 +139,6 @@ for dirpath, dirnames, filenames in walk(".", followlinks=True):
         try:
             size = path.getsize(filepath)
         except FileNotFoundError:
-            continue
-
-        # no possible use for these files
-        if size < MIN_SIZE:
             continue
 
         file_list.append((size, filepath))
