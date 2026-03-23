@@ -272,7 +272,30 @@ def handle_event(event):
                 rewrite_needed.set()
 
 
+DESIRED_MAX_WATCHES = 1048576  # 1M, default is typically 8192 or 65536
+
+
+def raise_watch_limit():
+    """Bump inotify watch limit if it's below our desired value.
+
+    Requires root, but we already need root for chown.
+    """
+    sysctl_path = "/proc/sys/fs/inotify/max_user_watches"
+    with open(sysctl_path, "r") as f:
+        current = int(f.read().strip())
+    if current < DESIRED_MAX_WATCHES:
+        with open(sysctl_path, "w") as f:
+            f.write(str(DESIRED_MAX_WATCHES))
+        print(
+            "astralbrowser-realtime-indexer: raised max_user_watches from %d to %d"
+            % (current, DESIRED_MAX_WATCHES),
+            file=sys.stderr,
+        )
+
+
 def main():
+    raise_watch_limit()
+
     def on_signal(signum, frame):
         print("astralbrowser-realtime-indexer: shutting down", file=sys.stderr)
         shutdown.set()
