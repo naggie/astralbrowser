@@ -126,6 +126,7 @@ IGNORES = [
 ]
 
 MIN_SIZE = 1024  # 1KB
+MAX_WATCHES_SYSCTL = "/proc/sys/fs/inotify/max_user_watches"
 
 # --- state protected by lock ---
 lock = threading.Lock()
@@ -203,7 +204,10 @@ def rewrite_thread():
 
 
 def initial_scan():
-    """Walk the tree to build the initial in-memory index, same as the batch indexer."""
+    """Walk the tree to build the initial in-memory index, same as the batch indexer.
+
+    Returns the number of unique directories containing indexed files.
+    """
     os.chdir(root)
     for dirpath, dirnames, filenames in os.walk(".", followlinks=True):
         for filename in filenames:
@@ -224,7 +228,16 @@ def initial_scan():
 
             index[filepath] = size
 
+    dir_count = len(set(path.dirname(p) for p in index))
+
+    with open(MAX_WATCHES_SYSCTL, "r") as f:
+        max_watches = int(f.read().strip())
+    assert max_watches >= dir_count, (
+        "max_user_watches (%d) < directories to watch (%d)" % (max_watches, dir_count)
+    )
+
     full_rewrite()
+    return dir_count
 
 
 def handle_event(event):
@@ -280,11 +293,10 @@ def raise_watch_limit():
 
     Requires root, but we already need root for chown.
     """
-    sysctl_path = "/proc/sys/fs/inotify/max_user_watches"
-    with open(sysctl_path, "r") as f:
+    with open(MAX_WATCHES_SYSCTL, "r") as f:
         current = int(f.read().strip())
     if current < DESIRED_MAX_WATCHES:
-        with open(sysctl_path, "w") as f:
+        with open(MAX_WATCHES_SYSCTL, "w") as f:
             f.write(str(DESIRED_MAX_WATCHES))
         print(
             "astralbrowser-realtime-indexer: raised max_user_watches from %d to %d"
