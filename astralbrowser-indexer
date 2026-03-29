@@ -21,6 +21,10 @@ user = environ["ASTRALBROWSER_USER"]
 indexfile = path.join(root, ".index.txt")
 indextmp = path.join(root, ".index-tmp.txt")
 
+# 24h matches the systemd timer interval -- if the sub-index is older than one
+# cycle, it's overdue for a refresh and we should crawl instead
+MAX_INDEX_AGE_S = 24 * 3600
+
 # adapted from my git ignores
 ignores = [
     ".envrc",
@@ -121,6 +125,42 @@ ignores = [
 ]
 
 
+def try_read_sub_index(index_path, dirpath):
+    """If index_path is a valid, recent .index.txt, return its entries with
+    paths rewritten to be relative to the root. Returns None on any failure."""
+    try:
+        with open(index_path, "r") as f:
+            header = f.readline()
+            fields = header.strip().split(" ")
+            if len(fields) != 3:
+                return None
+
+            timestamp = int(fields[2])
+            age = time() - timestamp
+            if age > MAX_INDEX_AGE_S or age < 0:
+                return None
+
+            entries = []
+            for line in f:
+                line = line.strip()
+                if not line:
+                    continue
+                # format: "<size> <relpath>"
+                space = line.index(" ")
+                size = int(line[:space])
+                entry_path = line[space + 1:]
+                # entry_path is relative to the sub-index dir (e.g. ./foo/bar),
+                # rewrite to be relative to root
+                if entry_path.startswith("./"):
+                    entry_path = entry_path[2:]
+                entries.append((size, path.join(dirpath, entry_path)))
+
+            print("using sub-index: %s (%s entries)" % (index_path, len(entries)), file=sys.stderr)
+            return entries
+    except (OSError, ValueError, IndexError):
+        return None
+
+
 chdir(root)
 
 # list of tuples: (size, path)
@@ -128,6 +168,17 @@ chdir(root)
 file_list = []  # older python!
 
 for dirpath, dirnames, filenames in walk(".", followlinks=True):
+    # Skip the root's own .index.txt -- that's the file we're writing
+    if dirpath != ".":
+        sub_index = path.join(dirpath, ".index.txt")
+        if path.isfile(sub_index):
+            entries = try_read_sub_index(sub_index, dirpath)
+            if entries is not None:
+                file_list.extend(entries)
+                # don't descend into this subtree, the sub-index covers it
+                dirnames.clear()
+                continue
+
     for filename in filenames:
         if any(fnmatch(filename, ignore) for ignore in ignores):
             continue
