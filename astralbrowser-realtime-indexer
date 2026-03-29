@@ -26,6 +26,10 @@ user = environ["ASTRALBROWSER_USER"]
 indexfile = path.join(root, ".index.txt")
 indextmp = path.join(root, ".index-tmp.txt")
 
+MAX_INDEX_AGE = 24 * 3600
+# Rewrite before the batch indexer would consider our index stale
+REFRESH_INTERVAL = MAX_INDEX_AGE - 10 * 60
+
 # Same ignore list as the batch indexer
 IGNORES = [
     path.basename(indexfile),
@@ -179,23 +183,34 @@ def rewrite_thread():
     """Background thread that performs rate-limited full rewrites.
 
     Wakes when rewrite_needed is set, waits 5 seconds (coalescing multiple
-    removals), then rewrites.
+    removals), then rewrites. Also rewrites periodically to keep the timestamp
+    fresh so the batch indexer (and the frontend) never sees a stale index.
     """
+    last_write = time.time()
     try:
         while not shutdown.is_set():
-            rewrite_needed.wait(timeout=1.0)
+            remaining = REFRESH_INTERVAL - (time.time() - last_write)
+            timeout = min(max(remaining, 0), 1.0)
+
+            rewrite_needed.wait(timeout=timeout)
             if shutdown.is_set():
                 break
-            if not rewrite_needed.is_set():
+
+            now = time.time()
+            age = now - last_write
+            if not rewrite_needed.is_set() and age < REFRESH_INTERVAL:
                 continue
 
             rewrite_needed.clear()
-            # Rate limit: wait 5s to coalesce rapid changes
-            shutdown.wait(timeout=5.0)
-            if shutdown.is_set():
-                break
+            # Rate limit: wait 5s to coalesce rapid changes (skip if this is
+            # just a periodic timestamp refresh)
+            if age < REFRESH_INTERVAL:
+                shutdown.wait(timeout=5.0)
+                if shutdown.is_set():
+                    break
 
             full_rewrite()
+            last_write = time.time()
     except Exception:
         import traceback
         traceback.print_exc()

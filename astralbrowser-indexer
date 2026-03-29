@@ -23,7 +23,7 @@ indextmp = path.join(root, ".index-tmp.txt")
 
 # 24h matches the systemd timer interval -- if the sub-index is older than one
 # cycle, it's overdue for a refresh and we should crawl instead
-MAX_INDEX_AGE_S = 24 * 3600
+MAX_INDEX_AGE = 24 * 3600
 
 # adapted from my git ignores
 ignores = [
@@ -137,7 +137,7 @@ def try_read_sub_index(index_path, dirpath):
 
             timestamp = int(fields[2])
             age = time() - timestamp
-            if age > MAX_INDEX_AGE_S or age < 0:
+            if age > MAX_INDEX_AGE or age < 0:
                 return None
 
             entries = []
