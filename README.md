@@ -45,6 +45,11 @@ Walks the entire file tree and writes `.index.txt` atomically. Designed to run
 periodically via a systemd timer (default: every 24h). See
 `install-indexer-example.sh`.
 
+If a `.index.txt` is found in a subdirectory (e.g. a mounted network share
+running its own indexer) and is less than 24h old, its entries are incorporated
+directly and the subdirectory is not crawled. This avoids redundant traversal
+of remote filesystems.
+
 ### `astralbrowser-realtime-indexer` (inotify)
 
 Long-running daemon that uses inotify to watch `ASTRALBROWSER_ROOT` recursively.
