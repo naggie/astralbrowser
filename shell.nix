@@ -1,10 +1,12 @@
-{ pkgs ? import <nixpkgs> {} }:
+{
+  pkgs ? import <nixpkgs> { },
+}:
 
 pkgs.mkShell {
   buildInputs = with pkgs; [
     # Node.js and npm for building the JavaScript application
     nodejs_20
-    
+
     # nginx for serving the demo
     nginx
 
