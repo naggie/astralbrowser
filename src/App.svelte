@@ -88,6 +88,11 @@
 {/if}
 
 <style>
+    /* hack: assumes mount target has id="astralbrowser" */
+    :global(#astralbrowser) {
+        padding: 0 20px;
+    }
+
     :global(#astralbrowser-toolbar) {
         display:flex;
     }
