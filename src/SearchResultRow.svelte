@@ -1,17 +1,23 @@
 <script lang="ts">
-    // can handle a million files whilst still being responsive!
     import { joinPath, splitName, humanFileSize } from './util';
-    export let result: Result;
-    export let mountPoint: string;
-    export let selected: boolean = false;
+    import { untrack } from 'svelte';
 
-    let tr: HTMLTableRowElement;
+    let { result, mountPoint, selected = false }: {
+        result: Result;
+        mountPoint: string;
+        selected?: boolean;
+    } = $props();
 
-    const [path, name] = splitName(result.path);
+    let tr: HTMLTableRowElement = $state(undefined);
 
-    $: if (tr && selected) {
-        tr.scrollIntoView({block: "nearest"});
-    }
+    // result is fixed per row; untrack avoids a spurious reactivity warning
+    const [path, name] = untrack(() => splitName(result.path));
+
+    $effect(() => {
+        if (tr && selected) {
+            tr.scrollIntoView({block: "nearest"});
+        }
+    });
 </script>
     <tr class:selected bind:this={tr}>
         {#if name.endsWith("/")}

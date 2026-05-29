@@ -1,25 +1,24 @@
 <script lang="ts">
-    // TODO maybe instant search
     import { hash } from './stores';
     import LsDir from './LsDir.svelte';
     import { joinPath } from './util';
     import SearchEngineWorker from './searchengineworker?worker&inline';
     import SearchResultsView from './SearchResultsView.svelte';
-    import { onMount } from 'svelte';
-    // path is what user sees, mountpoint is where path exists
-    export let mountPoint: string;
+    import { onMount, untrack } from 'svelte';
+
+    let { mountPoint }: { mountPoint: string } = $props();
 
     let input: HTMLInputElement;
 
-    const indexUrl = new URL(joinPath(mountPoint, '.index.txt'), window.location.origin).href;
-    let searchResults: Result[] = [];
-    let searchReport: ProgressReport;
-    let searchError: string = "";
-    let path: string = "/";
-    let query: string = "";
+    // mountPoint is fixed at mount time; untrack avoids a spurious reactivity warning
+    const indexUrl = new URL(joinPath(untrack(() => mountPoint), '.index.txt'), window.location.origin).href;
+    let searchResults: Result[] = $state([]);
+    let searchReport: ProgressReport = $state(undefined);
+    let searchError: string = $state("");
+    let path: string = $state("/");
+    let query: string = $state("");
 
     const searchEngineWorker = new SearchEngineWorker();
-    // (when search bar is focused, index is built)
     searchEngineWorker.onmessage = (e) => {
         const response: WorkerResponse = e.data;
 
@@ -43,23 +42,28 @@
     }
     searchEngineWorker.postMessage({type:"init", indexUrl: indexUrl, resultLimit: 100});
 
-    function handlePathSubmit(e: any) {
-        window.location.hash = joinPath("/", e.target.elements["path"].value, "/");
+    function handlePathSubmit(e: SubmitEvent) {
+        const form = e.target as HTMLFormElement;
+        window.location.hash = joinPath("/", (form.elements as any)["path"].value, "/");
     }
 
+    $effect(() => {
+        if ($hash) {
+            path = joinPath('/', $hash, '/');
+            query = "";
+        }
+    });
 
-    $: if ($hash) {
-        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
-        path = joinPath('/', $hash, '/');
-        query = "";
-    }
+    $effect(() => {
+        searchEngineWorker.postMessage({type:"newSearch", query: query});
+    });
 
-    $: searchEngineWorker.postMessage({type:"newSearch", query: query});
-
-    $: if(query) {
-        searchEngineWorker.postMessage({type:"buildIndex"});
-        path = "/";
-    }
+    $effect(() => {
+        if (query) {
+            searchEngineWorker.postMessage({type:"buildIndex"});
+            path = "/";
+        }
+    });
 
     onMount(() => {
         input.focus();
@@ -67,11 +71,11 @@
 </script>
 
 <div id="astralbrowser-toolbar">
-    <form id="astralbrowser-toolbar-path" on:submit|preventDefault={handlePathSubmit}>
+    <form id="astralbrowser-toolbar-path" onsubmit={(e) => { e.preventDefault(); handlePathSubmit(e); }}>
         <input type="text" value={query && "Search results" || path} name="path" spellcheck="false" disabled={!!query}>
         <input type="submit" hidden />
     </form>
-    <form id="astralbrowser-toolbar-search" on:submit|preventDefault={() => {}}>
+    <form id="astralbrowser-toolbar-search" onsubmit={(e) => e.preventDefault()}>
         <input type="text" bind:value={query} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
         <input type="submit" hidden />
     </form>
@@ -84,24 +88,24 @@
 {/if}
 
 <style>
-    #astralbrowser-toolbar {
+    :global(#astralbrowser-toolbar) {
         display:flex;
     }
 
-    #astralbrowser-toolbar input {
+    :global(#astralbrowser-toolbar input) {
         width:100%;
     }
 
-    #astralbrowser-toolbar-path {
+    :global(#astralbrowser-toolbar-path) {
         width:70%;
     }
 
-    #astralbrowser-toolbar-search {
+    :global(#astralbrowser-toolbar-search) {
         width:30%;
     }
 
-    #astralbrowser-toolbar form input[name=path],
-    #astralbrowser-toolbar form input[name="path"]:focus {
+    :global(#astralbrowser-toolbar form input[name=path]),
+    :global(#astralbrowser-toolbar form input[name="path"]:focus) {
         border: none!important;
         background: transparent;
         color: var(--heading);

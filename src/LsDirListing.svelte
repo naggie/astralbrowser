@@ -1,15 +1,16 @@
 <script lang="ts">
     import { parentDir } from './util';
-    import { onMount } from 'svelte';
+    import { onMount, untrack } from 'svelte';
     import LsDirRow from './LsDirRow.svelte';
-    export let mountPoint: string;
-    export let path: string = "/";
-    export let listing: Listing;
-    let selected: number = path == "/" ? -1 : -2;
 
-    // TODO refactor to avoid duplication with SearchResultsView?
-    // by always prepending parent dir entry to listing?
+    let { mountPoint, path = "/", listing }: {
+        mountPoint: string;
+        path?: string;
+        listing: Listing;
+    } = $props();
 
+    // path is a prop; untrack captures only the mount-time value for initial selection
+    let selected = $state(untrack(() => path == "/" ? -1 : -2));
     let tbody: HTMLElement;
 
     function handleKeydown(e: KeyboardEvent) {
@@ -17,7 +18,6 @@
             if (selected < listing.length - 1) {
                 selected += 1;
             } else {
-                // wrap around
                 selected = path != "/" ? -1 : 0;
             }
             e.preventDefault();
@@ -25,7 +25,6 @@
             if (selected > 0 || (selected == 0 && path != "/")) {
                 selected -= 1;
             } else {
-                // wrap around
                 selected = listing.length - 1;
             }
             e.preventDefault();

@@ -1,21 +1,17 @@
 <script lang="ts">
     import {joinPath} from './util';
     import LsDirListing from './LsDirListing.svelte';
-    export let mountPoint: string;
 
-    export let path: string = "/";
+    let { mountPoint, path = "/" }: { mountPoint: string; path?: string } = $props();
 
-    let listingReq: Promise<Listing>;
-    let readme: string = "";
+    let listingReq: Promise<Listing> = $state(undefined);
+    let readme: string = $state("");
 
     async function load_path(path: string) : Promise<Listing> {
-        // invalidate readme
         readme = "";
 
-        // must end in a slash to avoid loading massive non-directories. Set path to reflect in UI
         path = joinPath('/', path, '/');
 
-        // can get annoying if we don't do this
         window.scroll(0,0);
 
         const response = await fetch(
@@ -34,28 +30,28 @@
 
         const listing: Listing = Array.from(await response.json());
 
-        // look for README.md and remove it from listing, download and display it later
         for (let i = 0; i < listing.length; i++) {
             if (listing[i].name == "README.md" && listing[i].type == "file") {
                 listing.splice(i, 1);
                 const readmeResp = await fetch( joinPath(mountPoint, path, "README.md"));
                 readme = await readmeResp.text();
-                break; // important to break here, otherwise i may be out of bounds
+                break;
             }
         }
 
-        // remove .index.txt as well, it's the index file...
         for (let i = 0; i < listing.length; i++) {
             if (listing[i].name == ".index.txt" && listing[i].type == "file") {
                 listing.splice(i, 1);
-                break; // important to break here, otherwise i may be out of bounds
+                break;
             }
         }
 
         return listing;
     }
 
-    $: listingReq = load_path(path);
+    $effect(() => {
+        listingReq = load_path(path);
+    });
 </script>
 
 {#await listingReq}

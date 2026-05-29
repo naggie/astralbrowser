@@ -1,25 +1,24 @@
 <script lang="ts">
-    // can handle a million files whilst still being responsive!
     import { onMount } from 'svelte';
     import SearchResultRow from './SearchResultRow.svelte';
-    export let results: Result[];
-    export let report: ProgressReport;
-    export let error: string = "";
-    export let mountPoint: string = "";
-    export let selected: number = -1;
 
-    let tbody: HTMLTableSectionElement;
+    let { results, report, error = "", mountPoint = "" }: {
+        results: Result[];
+        report: ProgressReport;
+        error?: string;
+        mountPoint?: string;
+    } = $props();
 
-    // indexer runs every 24h
+    let selected = $state(-1);
+    let tbody: HTMLTableSectionElement = $state(undefined);
+
     const MAX_INDEX_AGE = 28 * 3600 * 1000;
-
 
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "ArrowDown") {
             if (selected < results.length - 1) {
                 selected += 1;
             } else {
-                // wrap around
                 selected = 0;
             }
             e.preventDefault();
@@ -27,7 +26,6 @@
             if (selected > 0) {
                 selected -= 1;
             } else {
-                // wrap around
                 selected = results.length - 1;
             }
             e.preventDefault();
@@ -83,7 +81,7 @@
           <tr>
             <th>Name</th>
             <th style="width:60%;">Path</th>
-            <th style="width:96px">Size</th> 
+            <th style="width:96px">Size</th>
           </tr>
         </thead>
         <tbody bind:this={tbody}>
@@ -95,7 +93,6 @@
 {/if}
 
 <style>
-    /* TODO: Migrate to global styles namespace so this can be re-used */
     .astralbrowser-progress,
     .astralbrowser-progress-bar {
         height: 1px;
@@ -104,7 +101,6 @@
     }
 
     .astralbrowser-progress {
-        /* change back to var when re-enable when github.com/darionco/rollup-plugin-web-worker-loader/issues/60 is fixed and we can generate css */
         background-color: black;
         display: flex;
         margin: 20px 0;
