@@ -5,7 +5,7 @@
 pkgs.mkShell {
   buildInputs = with pkgs; [
     # Node.js and npm for building the JavaScript application
-    nodejs_20
+    nodejs
 
     # nginx for serving the demo
     nginx
