@@ -67,6 +67,7 @@
         // Swap: the preloaded element becomes the player
         useA = !useA;
         const current = useA ? audioA : audioB;
+        current.currentTime = 0;
         current.play();
 
         // Preload next-next onto the now-idle element
