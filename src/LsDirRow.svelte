@@ -28,7 +28,7 @@
         <td>
             <a href={joinPath(mountPoint, path, item.name)}>{item.name}</a>
             {#if onAudioPlay}
-                <button class="audio-play-btn" onclick={() => audioPlaying ? onAudioStop() : onAudioPlay()}>
+                <button class="audio-play-btn" class:playing={audioPlaying} onclick={() => audioPlaying ? onAudioStop() : onAudioPlay()}>
                     {audioPlaying ? "Stop" : "Play"}
                 </button>
             {/if}
@@ -45,5 +45,11 @@
         padding: 1px 8px;
         margin: 0;
         cursor: pointer;
+        visibility: hidden;
+    }
+
+    tr:hover .audio-play-btn,
+    .audio-play-btn.playing {
+        visibility: visible;
     }
 </style>
