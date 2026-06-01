@@ -48,7 +48,7 @@
         visibility: hidden;
     }
 
-    tr:hover .audio-play-btn,
+    :global(tr:hover) .audio-play-btn,
     .audio-play-btn.playing {
         visibility: visible;
     }
