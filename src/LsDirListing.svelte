@@ -90,6 +90,7 @@
 
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "ArrowDown") {
+            (document.activeElement as HTMLElement)?.blur();
             if (selected < listing.length - 1) {
                 selected += 1;
             } else {
@@ -97,12 +98,24 @@
             }
             e.preventDefault();
         } else if (e.key === "ArrowUp") {
+            (document.activeElement as HTMLElement)?.blur();
             if (selected > 0 || (selected == 0 && path != "/")) {
                 selected -= 1;
             } else {
                 selected = listing.length - 1;
             }
             e.preventDefault();
+        } else if (e.key === " ") {
+            if (selected >= 0 && selected < listing.length && isPlayable(listing[selected])) {
+                if (playingFile === listing[selected].name) {
+                    stopPlaying();
+                } else {
+                    startPlaying(listing[selected].name);
+                }
+                e.preventDefault();
+            }
+        } else if (e.key === "Escape") {
+            selected = -2;
         } else if (e.key === "Enter") {
             const a = tbody.querySelector("tr.selected a:first-child") as HTMLAnchorElement;
             if (a) {
@@ -111,10 +124,24 @@
         }
     }
 
+    function handleFocusIn(e: FocusEvent) {
+        if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) {
+            selected = -2;
+        }
+    }
+
+    function handleClick() {
+        selected = -2;
+    }
+
     onMount(() => {
         window.addEventListener("keydown", handleKeydown);
+        window.addEventListener("focusin", handleFocusIn);
+        window.addEventListener("click", handleClick);
         return () => {
             window.removeEventListener("keydown", handleKeydown);
+            window.removeEventListener("focusin", handleFocusIn);
+            window.removeEventListener("click", handleClick);
         }
     });
 </script>

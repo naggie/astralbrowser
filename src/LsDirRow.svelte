@@ -49,6 +49,7 @@
     }
 
     tr:hover .audio-play-btn,
+    tr.selected .audio-play-btn,
     .audio-play-btn.playing {
         visibility: visible;
     }
