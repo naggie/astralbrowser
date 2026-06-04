@@ -47,6 +47,13 @@
         window.location.hash = joinPath("/", (form.elements as any)["path"].value, "/");
     }
 
+    function handleSearchResultClick(e: MouseEvent) {
+        const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement;
+        if (!a) return;
+        query = "";
+        path = joinPath('/', a.getAttribute('href').slice(1), '/');
+    }
+
     $effect(() => {
         if ($hash) {
             path = joinPath('/', $hash, '/');
@@ -82,7 +89,10 @@
 </div>
 
 {#if query}
+<!-- svelte-ignore a11y_no_static_element_interactions -->
+<div onclick={handleSearchResultClick}>
 <SearchResultsView results={searchResults} report={searchReport} error={searchError} mountPoint={mountPoint} />
+</div>
 {:else}
 <LsDir mountPoint={mountPoint} path={path} />
 {/if}
