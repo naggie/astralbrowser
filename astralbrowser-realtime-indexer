@@ -133,6 +133,14 @@ IGNORES = [
 
 MAX_WATCHES_SYSCTL = "/proc/sys/fs/inotify/max_user_watches"
 
+WATCH_MASK = (
+    inotify.constants.IN_CREATE
+    | inotify.constants.IN_CLOSE_WRITE
+    | inotify.constants.IN_DELETE
+    | inotify.constants.IN_MOVED_FROM
+    | inotify.constants.IN_MOVED_TO
+)
+
 # --- state protected by lock ---
 lock = threading.Lock()
 # dict of relative_path -> size, the authoritative index
@@ -253,15 +261,39 @@ def initial_scan():
     return dir_count
 
 
-def handle_event(event):
+def add_watch_tree(i, dirpath):
+    """Add watches for dirpath and all non-ignored subdirectories."""
+    for dp, dirnames, _ in os.walk(dirpath, followlinks=True):
+        dirnames[:] = [d for d in dirnames if not is_ignored(d)]
+        try:
+            i.add_watch(dp, mask=WATCH_MASK)
+        except Exception as e:
+            print("warning: could not watch %s: %s" % (dp, e), file=sys.stderr)
+
+
+def index_dir_files(dirpath):
+    """Index all files under a directory that was moved into the tree."""
+    for dp, dirnames, filenames in os.walk(dirpath, followlinks=True):
+        dirnames[:] = [d for d in dirnames if not is_ignored(d)]
+        for filename in filenames:
+            if is_ignored(filename):
+                continue
+            abs_path = path.join(dp, filename)
+            rel = "./" + os.path.relpath(abs_path, root)
+            try:
+                size = path.getsize(abs_path)
+            except (FileNotFoundError, PermissionError):
+                continue
+            with lock:
+                index[rel] = size
+    rewrite_needed.set()
+
+
+def handle_event(event, i):
     header, type_names, watch_path, filename = event
 
     if not filename:
         return
-
-    # New directory created -- inotify_simple won't auto-watch it, but
-    # inotify.adapters.InotifyTree does handle this for us.
-    # We only care about file events.
 
     abs_path = path.join(watch_path, filename)
     rel_path = os.path.relpath(abs_path, root)
@@ -274,8 +306,11 @@ def handle_event(event):
     is_dir = "IN_ISDIR" in type_names
 
     if is_dir:
-        # We don't index directories, only files. InotifyTree handles
-        # adding watches for new subdirectories automatically.
+        if "IN_CREATE" in type_names:
+            add_watch_tree(i, abs_path)
+        elif "IN_MOVED_TO" in type_names:
+            add_watch_tree(i, abs_path)
+            index_dir_files(abs_path)
         return
 
     # IN_CREATE is needed because some operations (hard links, reflinks,
@@ -335,16 +370,8 @@ def main():
     # Start watching BEFORE the initial scan so events that occur during the
     # walk queue in the kernel's inotify buffer. After the scan, we drain
     # those events — duplicates are harmless (dict upsert).
-    i = inotify.adapters.InotifyTree(
-        root,
-        mask=(
-            inotify.constants.IN_CREATE
-            | inotify.constants.IN_CLOSE_WRITE
-            | inotify.constants.IN_DELETE
-            | inotify.constants.IN_MOVED_FROM
-            | inotify.constants.IN_MOVED_TO
-        ),
-    )
+    i = inotify.adapters.Inotify()
+    add_watch_tree(i, root)
 
     print("astralbrowser-realtime-indexer: scanning %s" % root, file=sys.stderr)
     initial_scan()
@@ -362,7 +389,7 @@ def main():
     for event in i.event_gen(yield_nones=False):
         if shutdown.is_set():
             break
-        handle_event(event)
+        handle_event(event, i)
 
     writer.join(timeout=10)
 
