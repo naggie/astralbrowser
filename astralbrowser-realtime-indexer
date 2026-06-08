@@ -145,7 +145,8 @@ shutdown = threading.Event()
 
 
 def is_ignored(name):
-    return any(fnmatch(name, pat) for pat in IGNORES)
+    # Strip trailing slash from patterns (gitignore convention for dirs)
+    return any(fnmatch(name, pat.rstrip("/")) for pat in IGNORES)
 
 
 def is_path_ignored(relpath):
@@ -226,10 +227,9 @@ def initial_scan():
     """
     os.chdir(root)
     for dirpath, dirnames, filenames in os.walk(".", followlinks=True):
+        dirnames[:] = [d for d in dirnames if not is_ignored(d)]
         for filename in filenames:
             if is_ignored(filename):
-                continue
-            if is_ignored(path.basename(dirpath)):
                 continue
 
             filepath = path.join(dirpath, filename)
