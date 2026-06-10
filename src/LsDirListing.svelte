@@ -3,7 +3,7 @@
     import { onMount, onDestroy, untrack } from 'svelte';
     import LsDirRow from './LsDirRow.svelte';
 
-    const AUDIO_EXTENSIONS = new Set(['mp3', 'ogg', 'oga', 'wav', 'flac', 'aac', 'm4a', 'opus', 'webm', 'weba']);
+    const AUDIO_EXTENSIONS = new Set(['mp3', 'ogg', 'oga', 'wav', 'flac', 'aac', 'm4a', 'opus', 'weba']);
 
     let { mountPoint, path = "/", listing }: {
         mountPoint: string;
