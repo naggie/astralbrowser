@@ -53,4 +53,11 @@
     .audio-play-btn.playing {
         visibility: visible;
     }
+
+    /* no hover on touch; show permanently so it's tappable */
+    @media (max-width: 700px) {
+        .audio-play-btn {
+            visibility: visible;
+        }
+    }
 </style>

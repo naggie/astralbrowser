@@ -164,12 +164,12 @@
             padding: 10px 12px;
             margin-bottom: 6px;
             border-radius: 4px;
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         /* reset even-row stripe so all cards have the same background */
         :global(#astralbrowser table tbody tr:nth-child(even)) {
-            background: rgba(255, 255, 255, 0.5);
+            background: rgba(255, 255, 255, 0.3);
         }
 
         :global(#astralbrowser table tbody td) {
