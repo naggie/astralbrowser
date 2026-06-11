@@ -144,4 +144,60 @@
         position: relative;
         top: -1px;
     }
+
+    /* Narrow screens: collapse table rows into cards by switching the table,
+       tr, and td elements to block/inline display. Each row becomes a card with
+       the name prominent on the first line and secondary metadata (size, date,
+       path) flowing inline below it. */
+    @media (max-width: 700px) {
+        :global(#astralbrowser table),
+        :global(#astralbrowser table tbody) {
+            display: block;
+        }
+
+        :global(#astralbrowser table thead) {
+            display: none;
+        }
+
+        :global(#astralbrowser table tbody tr) {
+            display: block;
+            padding: 10px 12px;
+            margin-bottom: 6px;
+            border-radius: 4px;
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        /* reset even-row stripe so all cards have the same background */
+        :global(#astralbrowser table tbody tr:nth-child(even)) {
+            background: rgba(255, 255, 255, 0.5);
+        }
+
+        :global(#astralbrowser table tbody td) {
+            display: block;
+            padding: 2px 0;
+        }
+
+        /* name / primary column: prominent, single line with ellipsis */
+        :global(#astralbrowser table tbody td:first-child) {
+            font-size: 16px;
+            padding-bottom: 4px;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            white-space: nowrap;
+        }
+
+        /* secondary columns (size, date, path) run inline on one line */
+        :global(#astralbrowser table tbody td:not(:first-child)) {
+            display: inline;
+            font-size: 13px;
+            color: #555;
+            padding: 0;
+        }
+
+        /* dot separator before the third column */
+        :global(#astralbrowser table tbody td:nth-child(3)::before) {
+            content: " · ";
+            color: #aaa;
+        }
+    }
 </style>
