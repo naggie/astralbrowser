@@ -81,11 +81,24 @@
         return item.type === "file" && AUDIO_EXTENSIONS.has(item.name.split('.').pop()?.toLowerCase() ?? '');
     }
 
+    // Keep system media controls in sync with playback state
+    $effect(() => {
+        if (!('mediaSession' in navigator)) return;
+        navigator.mediaSession.metadata = playingFile
+            ? new MediaMetadata({ title: playingFile })
+            : null;
+    });
+
     // LsDirListing is destroyed on navigation (LsDir re-awaits), but stop audio
     // immediately so there's no bleed during the loading transition
     onDestroy(() => {
         if (audioA) audioA.pause();
         if (audioB) audioB.pause();
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('nexttrack', null);
+            navigator.mediaSession.setActionHandler('previoustrack', null);
+            navigator.mediaSession.metadata = null;
+        }
     });
 
     function handleKeydown(e: KeyboardEvent) {
@@ -138,6 +151,20 @@
         window.addEventListener("keydown", handleKeydown);
         window.addEventListener("focusin", handleFocusIn);
         window.addEventListener("click", handleClick);
+
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.setActionHandler('nexttrack', () => {
+                if (!playingFile || playableFiles.length < 2) return;
+                const idx = playableFiles.indexOf(playingFile);
+                startPlaying(playableFiles[(idx + 1) % playableFiles.length]);
+            });
+            navigator.mediaSession.setActionHandler('previoustrack', () => {
+                if (!playingFile || playableFiles.length < 2) return;
+                const idx = playableFiles.indexOf(playingFile);
+                startPlaying(playableFiles[(idx - 1 + playableFiles.length) % playableFiles.length]);
+            });
+        }
+
         return () => {
             window.removeEventListener("keydown", handleKeydown);
             window.removeEventListener("focusin", handleFocusIn);
@@ -162,8 +189,8 @@
     {#if path != "/"}
       <tr class:selected={selected == -1}>
         <td><a class="astralbrowser-parent-directory" href={'#' + parentDir(path)}>../ <em>parent directory</em></a></td>
-        <td>-</td>
-        <td>-</td>
+        <td></td>
+        <td></td>
       </tr>
     {/if}
     {#each listing as item, i}

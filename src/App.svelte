@@ -128,23 +128,6 @@
         padding-left: 0;
     }
 
-    :global(.astralbrowser-parent-directory:before) {
-        content: "\21B0";
-        display: inline-block;
-        margin-right: 0.5em;
-        position: relative;
-        top: -1px;
-    }
-
-    :global(.astralbrowser-directory:before) {
-        content: "\1F4C1";
-        display: inline-block;
-        margin-right: 0.5em;
-        filter: saturate(0);
-        position: relative;
-        top: -1px;
-    }
-
     /* Narrow screens: collapse table rows into cards by switching the table,
        tr, and td elements to block/inline display. Each row becomes a card with
        the name prominent on the first line and secondary metadata (size, date,
@@ -162,6 +145,7 @@
         :global(#astralbrowser table tbody tr) {
             display: block;
             padding: 10px 12px;
+            padding-right: 90px; /* clearance for the absolute play button */
             margin-bottom: 6px;
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.3);
@@ -192,12 +176,6 @@
             font-size: 13px;
             color: #555;
             padding: 0;
-        }
-
-        /* dot separator before the third column */
-        :global(#astralbrowser table tbody td:nth-child(3)::before) {
-            content: " · ";
-            color: #aaa;
         }
     }
 </style>

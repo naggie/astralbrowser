@@ -22,7 +22,7 @@
 <tr class:selected bind:this={tr}>
     {#if item.type == "directory"}
         <td><a class="astralbrowser-directory" href={'#' + joinPath(path, item.name, "/")}>{joinPath(item.name, "/")}</a></td>
-        <td>-</td>
+        <td></td>
         <td>{humanRelativeTime(item.mtime)}</td>
     {:else if item.type == "file"}
         <td>
@@ -54,10 +54,20 @@
         visibility: visible;
     }
 
-    /* no hover on touch; show permanently so it's tappable */
+    /* no hover on touch; show permanently, large, bottom-right of card */
     @media (max-width: 700px) {
+        tr {
+            position: relative;
+        }
+
         .audio-play-btn {
             visibility: visible;
+            float: none;
+            position: absolute;
+            bottom: 10px;
+            right: 12px;
+            font-size: 24px;
+            padding: 2px 10px;
         }
     }
 </style>
