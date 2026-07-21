@@ -12,7 +12,7 @@ in
     pname = "astralbrowser-frontend";
     version = "0.0.1";
     inherit src;
-    npmDepsHash = "sha256-8h8fXbtRdPozYpEGyTEYrHmJVtL0iGnZdclFrHGqXJw=";
+    npmDepsHash = "sha256-DC+q7J9Vce9PnYmLXxLZ776EWplU3DxePNPDOERFfCA=";
     buildPhase = ''
       npm run build
     '';

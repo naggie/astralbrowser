@@ -1,6 +1,7 @@
 <script lang="ts">
     import {joinPath} from './util';
     import LsDirListing from './LsDirListing.svelte';
+    import { marked } from 'marked';
 
     let { mountPoint, path = "/" }: { mountPoint: string; path?: string } = $props();
 
@@ -64,10 +65,30 @@
 <p class="warningbox">{error.message}</p>
 {/await}
 
+<!-- README rendered as markdown. Content is trusted (own file server), so no
+     HTML sanitisation. marked runs sync with GitHub-flavoured defaults. -->
 {#if readme}
-<pre><code>
-# README.md
-
-{readme}
-</code></pre>
+<div class="astralbrowser-readme">
+    {@html marked.parse(readme, { gfm: true })}
+</div>
 {/if}
+
+<style>
+    /* @html content isn't scoped by Svelte, so target it globally. Host page
+       styles headings/paragraphs large; shrink them here. Code/pre untouched. */
+    :global(.astralbrowser-readme) {
+        font-size: 14px;
+    }
+    :global(.astralbrowser-readme h1) { font-size: 1.6em; }
+    :global(.astralbrowser-readme h2) { font-size: 1.3em; }
+    :global(.astralbrowser-readme h3) { font-size: 1.1em; }
+    :global(.astralbrowser-readme h4),
+    :global(.astralbrowser-readme h5),
+    :global(.astralbrowser-readme h6) { font-size: 1em; }
+    /* Host theme has a descendant rule (#centre ul li) that forces a different
+       font on list items; paragraphs escape it (direct-child selector). Match
+       lists back to the surrounding text. */
+    :global(.astralbrowser-readme ul),
+    :global(.astralbrowser-readme ol),
+    :global(.astralbrowser-readme li) { font-family: inherit; }
+</style>
