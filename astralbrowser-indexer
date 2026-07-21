@@ -85,6 +85,7 @@ ignores = [
     "*.tra",
     "*.uvopt",
     "*.uvproj",
+    "*.zsync",
     "*~",
     ".*.swp",
     ".AppleDouble",

@@ -5,6 +5,16 @@
 
     let { mountPoint, path = "/" }: { mountPoint: string; path?: string } = $props();
 
+    // File extensions (lower-case, no dot) hidden from the listing. e.g. .zsync
+    // control files that accompany published ISOs.
+    const IGNORED_EXTENSIONS = new Set(["zsync"]);
+
+    function isIgnored(item: ListingItem): boolean {
+        if (item.type !== "file") return false;
+        const ext = item.name.split('.').pop()?.toLowerCase() ?? '';
+        return IGNORED_EXTENSIONS.has(ext);
+    }
+
     let listingReq: Promise<Listing> = $state(undefined);
     let readme: string = $state("");
 
@@ -47,7 +57,7 @@
             }
         }
 
-        return listing;
+        return listing.filter(item => !isIgnored(item));
     }
 
     $effect(() => {

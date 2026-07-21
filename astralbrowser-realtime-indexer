@@ -92,6 +92,7 @@ IGNORES = [
     "*.tra",
     "*.uvopt",
     "*.uvproj",
+    "*.zsync",
     "*~",
     ".*.swp",
     ".AppleDouble",
