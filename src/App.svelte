@@ -1,5 +1,5 @@
 <script lang="ts">
-    import { hash } from './stores';
+    import { hash, navigateHash } from './stores';
     import LsDir from './LsDir.svelte';
     import { joinPath } from './util';
     import SearchEngineWorker from './searchengineworker?worker&inline';
@@ -15,10 +15,17 @@
     let searchResults: Result[] = $state([]);
     let searchReport: ProgressReport = $state(undefined);
     let searchError: string = $state("");
+    // The URL hash is the single source of truth. A leading "?" means a global
+    // search ("#?term"); anything else is a directory path. Search is not
+    // path-scoped, so no path is kept in the URL while searching.
+    const isSearchHash = (h: string) => h.startsWith("?");
+    const hashToQuery = (h: string) => isSearchHash(h) ? h.slice(1) : "";
+    const hashToPath = (h: string) => isSearchHash(h) ? "/" : joinPath('/', h, '/');
+
     let query: string = $state("");
-    // path derives from the URL hash: the hash is the single source of truth so
-    // browser back/forward and deep links stay in sync. Empty hash -> "/".
-    let path: string = $derived(joinPath('/', $hash, '/'));
+    let path: string = $derived(hashToPath($hash));
+    // Directory to return to when a search is cleared, captured on entry.
+    let preSearchHash: string = "";
 
     const searchEngineWorker = new SearchEngineWorker();
     searchEngineWorker.onmessage = (e) => {
@@ -49,17 +56,22 @@
         window.location.hash = joinPath("/", (form.elements as any)["path"].value, "/");
     }
 
-    function handleSearchResultClick(e: MouseEvent) {
-        const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement;
-        if (!a) return;
-        // The anchor's hash navigation drives path via $hash; just exit search.
-        query = "";
+    function handleSearchInput(e: Event) {
+        const value = (e.currentTarget as HTMLInputElement).value;
+        const entering = query === "" && value !== "";
+        if (entering) preSearchHash = $hash;  // remember directory to restore
+        query = value;
+        if (value)
+            // Push one history entry when search begins, then replace it on each
+            // keystroke so typing doesn't flood the back stack.
+            navigateHash("?" + encodeURIComponent(value), !entering);
+        else
+            navigateHash(preSearchHash, true);  // restore directory in place
     }
 
-    // Any hash navigation (link click, back/forward, path submit) exits search.
+    // Keep search box in sync with the hash for back/forward and deep links.
     $effect(() => {
-        $hash;
-        query = "";
+        query = hashToQuery($hash);
     });
 
     $effect(() => {
@@ -83,16 +95,14 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" onsubmit={(e) => e.preventDefault()}>
-        <input type="text" bind:value={query} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
+        <input type="text" value={query} oninput={handleSearchInput} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
         <input type="submit" hidden />
     </form>
 </div>
 
 {#if query}
-<!-- svelte-ignore a11y_no_static_element_interactions -->
-<div onclick={handleSearchResultClick}>
+<!-- Result links are #-anchors; the hash effect exits search when clicked. -->
 <SearchResultsView results={searchResults} report={searchReport} error={searchError} mountPoint={mountPoint} />
-</div>
 {:else}
 <LsDir mountPoint={mountPoint} path={path} />
 {/if}
