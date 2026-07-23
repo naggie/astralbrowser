@@ -15,8 +15,10 @@
     let searchResults: Result[] = $state([]);
     let searchReport: ProgressReport = $state(undefined);
     let searchError: string = $state("");
-    let path: string = $state("/");
     let query: string = $state("");
+    // path derives from the URL hash: the hash is the single source of truth so
+    // browser back/forward and deep links stay in sync. Empty hash -> "/".
+    let path: string = $derived(joinPath('/', $hash, '/'));
 
     const searchEngineWorker = new SearchEngineWorker();
     searchEngineWorker.onmessage = (e) => {
@@ -50,15 +52,14 @@
     function handleSearchResultClick(e: MouseEvent) {
         const a = (e.target as HTMLElement).closest('a[href^="#"]') as HTMLAnchorElement;
         if (!a) return;
+        // The anchor's hash navigation drives path via $hash; just exit search.
         query = "";
-        path = joinPath('/', a.getAttribute('href').slice(1), '/');
     }
 
+    // Any hash navigation (link click, back/forward, path submit) exits search.
     $effect(() => {
-        if ($hash) {
-            path = joinPath('/', $hash, '/');
-            query = "";
-        }
+        $hash;
+        query = "";
     });
 
     $effect(() => {
@@ -68,7 +69,6 @@
     $effect(() => {
         if (query) {
             searchEngineWorker.postMessage({type:"buildIndex"});
-            path = "/";
         }
     });
 
