@@ -155,7 +155,6 @@
         :global(#astralbrowser table tbody tr) {
             display: block;
             padding: 10px 12px;
-            padding-right: 90px; /* clearance for the absolute play button */
             margin-bottom: 6px;
             border-radius: 4px;
             background: rgba(255, 255, 255, 0.3);

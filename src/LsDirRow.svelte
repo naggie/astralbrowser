@@ -28,8 +28,12 @@
         <td>
             <a href={joinPath(mountPoint, path, item.name)}>{item.name}</a>
             {#if onAudioPlay}
-                <button class="audio-play-btn" class:playing={audioPlaying} onclick={() => audioPlaying ? onAudioStop() : onAudioPlay()}>
-                    {audioPlaying ? "Stop" : "Play"}
+                <button class="audio-play-btn" class:playing={audioPlaying} aria-label={audioPlaying ? "Stop" : "Play"} onclick={() => audioPlaying ? onAudioStop() : onAudioPlay()}>
+                    {#if audioPlaying}
+                        <svg class="audio-icon" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1" /></svg>
+                    {:else}
+                        <svg class="audio-icon" viewBox="0 0 16 16"><path d="M4 2.5v11l9-5.5z" /></svg>
+                    {/if}
                 </button>
             {/if}
         </td>
@@ -39,13 +43,26 @@
 </tr>
 
 <style>
+    /* floated right; equal padding -> square */
     .audio-play-btn {
         float: right;
-        font-size: 13px;
-        padding: 1px 8px;
+        font-size: 18px;
+        padding: 4px;
         margin: 0;
+        border: none;
+        background: rgba(0, 0, 0, 0.2);
         cursor: pointer;
         visibility: hidden;
+        line-height: 0;
+    }
+
+    /* icon scales with the button's font-size (see the mobile override below).
+       Both icons share the same 1em square box so play/stop never shift layout. */
+    .audio-icon {
+        width: 1em;
+        height: 1em;
+        fill: currentColor;
+        display: block;
     }
 
     tr:hover .audio-play-btn,
@@ -54,20 +71,11 @@
         visibility: visible;
     }
 
-    /* no hover on touch; show permanently, large, bottom-right of card */
+    /* no hover on touch; show permanently */
     @media (max-width: 700px) {
-        tr {
-            position: relative;
-        }
-
         .audio-play-btn {
             visibility: visible;
-            float: none;
-            position: absolute;
-            bottom: 10px;
-            right: 12px;
-            font-size: 24px;
-            padding: 2px 10px;
+            font-size: 22px;
         }
     }
 </style>
