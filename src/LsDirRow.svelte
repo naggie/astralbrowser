@@ -50,7 +50,7 @@
         padding: 4px;
         margin: 0;
         border: none;
-        background: rgba(0, 0, 0, 0.2);
+        background: lightgray;
         cursor: pointer;
         visibility: hidden;
         line-height: 0;
