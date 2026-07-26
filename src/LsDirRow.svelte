@@ -49,8 +49,12 @@
         font-size: 18px;
         padding: 4px;
         margin: 0;
-        border: none;
-        background: lightgray;
+        /* Match the host theme's CTA buttons (aerogel): pull colours from its
+           CSS vars when embedded in the portal, falling back to the standalone
+           colours. No rounded border. currentColor drives the icon fill. */
+        border: 1px solid var(--text, black);
+        background: var(--bg, lightgray);
+        color: var(--text, inherit);
         cursor: pointer;
         visibility: hidden;
         line-height: 0;
