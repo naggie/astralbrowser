@@ -104,7 +104,9 @@
     function handleKeydown(e: KeyboardEvent) {
         if (e.key === "ArrowDown") {
             (document.activeElement as HTMLElement)?.blur();
-            if (selected < listing.length - 1) {
+            if (selected === -2) {
+                selected = 0;  // no selection: start at the first real item, not the parent dir
+            } else if (selected < listing.length - 1) {
                 selected += 1;
             } else {
                 selected = path != "/" ? -1 : 0;
