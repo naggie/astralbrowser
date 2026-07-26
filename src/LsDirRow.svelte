@@ -43,6 +43,14 @@
 </tr>
 
 <style>
+    /* The play/stop button is taller than a text line, so audio rows would be
+       taller than plain rows. Give every row the button's box height (1em icon
+       + 2*4px padding + 2*1px border) so all rows match and their text centres
+       (vertical-align:middle) regardless of whether a button is present. */
+    td {
+        line-height: 28px;
+    }
+
     /* floated right; equal padding -> square */
     .audio-play-btn {
         float: right;
@@ -80,6 +88,11 @@
         .audio-play-btn {
             visibility: visible;
             font-size: 22px;
+        }
+
+        /* bigger icon -> taller button; keep every row's height in step */
+        td {
+            line-height: 32px;
         }
     }
 </style>
