@@ -127,6 +127,15 @@
                 }
                 e.preventDefault();
             }
+        } else if (e.key === "Backspace") {
+            // Go up a directory — unless a text input (search/path box) is
+            // focused, where Backspace must stay an edit key.
+            const el = document.activeElement;
+            if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return;
+            if (path != "/") {
+                window.location.hash = parentDir(path);
+                e.preventDefault();
+            }
         } else if (e.key === "Escape") {
             selected = -2;
         } else if (e.key === "Enter") {
