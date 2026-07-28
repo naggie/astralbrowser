@@ -11,10 +11,10 @@
         onAudioStop?: () => void;
     } = $props();
 
-    let tr: HTMLTableRowElement = $state(undefined);
+    let tr: HTMLTableRowElement;
 
     $effect(() => {
-        if (tr && selected) {
+        if (selected) {
             tr.scrollIntoView({block: "nearest"});
         }
     });
@@ -28,7 +28,7 @@
         <td>
             <a href={joinPath(mountPoint, path, item.name)}>{item.name}</a>
             {#if onAudioPlay}
-                <button class="audio-play-btn" class:playing={audioPlaying} aria-label={audioPlaying ? "Stop" : "Play"} onclick={() => audioPlaying ? onAudioStop() : onAudioPlay()}>
+                <button class="audio-play-btn" class:playing={audioPlaying} aria-label={audioPlaying ? "Stop" : "Play"} onclick={() => audioPlaying ? onAudioStop?.() : onAudioPlay?.()}>
                     {#if audioPlaying}
                         <svg class="audio-icon" viewBox="0 0 16 16"><rect x="3" y="3" width="10" height="10" rx="1" /></svg>
                     {:else}

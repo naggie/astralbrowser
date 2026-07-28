@@ -15,7 +15,9 @@
         return IGNORED_EXTENSIONS.has(ext);
     }
 
-    let listingReq: Promise<Listing> = $state(undefined);
+    // Stays pending (so {#await} shows the loading bar) until the effect below
+    // kicks off the first real load on mount. Avoids a nullable initial value.
+    let listingReq: Promise<Listing> = $state(new Promise<Listing>(() => {}));
     let readme: string = $state("");
 
     async function load_path(path: string) : Promise<Listing> {

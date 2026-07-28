@@ -13,7 +13,7 @@
     // mountPoint is fixed at mount time; untrack avoids a spurious reactivity warning
     const indexUrl = new URL(joinPath(untrack(() => mountPoint), '.index.txt'), window.location.origin).href;
     let searchResults: Result[] = $state([]);
-    let searchReport: ProgressReport = $state(undefined);
+    let searchReport: ProgressReport | undefined = $state(undefined);
     let searchError: string = $state("");
     // The URL hash is the single source of truth. A leading "?" means a global
     // search ("#?term"); anything else is a directory path. Search is not
@@ -34,7 +34,7 @@
         switch(response.type) {
             case "result":
                 searchResults = [...searchResults, response.result];
-                searchError = undefined;
+                searchError = "";
                 break;
             case "progressUpdate":
                 searchReport = response.report;

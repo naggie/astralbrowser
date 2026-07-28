@@ -8,13 +8,13 @@
         selected?: boolean;
     } = $props();
 
-    let tr: HTMLTableRowElement = $state(undefined);
+    let tr: HTMLTableRowElement;
 
     // result is fixed per row; untrack avoids a spurious reactivity warning
     const [path, name] = untrack(() => splitName(result.path));
 
     $effect(() => {
-        if (tr && selected) {
+        if (selected) {
             tr.scrollIntoView({block: "nearest"});
         }
     });

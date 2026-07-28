@@ -46,7 +46,7 @@ export function parentDir(path: string) : string {
 // /foo/bar/baz.exe -> /foo/bar/ baz.exe
 export function splitName(path: string) : [string, string] {
     const parts = path.split('/');
-    const end = parts.pop();
+    const end = parts.pop() ?? "";
 
     if (end == "") {
         // directory

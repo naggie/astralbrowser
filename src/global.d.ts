@@ -12,14 +12,15 @@ declare global {
     interface File {
         name: string;
         type: "file";
-        mtime?: string;
-        size?: number;
+        mtime: string;
+        size: number;
     }
 
     interface Result {
         path: string;
+        // size is absent on directory results (searchengine.ts builds them as
+        // {path} only); present on file results parsed from .index.txt.
         size?: number;
-        mtime?: number;
     }
 
     type ListingItem = File|Directory;

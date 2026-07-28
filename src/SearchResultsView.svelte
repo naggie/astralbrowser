@@ -4,13 +4,15 @@
 
     let { results, report, error = "", mountPoint = "" }: {
         results: Result[];
-        report: ProgressReport;
+        report?: ProgressReport;
         error?: string;
         mountPoint?: string;
     } = $props();
 
     let selected = $state(-1);
-    let tbody: HTMLTableSectionElement = $state(undefined);
+    // tbody lives inside {#if results.length > 0}, so it binds/unbinds
+    // reactively and must be $state (undefined until the table renders)
+    let tbody: HTMLTableSectionElement | undefined = $state();
 
     const MAX_INDEX_AGE = 28 * 3600 * 1000;
 
@@ -30,7 +32,7 @@
             }
             e.preventDefault();
         } else if (e.key === "Enter") {
-            const a = tbody.querySelector("tr.selected a:first-child") as HTMLAnchorElement;
+            const a = tbody?.querySelector("tr.selected a:first-child") as HTMLAnchorElement;
             if (a) {
                 a.click();
             }
