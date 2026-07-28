@@ -6,6 +6,50 @@ See [my blog
 post](https://calbryant.uk/blog/designing-an-incredibly-fast-but-niche-file-search-engine/)
 for more details on the design.
 
+## Features
+
+### Search
+
+Streaming client-side search over the downloaded index. The URL hash is the
+single source of truth: `#?term` is a global (non-path-scoped) search, anything
+else is a directory path. Searching pushes a single history entry then replaces
+it on each keystroke, so back/forward and deep links work without flooding the
+back stack. Clearing the search restores the directory you were in.
+
+### Keyboard navigation
+
+- **Up / Down** — move the row selection (wraps; Down from no selection starts
+  at the first real item).
+- **Enter** — open the selected row.
+- **Backspace** — go up a directory (ignored while a text input is focused).
+- **Space** — play/stop the selected audio file.
+- **Escape** — clear the selection.
+
+### Audio player
+
+Audio files (`mp3`, `ogg`, `oga`, `wav`, `flac`, `aac`, `m4a`, `opus`, `weba`)
+get an inline play/stop button. Playback advances gaplessly through the
+directory as a playlist using two swapped `<audio>` elements (one plays while
+the next preloads). Integrates with system media controls (`mediaSession`):
+track title, next/previous track, and hardware media keys.
+
+### README rendering
+
+A `README.md` in a directory is rendered inline as GitHub-flavoured markdown
+below the listing (via `marked`). Content is trusted — served from your own
+file server — so no HTML sanitisation is applied.
+
+### Hidden files
+
+`.index.txt` and `.zsync` control files (which accompany published ISOs) are
+hidden from the listing.
+
+### Responsive layout
+
+On narrow screens (≤700px) the table collapses into cards: the name is
+prominent with size/date/path flowing inline below it, and audio buttons are
+always visible (no hover on touch).
+
 ## Demo
 
 To run a demo of astralbrowser with a sample file tree:
