@@ -385,9 +385,16 @@ def main():
 
     print("astralbrowser-realtime-indexer: watching for changes", file=sys.stderr)
 
-    for event in i.event_gen(yield_nones=False):
+    # yield_nones=True + timeout_s makes event_gen wake every second even with
+    # no filesystem activity, so a SIGTERM/SIGINT (which sets `shutdown` from
+    # the handler) is noticed within 1s. With the previous yield_nones=False the
+    # loop blocked in the kernel read until the next inotify event, so on an
+    # idle tree systemd waited out TimeoutStopSec then SIGKILLed us.
+    for event in i.event_gen(yield_nones=True, timeout_s=1):
         if shutdown.is_set():
             break
+        if event is None:
+            continue
         handle_event(event, i)
 
     writer.join(timeout=10)
