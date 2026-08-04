@@ -41,8 +41,6 @@ in
       serviceConfig = {
         Type = "simple";
         ExecStart = "${astralbrowser.realtime-indexer}/bin/astralbrowser-realtime-indexer";
-        Restart = "on-failure";
-        RestartSec = "5";
       };
       environment = {
         PYTHONUNBUFFERED = "1";

@@ -390,12 +390,22 @@ def main():
 
     print("astralbrowser-realtime-indexer: watching for changes", file=sys.stderr)
 
-    # yield_nones=True + timeout_s makes event_gen wake every second even with
-    # no filesystem activity, so a SIGTERM/SIGINT (which sets `shutdown` from
-    # the handler) is noticed within 1s. With the previous yield_nones=False the
-    # loop blocked in the kernel read until the next inotify event, so on an
-    # idle tree systemd waited out TimeoutStopSec then SIGKILLed us.
-    for event in i.event_gen(yield_nones=True, timeout_s=1):
+    # event_gen blocks block_duration_s (default 1s) per kernel poll, then with
+    # yield_nones=True yields None on each idle cycle, so a SIGTERM/SIGINT (which
+    # sets `shutdown` from the handler) is noticed within ~1s.
+    #
+    # Do NOT pass timeout_s. In dsoprea/inotify timeout_s is a total INACTIVITY
+    # timeout that TERMINATES the generator (StopIteration) after that many idle
+    # seconds -- it is a lifetime, not a per-poll wake. timeout_s=1 made this loop
+    # end after the first 1s of quiet, so main() returned and the process exited 0;
+    # with Restart=on-failure a clean exit is ignored, so the indexer silently died
+    # and stopped indexing (index frozen, new files never seen). block_duration_s
+    # is the wake lever. See https://pypi.org/project/inotify/ (event_gen).
+    #
+    # The earlier yield_nones=False instead blocked in the kernel read until the
+    # next event, so on an idle tree systemd waited out TimeoutStopSec then
+    # SIGKILLed us -- do not go back to that either.
+    for event in i.event_gen(yield_nones=True):
         if shutdown.is_set():
             break
         if event is None:
