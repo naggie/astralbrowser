@@ -305,9 +305,14 @@ def handle_event(event, i):
     is_dir = "IN_ISDIR" in type_names
 
     if is_dir:
-        if "IN_CREATE" in type_names:
-            add_watch_tree(i, abs_path)
-        elif "IN_MOVED_TO" in type_names:
+        # Both created and moved-in dirs: add watches, then re-scan the subtree.
+        # There is an unavoidable race between a new dir being created and its
+        # watch being added, so files that landed in that window (e.g. a writer
+        # doing mkdir then immediately rename a file in) must be recovered by the
+        # scan. add_watch_tree and index_dir_files both recurse, so nested mkdirs
+        # are covered too. Previously IN_CREATE only added watches and dropped
+        # such files.
+        if "IN_CREATE" in type_names or "IN_MOVED_TO" in type_names:
             add_watch_tree(i, abs_path)
             index_dir_files(abs_path)
         return
