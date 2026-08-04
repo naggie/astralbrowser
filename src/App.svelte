@@ -84,10 +84,21 @@
         }
     });
 
+    // GitHub-style shortcut: "t" focuses search unless an input is already focused.
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key !== "t" || e.ctrlKey || e.metaKey || e.altKey) return;
+        const el = document.activeElement;
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return;
+        e.preventDefault();  // stop "t" landing in the box
+        input.focus();
+    }
+
     onMount(() => {
         input.focus();
     });
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 <div id="astralbrowser-toolbar">
     <form id="astralbrowser-toolbar-path" onsubmit={(e) => { e.preventDefault(); handlePathSubmit(e); }}>
@@ -95,7 +106,7 @@
         <input type="submit" hidden />
     </form>
     <form id="astralbrowser-toolbar-search" onsubmit={(e) => e.preventDefault()}>
-        <input type="text" value={query} oninput={handleSearchInput} name="query" placeholder="Search" spellcheck="false" autocomplete="off" bind:this={input} />
+        <input type="text" value={query} oninput={handleSearchInput} name="query" placeholder="Search [t]" spellcheck="false" autocomplete="off" bind:this={input} />
         <input type="submit" hidden />
     </form>
 </div>
