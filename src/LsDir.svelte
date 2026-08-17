@@ -1,5 +1,5 @@
 <script lang="ts">
-    import {joinPath} from './util';
+    import {joinPath, parentDir} from './util';
     import LsDirListing from './LsDirListing.svelte';
     import { marked } from 'marked';
 
@@ -65,7 +65,22 @@
     $effect(() => {
         listingReq = load_path(path);
     });
+
+    // Backspace goes up a directory. Lives here, not in LsDirListing, so it
+    // still works when the listing failed to load (e.g. 403 on a directory
+    // without permission) and only the error box is rendered.
+    function handleKeydown(e: KeyboardEvent) {
+        if (e.key !== "Backspace") return;
+        // A text input (search/path box) keeps Backspace as an edit key.
+        const el = document.activeElement;
+        if (el instanceof HTMLInputElement || el instanceof HTMLTextAreaElement) return;
+        if (path == "/") return;
+        e.preventDefault();
+        window.location.hash = parentDir(path);
+    }
 </script>
+
+<svelte:window onkeydown={handleKeydown} />
 
 {#await listingReq}
     <div class="astralbrowser-progress">
