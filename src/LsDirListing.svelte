@@ -158,10 +158,17 @@
         selected = -2;
     }
 
+    // Guard against losing playback by accident. Browsers only show the dialog
+    // if the page has sticky user activation, which starting playback provides.
+    function handleBeforeUnload(e: BeforeUnloadEvent) {
+        if (playingFile) e.preventDefault();
+    }
+
     onMount(() => {
         window.addEventListener("keydown", handleKeydown);
         window.addEventListener("focusin", handleFocusIn);
         window.addEventListener("click", handleClick);
+        window.addEventListener("beforeunload", handleBeforeUnload);
 
         if ('mediaSession' in navigator) {
             navigator.mediaSession.setActionHandler('nexttrack', () => {
@@ -180,6 +187,7 @@
             window.removeEventListener("keydown", handleKeydown);
             window.removeEventListener("focusin", handleFocusIn);
             window.removeEventListener("click", handleClick);
+            window.removeEventListener("beforeunload", handleBeforeUnload);
         }
     });
 </script>
