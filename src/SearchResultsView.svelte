@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount } from 'svelte';
     import SearchResultRow from './SearchResultRow.svelte';
+    import { humanFileSize } from './util';
 
     let { results, report, error = "", mountPoint = "" }: {
         results: Result[];
@@ -67,7 +68,7 @@
         <div class="astralbrowser-progress-bar" style="width:{report.percentSearched}%"></div>
     </div>
     {#if report.numSearched > 0}
-        Searched {report.numSearched} items in {report.elapsedMs | 0}ms
+        Searched {report.numSearched} items ({humanFileSize(report.totalSize, false)}) in {report.elapsedMs | 0}ms
     {:else}
         Searching...
     {/if}
