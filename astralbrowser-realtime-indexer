@@ -128,6 +128,7 @@ IGNORES = [
     "xcuserdata",
     "~$*",
     ".git",
+    "*-journal",
 ]
 
 MAX_WATCHES_SYSCTL = "/proc/sys/fs/inotify/max_user_watches"

@@ -121,6 +121,7 @@ ignores = [
     "xcuserdata",
     "~$*",
     ".git",
+    "*-journal",
 ]
 
 
